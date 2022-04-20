@@ -2,7 +2,7 @@
   config(
     materialized='incremental',
     cluster_by='block_timestamp',
-    unique_key='tx_id',
+    unique_key='block_height',
     incremental_strategy = 'delete+insert',
     tags=['silver','blocks']
   )
@@ -12,6 +12,7 @@ with
 bronze_blocks as (
 
   select * from {{ ref('bronze__blocks') }}
+
   {% if is_incremental() %}
   where ingested_at::date >= getdate() - interval '2 days'
   {% endif %}
