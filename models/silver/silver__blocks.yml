@@ -1,5 +1,4 @@
 
-
 version: 2
 
 models:
@@ -8,47 +7,82 @@ models:
 
     columns:
       - name: block_height
-        description:
+        description: tbd
         tests:
           - not_null
           - unique
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
 
       - name: block_timestamp
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: network
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: chain_id
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: tx_count
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
 
       - name: id
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: parent_id
-        description:
+        description: tbd
         tests:
           - not_null
-
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                
       - name: collection_guarantee
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
 
       - name: ingested_at
-        description:
+        description: tbd
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

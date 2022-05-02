@@ -1,10 +1,9 @@
 {{
   config(
     materialized='incremental',
-    cluster_by='block_timestamp',
+    cluster_by=['ingested_at::DATE', 'block_timestamp::DATE'],
     unique_key='block_height',
-    incremental_strategy = 'delete+insert',
-    tags=['silver','blocks']
+    incremental_strategy = 'delete+insert'
   )
 }}
 
@@ -30,20 +29,9 @@ silver_blocks as (
       network,
       chain_id,
       tx_count,
-      case
-          when (header:block_id is null and header:block_header:block_id is null) then header:id::string
-          when (header:block_id is null and header:id is null) then header:block_header:block_id::string
-          else header:block_id::string
-      end as id,
-      case
-          when (header:parent_id is null and header:parentId is null) then header:block_header:parent_id::string
-          when (header:parent_id is null and header:block_header:parent_id is null) then header:parentId::string
-          else header:parent_id::string
-      end as parent_id,
-      case
-          when header:block_header:collection_guarantee is null then header:collection_guarantee::variant
-          else header:block_header:collection_guarantee::variant
-      end as collection_guarantee,
+      coalesce(header:block_id, header:block_header:block_id, header:id)::string as id,
+      coalesce(header:parent_id, header:parentId, header:block_header:parent_id)::string as parent_id,
+      coalesce(header:block_header:collection_guarantee, header:collection_guarantee)::variant as collection_guarantee,
       ingested_at
 
   from bronze_blocks
