@@ -1,0 +1,110 @@
+
+version: 2
+
+models:
+  - name: silver__tx_events
+    description: |-
+      This table records events from each transaction on the FLOW blockchain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - event_index
+
+    columns:
+      - name: event_id
+        description: tbd
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_id
+        description: tbd
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: block_height
+        description: tdb
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER    
+                - FLOAT  
+
+      - name: tx_succeeded
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: event_index
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: event_contract
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: event_type
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: event_data
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: event_data_type
+        description: tbd - likely deleted
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: event_data_fields
+        description: tbd - likely deleted
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: ingested_at
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

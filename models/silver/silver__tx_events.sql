@@ -20,8 +20,8 @@ events as (
 
       tx_id,
       block_timestamp,
-      block_id,
-      error_status,
+      block_height,
+      tx_succeeded,
       coalesce(value:event_index, value:eventIndex)::number as event_index,
       split(value:type, '.') as type_split,
       case
@@ -49,8 +49,8 @@ final as (
     event_id,
     tx_id,
     block_timestamp,
-    block_id,
-    error_status,
+    block_height,
+    tx_succeeded,
     event_index,
     event_contract,
     event_type,
