@@ -27,7 +27,7 @@ silver_txs as (
 
       tx_id,
       block_timestamp,
-      block_id,
+      block_id as block_height,
       chain_id,
       case
         when tx:proposal_key:Address is null then tx:proposalKeyAddress::string

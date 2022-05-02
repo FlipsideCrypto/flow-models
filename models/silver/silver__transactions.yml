@@ -23,7 +23,7 @@ models:
         tests:
           - not_null
 
-      - name: block_id
+      - name: block_height
         description: Height of the block.
         tests:
           - not_null
