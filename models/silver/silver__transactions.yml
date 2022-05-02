@@ -1,0 +1,114 @@
+
+version: 2
+
+models:
+  - name: silver__transactions
+    description: |-
+      This table records all the transactions of the FLOW blockchain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - block_height
+
+    columns:
+      - name: tx_id
+        description: ID for the transaction.
+        tests:
+          - not_null
+          - unique
+
+      - name: block_timestamp
+        description: Timestamp of when the block occurred.
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: block_height
+        description: Height of the block.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER    
+                - FLOAT  
+
+      - name: chain_id
+        description: Name of the chain on which the block was written.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+              - STRING
+              - VARCHAR
+
+      - name: proposer
+        description: Address of the transaction proposer.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+              - STRING
+              - VARCHAR
+
+      - name: payer
+        description: Address of the wallet paying for the transaction.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+              - STRING
+              - VARCHAR
+
+      - name: authorizers
+        description: Address(es) authorizing the transaction.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: count_authorizers
+        description: Number of authorizers.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: gas_limit
+        description: Upper gas limit attached to the transaction.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: transaction_result
+        description: Outcome of the transaction, including events that were called.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: tx_succeeded
+        description: Transaction status, if it succeeded or failed.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: ingested_at
+        description: Timestamp for when the record was ingested by the chainwalker.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
