@@ -3,18 +3,21 @@
     materialized='incremental',
     cluster_by='block_timestamp',
     unique_key='tx_id',
-    incremental_strategy = 'delete+insert'
+    incremental_strategy = 'delete+insert',
+    tags=['silver', 'txs']
   )
 }}
 
 with
 bronze_txs as (
 
-  select * from {{ ref('bronze__txs') }}
+  select * from {{ ref('bronze__transactions') }}
 
   {% if is_incremental() %}
-  where ingested_at::date >= getdate() - interval '2 days'
+    where ingested_at::date >= getdate() - interval '2 days'
   {% endif %}
+
+  qualify row_number() over (partition by tx_id order by ingested_at desc) = 1
 
 ),
 
@@ -31,7 +34,7 @@ silver_txs as (
         else tx:proposal_key:Address::string
       end as proposer,
       tx:payer::string as payer,
-      tx:authorizers::variant as authorizers,
+      tx:authorizers::array as authorizers,
       array_size(authorizers) as count_authorizers,
       case
         when tx:gas_limit is null then tx:gasLimit::number
@@ -44,7 +47,8 @@ silver_txs as (
       case
         when transaction_result:error = '{}' then 'FAILED'
         else 'SUCCEEDED'
-      end as error_status
+      end as error_status,
+      ingested_at
 
   from bronze_txs
 

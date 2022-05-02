@@ -1,0 +1,68 @@
+
+version: 2
+
+models:
+  - name: silver__transactions
+    description: |-
+      This table records all the transactions of the FLOW blockchain.
+      
+    columns:
+      - name: tx_id
+        description: ID for the transaction.
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: Timestamp of when the block occurred.
+        tests:
+          - not_null
+
+      - name: block_id
+        description: Height of the block.
+        tests:
+          - not_null
+
+      - name: chain_id
+        description: Name of the chain on which the block was written.
+        tests:
+          - not_null
+
+      - name: proposer
+        description: Address of the transaction proposer.
+        tests:
+          - not_null
+
+      - name: payer
+        description: Address of the wallet paying for the transaction.
+        tests:
+          - not_null
+
+      - name: authorizers
+        description: Address(es) authorizing the transaction.
+        tests:
+          - not_null
+
+      - name: count_authorizers
+        description: Number of authorizers.
+        tests:
+          - not_null
+
+      - name: gas_limit
+        description: Upper gas limit attached to the transaction.
+        tests:
+          - not_null
+
+      - name: transaction_result
+        description: Outcome of the transaction, including events that were called.
+        tests:
+          - not_null
+
+      - name: error_status
+        description: Transaction status, if it succeeded or failed.
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: Timestamp for when the record was ingested by the chainwalker.
+        tests:
+          - not_null
