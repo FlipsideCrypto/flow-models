@@ -14,7 +14,7 @@ WITH bronze_blocks AS (
 
 {% if is_incremental() %}
 WHERE
-  ingested_at :: DATE >= getdate() - INTERVAL '2 days'
+  ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
 
 qualify ROW_NUMBER() over (
