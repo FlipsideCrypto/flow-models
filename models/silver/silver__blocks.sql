@@ -17,6 +17,8 @@ bronze_blocks as (
   where ingested_at::date >= getdate() - interval '2 days'
   {% endif %}
 
+  qualify row_number() over (partition by block_id order by ingested_at desc) = 1
+
 ),
 
 silver_blocks as (
@@ -41,7 +43,8 @@ silver_blocks as (
       case
           when header:block_header:collection_guarantee is null then header:collection_guarantee::variant
           else header:block_header:collection_guarantee::variant
-      end as collection_guarantee
+      end as collection_guarantee,
+      ingested_at
 
   from bronze_blocks
 
