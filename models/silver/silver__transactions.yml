@@ -5,12 +5,18 @@ models:
   - name: silver__transactions
     description: |-
       This table records all the transactions of the FLOW blockchain.
-      
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - block_id
+
     columns:
       - name: tx_id
         description: ID for the transaction.
         tests:
           - not_null
+          - unique
 
       - name: block_timestamp
         description: Timestamp of when the block occurred.
