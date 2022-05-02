@@ -1,41 +1,54 @@
-{{
-  config(
-    materialized='incremental',
-    cluster_by=['ingested_at::DATE', 'block_timestamp::DATE'],
-    unique_key='block_height',
-    incremental_strategy = 'delete+insert'
-  )
-}}
+{{ config(
+  materialized = 'incremental',
+  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  unique_key = 'block_height',
+  incremental_strategy = 'delete+insert'
+) }}
 
-with
-bronze_blocks as (
+WITH bronze_blocks AS (
 
-  select * from {{ ref('bronze__blocks') }}
+  SELECT
+    *
+  FROM
+    {{ ref('bronze__blocks') }}
 
-  {% if is_incremental() %}
-  where ingested_at::date >= getdate() - interval '2 days'
-  {% endif %}
+{% if is_incremental() %}
+WHERE
+  ingested_at :: DATE >= getdate() - INTERVAL '2 days'
+{% endif %}
 
-  qualify row_number() over (partition by block_id order by ingested_at desc) = 1
-
+qualify ROW_NUMBER() over (
+  PARTITION BY block_id
+  ORDER BY
+    ingested_at DESC
+) = 1
 ),
-
-silver_blocks as (
-
-  select
-
-      block_id as block_height,
-      block_timestamp,
-      network,
-      chain_id,
-      tx_count,
-      coalesce(header:block_id, header:block_header:block_id, header:id)::string as id,
-      coalesce(header:parent_id, header:parentId, header:block_header:parent_id)::string as parent_id,
-      coalesce(header:block_header:collection_guarantee, header:collection_guarantee)::variant as collection_guarantee,
-      ingested_at
-
-  from bronze_blocks
-
+silver_blocks AS (
+  SELECT
+    block_id AS block_height,
+    block_timestamp,
+    network,
+    chain_id,
+    tx_count,
+    COALESCE(
+      header :block_id,
+      header :block_header :block_id,
+      header :id
+    ) :: STRING AS id,
+    COALESCE(
+      header :parent_id,
+      header :parentId,
+      header :block_header :parent_id
+    ) :: STRING AS parent_id,
+    COALESCE(
+      header :block_header :collection_guarantee,
+      header :collection_guarantee
+    ) :: variant AS collection_guarantee,
+    ingested_at
+  FROM
+    bronze_blocks
 )
-
-select * from silver_blocks
+SELECT
+  *
+FROM
+  silver_blocks
