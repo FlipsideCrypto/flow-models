@@ -1,0 +1,54 @@
+
+
+version: 2
+
+models:
+  - name: silver__blocks
+    description: Information about blocks on the FLOW network and corresponding metadata.
+
+    columns:
+      - name: block_height
+        description:
+        tests:
+          - not_null
+          - unique
+
+      - name: block_timestamp
+        description:
+        tests:
+          - not_null
+
+      - name: network
+        description:
+        tests:
+          - not_null
+
+      - name: chain_id
+        description:
+        tests:
+          - not_null
+
+      - name: tx_count
+        description:
+        tests:
+          - not_null
+
+      - name: id
+        description:
+        tests:
+          - not_null
+
+      - name: parent_id
+        description:
+        tests:
+          - not_null
+
+      - name: collection_guarantee
+        description:
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description:
+        tests:
+          - not_null
