@@ -14,7 +14,7 @@ WITH transactions AS (
 
 {% if is_incremental() %}
 WHERE
-  ingested_at :: DATE >= CURRENT_DATE - 2
+  _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
 ),
 events AS (
