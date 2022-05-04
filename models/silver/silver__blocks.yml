@@ -79,7 +79,7 @@ models:
               column_type_list:
                 - ARRAY
 
-      - name: ingested_at
+      - name: _ingested_at
         description: tbd
         tests:
           - not_null

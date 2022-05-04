@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: silver__tx_events
+  - name: silver__events
     description: |-
       This table records events from each transaction on the FLOW blockchain.
     tests:

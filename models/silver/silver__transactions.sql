@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
   unique_key = 'tx_id',
   incremental_strategy = 'delete+insert'
 ) }}
@@ -14,13 +14,13 @@ WITH bronze_txs AS (
 
 {% if is_incremental() %}
 WHERE
-  ingested_at :: DATE >= CURRENT_DATE - 2
+  _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
 
 qualify ROW_NUMBER() over (
   PARTITION BY tx_id
   ORDER BY
-    ingested_at DESC
+    _ingested_at DESC
 ) = 1
 ),
 final AS (
@@ -48,7 +48,7 @@ final AS (
       WHEN transaction_result :error = '{}' THEN false
       ELSE true
     END AS tx_succeeded,
-    ingested_at
+    _ingested_at
   FROM
     bronze_txs
 )

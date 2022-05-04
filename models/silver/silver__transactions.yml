@@ -105,7 +105,7 @@ models:
               column_type_list:
                 - BOOLEAN
 
-      - name: ingested_at
+      - name: _ingested_at
         description: Timestamp for when the record was ingested by the chainwalker.
         tests:
           - not_null
