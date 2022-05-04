@@ -8,12 +8,14 @@
 with 
 events as (
 
-    select * from flow_dev.silver.tx_events
+    select * from flow.silver.events
 
     {% if is_incremental() %}
         WHERE
             _ingested_at :: DATE >= CURRENT_DATE - 2
     {% endif %}
+
+    limit 100000
 
 ),
 
@@ -63,8 +65,8 @@ handle_address_arrays as (
     select
 
         attribute_id,
-        index,
-        trim(to_char(b.value::int,'XXXXXXX'))::string as hex
+        b.index,
+        lpad(trim(to_char(b.value::int,'XXXXXXX'))::string,2,'0') as hex
 
     from attributes a, table(flatten(attribute_value, recursive=>true)) b
 
@@ -78,11 +80,10 @@ recombine_address as (
     select
 
         attribute_id,
-        index,
         concat('0x',array_to_string(array_agg(hex) within group (order by index asc),'')) as decoded_address
 
     from handle_address_arrays
-    group by 1,2
+    group by 1
 
 ),
 
@@ -123,10 +124,9 @@ final as (
         event_contract,
         event_type,
         attribute_key,
-        case
-            when is_array(attribute_value) = true then decoded_address
-            else attribute_value
-        end as attribute_value,
+        decoded_address,
+        attribute_value,
+        coalesce(decoded_address, attribute_value)::string as attribute_value_adj,
         _ingested_at
 
     from replace_arrays
