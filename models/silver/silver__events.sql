@@ -31,19 +31,8 @@ events AS (
       VALUE :type,
       '.'
     ) AS type_split,
-    CASE
-      WHEN ARRAY_SIZE(type_split) = 4 THEN concat_ws(
-        '.',
-        type_split [0],
-        type_split [1],
-        type_split [2]
-      ) :: STRING
-      ELSE type_split [0] :: STRING
-    END AS event_contract,
-    CASE
-      WHEN ARRAY_SIZE(type_split) = 4 THEN type_split [3] :: STRING
-      ELSE type_split [1] :: STRING
-    END AS event_type,
+    ARRAY_TO_STRING(ARRAY_SLICE(type_split, 0, ARRAY_SIZE(type_split) -1), '.') AS event_contract,
+    type_split [array_size(type_split)-1] :: STRING AS event_type,
     VALUE :value :: variant AS event_data,
     COALESCE(
       VALUE :value :EventType,
@@ -58,7 +47,7 @@ events AS (
       tx_id,
       event_index
     ) AS event_id,
-    ingested_at
+    _ingested_at
   FROM
     transactions,
     LATERAL FLATTEN(
@@ -78,7 +67,7 @@ FINAL AS (
     event_data,
     event_data_type AS _event_data_type,
     event_data_fields AS _event_data_fields,
-    ingested_at AS _ingested_at
+    _ingested_at
   FROM
     events
 )
