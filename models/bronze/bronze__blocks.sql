@@ -11,7 +11,7 @@ SELECT
     chain_id, 
     tx_count, 
     header, 
-    ingested_at
+    ingested_at as _ingested_at
 FROM 
     {{ source(
       'prod',

@@ -2,24 +2,29 @@
 version: 2
 
 models:
-  - name: silver__transactions
+  - name: silver__events
     description: |-
-      This table records all the transactions of the FLOW blockchain.
+      This table records events from each transaction on the FLOW blockchain.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
-            - block_height
+            - event_index
 
     columns:
-      - name: tx_id
-        description: ID for the transaction.
+      - name: event_id
+        description: tbd
         tests:
           - not_null
           - unique
 
+      - name: tx_id
+        description: tbd
+        tests:
+          - not_null
+
       - name: block_timestamp
-        description: Timestamp of when the block occurred.
+        description: tbd
         tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
@@ -30,7 +35,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: block_height
-        description: Height of the block.
+        description: tdb
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -38,75 +43,66 @@ models:
                 - NUMBER    
                 - FLOAT  
 
-      - name: chain_id
-        description: Name of the chain on which the block was written.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-              - STRING
-              - VARCHAR
-
-      - name: proposer
-        description: Address of the transaction proposer.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-              - STRING
-              - VARCHAR
-
-      - name: payer
-        description: Address of the wallet paying for the transaction.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-              - STRING
-              - VARCHAR
-
-      - name: authorizers
-        description: Address(es) authorizing the transaction.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-
-      - name: count_authorizers
-        description: Number of authorizers.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
-      - name: gas_limit
-        description: Upper gas limit attached to the transaction.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
-      - name: transaction_result
-        description: Outcome of the transaction, including events that were called.
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARIANT
-
       - name: tx_succeeded
-        description: Transaction status, if it succeeded or failed.
+        description: tbd
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
 
+      - name: event_index
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: event_contract
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: event_type
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: event_data
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: _event_data_type
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
+      - name: _event_data_fields
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+
       - name: _ingested_at
-        description: Timestamp for when the record was ingested by the chainwalker.
+        description: tbd
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
