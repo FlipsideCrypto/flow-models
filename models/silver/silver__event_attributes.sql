@@ -8,14 +8,12 @@
 with 
 events as (
 
-    select * from flow.silver.events
+    select * from {{ ref('silver__events') }}
 
     {% if is_incremental() %}
         WHERE
             _ingested_at :: DATE >= CURRENT_DATE - 2
     {% endif %}
-
-    limit 100000
 
 ),
 
@@ -25,8 +23,6 @@ events_data as (
         event_id,
         tx_id,
         block_timestamp,
-        block_height,
-        tx_succeeded,
         event_index,
         event_contract,
         event_type,
@@ -46,8 +42,6 @@ attributes as (
         event_id,
         tx_id,
         block_timestamp,
-        block_height,
-        tx_succeeded,
         event_index,
         event_contract,
         event_type,
@@ -95,18 +89,32 @@ replace_arrays as (
         event_id,
         tx_id,
         block_timestamp,
-        block_height,
-        tx_succeeded,
         event_index,
         event_contract,
         event_type,
         attribute_key,
         attribute_value,
-        _ingested_at,
-        decoded_address
+        decoded_address,
+        coalesce(decoded_address, attribute_value)::string as attribute_value_adj,
+        _ingested_at
 
     from attributes a
         left join recombine_address using (attribute_id)
+
+),
+
+address_adjustment as (
+
+    select 
+
+        attribute_id,
+        length(attribute_value_adj) as ava_len, 
+        concat('0x',lpad(split(attribute_value_adj, '0x')[1],16,'0')::string) as address_adj
+
+    from replace_arrays
+    where attribute_value_adj like '0x%'
+        and ava_len < 19
+
 
 ),
 
@@ -114,22 +122,21 @@ final as (
 
     select
     
-        attribute_id,
+        a.attribute_id,
         event_id,
         tx_id,
         block_timestamp,
-        block_height,
-        tx_succeeded,
         event_index,
         event_contract,
         event_type,
         attribute_key,
         decoded_address,
         attribute_value,
-        coalesce(decoded_address, attribute_value)::string as attribute_value_adj,
+        coalesce(address_adj, attribute_value_adj) as attribute_value_adj,
         _ingested_at
 
-    from replace_arrays
+    from replace_arrays a
+    left join address_adjustment using (attribute_id)
 
 )
 
