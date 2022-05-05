@@ -47,7 +47,9 @@ FINAL AS (
     ) :: variant AS transaction_result,
     CASE
       WHEN transaction_result :error = '' THEN TRUE
-      WHEN transaction_result :error IS NULL THEN TRUE
+      WHEN TYPEOF(
+        transaction_result :error
+      ) = 'NULL_VALUE' THEN TRUE
       ELSE FALSE
     END AS tx_succeeded,
     COALESCE(
