@@ -47,7 +47,7 @@ models:
               - STRING
               - VARCHAR
 
-      - name: tx_block_index
+      - name: tx_index
         description: tbd
         tests:
           - not_null
