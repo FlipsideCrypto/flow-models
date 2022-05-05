@@ -50,7 +50,10 @@ FINAL AS (
       WHEN transaction_result :error IS NULL THEN TRUE
       ELSE FALSE
     END AS tx_succeeded,
-    coalesce(transaction_result:error::string, '') as error_msg,
+    COALESCE(
+      transaction_result :error,
+      ''
+    ) :: STRING AS error_msg,
     _ingested_at
   FROM
     bronze_txs
