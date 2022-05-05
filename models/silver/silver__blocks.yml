@@ -70,14 +70,6 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
-      - name: collection_guarantee
-        description: tbd
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
 
       - name: _ingested_at
         description: tbd
