@@ -10,6 +10,7 @@ models:
           combination_of_columns:
             - tx_id
             - event_index
+            - attribute_index
 
     columns:
       - name: attribute_id
@@ -55,6 +56,14 @@ models:
               column_type_list:
                 - NUMBER
 
+      - name: attribute_index
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
       - name: event_contract
         description: tbd
         tests:
@@ -89,16 +98,10 @@ models:
       - name: attribute_value
         description: tbd
         tests:
-          - not_null
 
       - name: attribute_value_adj
         description: tbd
         tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
                 
       - name: _ingested_at
         description: tbd

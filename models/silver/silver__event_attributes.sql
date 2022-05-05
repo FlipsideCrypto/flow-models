@@ -48,6 +48,7 @@ attributes as (
         coalesce(value:identifier, value:Identifier)::string as attribute_key,
         coalesce(_event_data_fields[index]:Value, _event_data_fields[index]) as attribute_value,
         concat_ws('-', event_id, index) as attribute_id,
+        index as attribute_index,
         _ingested_at
 
     from events_data, lateral flatten(input => event_data_type_fields)
@@ -90,6 +91,7 @@ replace_arrays as (
         tx_id,
         block_timestamp,
         event_index,
+        attribute_index,
         event_contract,
         event_type,
         attribute_key,
@@ -127,6 +129,7 @@ final as (
         tx_id,
         block_timestamp,
         event_index,
+        attribute_index,
         event_contract,
         event_type,
         attribute_key,
