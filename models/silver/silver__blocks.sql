@@ -40,10 +40,6 @@ silver_blocks AS (
       header :parentId,
       header :block_header :parent_id
     ) :: STRING AS parent_id,
-    COALESCE(
-      header :block_header :collection_guarantee,
-      header :collection_guarantee
-    ) :: variant AS collection_guarantee,
     _ingested_at
   FROM
     bronze_blocks
