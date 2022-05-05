@@ -105,6 +105,15 @@ models:
               column_type_list:
                 - BOOLEAN
 
+      - name: error_msg
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: _ingested_at
         description: Timestamp for when the record was ingested by the chainwalker.
         tests:
