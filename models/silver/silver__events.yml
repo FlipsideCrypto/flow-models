@@ -13,18 +13,18 @@ models:
 
     columns:
       - name: event_id
-        description: tbd
+        description: "{{ doc('event_id') }}"
         tests:
           - not_null
           - unique
 
       - name: tx_id
-        description: tbd
+        description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
       - name: block_timestamp
-        description: tbd
+        description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
@@ -35,7 +35,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: block_height
-        description: tdb
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -44,7 +44,7 @@ models:
                 - FLOAT  
 
       - name: tx_succeeded
-        description: tbd
+        description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -52,7 +52,7 @@ models:
                 - BOOLEAN
 
       - name: event_index
-        description: tbd
+        description: "{{ doc('event_index') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -60,7 +60,7 @@ models:
                 - NUMBER
 
       - name: event_contract
-        description: tbd
+        description: "{{ doc('event_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -69,7 +69,7 @@ models:
                 - VARCHAR
 
       - name: event_type
-        description: tbd
+        description: "{{ doc('event_type') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -78,7 +78,7 @@ models:
                 - VARCHAR
 
       - name: event_data
-        description: tbd
+        description: "{{ doc('event_data') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -86,7 +86,7 @@ models:
                 - VARIANT
 
       - name: _event_data_type
-        description: tbd
+        description: "{{ doc('_event_data_type') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -94,7 +94,7 @@ models:
                 - VARIANT
 
       - name: _event_data_fields
-        description: tbd
+        description: "{{ doc('_event_data_fields') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -102,7 +102,7 @@ models:
                 - VARIANT
 
       - name: _ingested_at
-        description: tbd
+        description: "{{ doc('_ingested_at') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

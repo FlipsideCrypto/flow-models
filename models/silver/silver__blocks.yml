@@ -7,7 +7,7 @@ models:
 
     columns:
       - name: block_height
-        description: tbd
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - unique
@@ -17,7 +17,7 @@ models:
                 - FLOAT
 
       - name: block_timestamp
-        description: tbd
+        description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
@@ -28,7 +28,7 @@ models:
                 - TIMESTAMP_NTZ
 
       - name: network
-        description: tbd
+        description: "{{ doc('network') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -37,7 +37,7 @@ models:
                 - VARCHAR
 
       - name: chain_id
-        description: tbd
+        description: "{{ doc('chain_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -46,7 +46,7 @@ models:
                 - VARCHAR
 
       - name: tx_count
-        description: tbd
+        description: "{{ doc('tx_count') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -54,7 +54,7 @@ models:
                 - NUMBER
 
       - name: id
-        description: tbd
+        description: "{{ doc('id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -63,7 +63,7 @@ models:
                 - VARCHAR
 
       - name: parent_id
-        description: tbd
+        description: "{{ doc('parent_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -72,7 +72,7 @@ models:
                 - VARCHAR
 
       - name: _ingested_at
-        description: tbd
+        description: "{{ doc('_ingested_at') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
