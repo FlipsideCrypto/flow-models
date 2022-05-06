@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    cluster_by = ['_ingested_at::DATE'],
+    cluster_by = ['address'],
     unique_key = 'event_id',
 ) }}
 
