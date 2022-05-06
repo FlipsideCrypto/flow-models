@@ -29,7 +29,7 @@ FINAL AS (
     block_timestamp,
     block_id AS block_height,
     chain_id,
-    tx_index,
+    tx_block_index AS tx_index,
     COALESCE(
       tx :proposal_key :Address,
       tx :proposalKeyAddress
