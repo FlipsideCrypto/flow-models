@@ -9,7 +9,8 @@ WITH labels AS (
         insert_date AS _ingested_at,
         blockchain,
         address,
-        creator label_type,
+        creator,
+        label_type,
         label_subtype,
         address_name,
         project_name
