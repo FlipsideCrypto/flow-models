@@ -23,12 +23,13 @@ qualify ROW_NUMBER() over (
     _ingested_at DESC
 ) = 1
 ),
-final AS (
+FINAL AS (
   SELECT
     tx_id,
     block_timestamp,
     block_id AS block_height,
     chain_id,
+    tx_block_index AS tx_index,
     COALESCE(
       tx :proposal_key :Address,
       tx :proposalKeyAddress
@@ -45,9 +46,14 @@ final AS (
       tx :result
     ) :: variant AS transaction_result,
     CASE
-      WHEN transaction_result :error = '{}' THEN false
-      ELSE true
+      WHEN transaction_result :error = '' THEN TRUE
+      WHEN transaction_result :error :: STRING IS NULL THEN TRUE
+      ELSE FALSE
     END AS tx_succeeded,
+    COALESCE(
+      transaction_result :error,
+      ''
+    ) :: STRING AS error_msg,
     _ingested_at
   FROM
     bronze_txs
@@ -55,4 +61,4 @@ final AS (
 SELECT
   *
 FROM
-  final
+  FINAL
