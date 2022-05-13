@@ -1,46 +1,47 @@
-{{
-    config(
-        materialized='incremental',
-        incremental_strategy='delete+insert',
-        cluster_by=['block_timestamp::date'],
-        unique_key='event_id'
-    )
-}}
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    cluster_by = ['block_timestamp::date'],
+    unique_key = 'event_id'
+) }}
 
-with silver_events as (
+WITH silver_events AS (
 
-    select * from {{ ref('silver__events') }}
+    SELECT
+        *
+    FROM
+        {{ ref('silver__events') }}
 
-    {% if is_incremental() %}
-    where
-        _ingested_at::date >= current_date -2 
-    {% endif %}
-
-),
-
-silver_event_attributes as (
-
-    select * from {{ ref('silver__event_attributes') }}
 {% if is_incremental() %}
-    where
-        _ingested_at::date >= current_date -2 
-    {% endif %}
-
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
+{% endif %}
 ),
+silver_event_attributes AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__event_attributes') }}
 
-objs as (
-
-    select
+{% if is_incremental() %}
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
+{% endif %}
+),
+objs AS (
+    SELECT
         event_id,
-        object_agg(attribute_key, attribute_value_adj::variant) as event_data
-    from silver_event_attributes
-    group by 1
-
+        OBJECT_AGG(
+            attribute_key,
+            attribute_value_adj :: variant
+        ) AS event_data
+    FROM
+        silver_event_attributes
+    GROUP BY
+        1
 ),
-
-location_object as (
-
-    select
+location_object AS (
+    SELECT
         event_id,
         tx_id,
         block_timestamp,
@@ -49,15 +50,17 @@ location_object as (
         event_index,
         event_contract,
         event_type,
-        coalesce(_event_data_type:location, _event_data_type:Location) as event_data
-    from silver_events
-    where _event_data_fields = '[]'
+        COALESCE(
+            _event_data_type :location,
+            _event_data_type :Location
+        ) AS event_data
+    FROM
+        silver_events
+    WHERE
+        _event_data_fields = '[]'
 ),
-
-
-gold_events as (
-
-    select
+gold_events AS (
+    SELECT
         e.event_id,
         e.tx_id,
         e.block_timestamp,
@@ -66,16 +69,23 @@ gold_events as (
         e.event_index,
         e.event_contract,
         e.event_type,
-        a.event_data
-    from objs a
-        left join silver_events e using (event_id)
+        A.event_data
+    FROM
+        objs A
+        LEFT JOIN silver_events e USING (event_id)
 ),
-
-final as (
-
-    select * from gold_events
-    union
-    select * from location_object
+FINAL AS (
+    SELECT
+        *
+    FROM
+        gold_events
+    UNION
+    SELECT
+        *
+    FROM
+        location_object
 )
-
-select * from final
+SELECT
+    *
+FROM
+    FINAL
