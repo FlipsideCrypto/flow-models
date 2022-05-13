@@ -1,0 +1,67 @@
+
+version: 2
+
+models:
+  - name: silver__labels
+    description: |-
+      This table provides labels for addresses on the Flow blockchain.
+
+
+    columns:
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: blockchain
+        description: "{{ doc('blockchain') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+
+      - name: address
+        description: "{{ doc('address') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
+      - name: creator
+        description: "{{ doc('creator') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
+      - name: label_type
+        description: "{{ doc('label_type') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
+      - name: label_subtype
+        description: "{{ doc('label_subtype') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
+      - name: address_name
+        description: "{{ doc('address_name') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
+      - name: project_name
+        description: "{{ doc('project_name') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                
