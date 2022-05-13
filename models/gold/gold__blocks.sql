@@ -12,11 +12,14 @@ silver_blocks as (
 
     select * from {{ ref('silver__blocks') }}
 
-    {{ % if is_incremental() %}}
 
-        WHERE _ingested_at::DATE >= CURRENT_DATE - 2
+{% if is_incremental() %}
+WHERE
+  _ingested_at :: DATE >= CURRENT_DATE - 2
+{% endif %}
 
-    {{ % endif %}}
+
+    
 
 ),
 
@@ -31,7 +34,7 @@ gold_blocks as (
         tx_count,
         id,
         parent_id
-    from silver__blocks
+    from silver_blocks
 
 )
 
