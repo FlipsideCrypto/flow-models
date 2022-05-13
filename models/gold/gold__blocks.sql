@@ -1,32 +1,24 @@
-{{
-    config(
-        materialized='incremental',
-        incremental_strategy='delete+insert',
-        cluster_by=['block_timestamp::DATE'],
-        unique_key='block_height'
-    )
-}}
+{{ config(
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    cluster_by = ['block_timestamp::DATE'],
+    unique_key = 'block_height'
+) }}
 
-with
-silver_blocks as (
+WITH silver_blocks AS (
 
-    select * from {{ ref('silver__blocks') }}
-
+    SELECT
+        *
+    FROM
+        {{ ref('silver__blocks') }}
 
 {% if is_incremental() %}
 WHERE
-  _ingested_at :: DATE >= CURRENT_DATE - 2
+    _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
-
-
-    
-
 ),
-
-gold_blocks as (
-
-
-    select
+gold_blocks AS (
+    SELECT
         block_height,
         block_timestamp,
         network,
@@ -34,8 +26,10 @@ gold_blocks as (
         tx_count,
         id,
         parent_id
-    from silver_blocks
-
+    FROM
+        silver_blocks
 )
-
-select * from gold_blocks
+SELECT
+    *
+FROM
+    gold_blocks

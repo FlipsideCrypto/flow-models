@@ -1,13 +1,15 @@
-{{
-    config(
-        materialized='view'
-    )
-}}
+{{ config(
+    materialized = 'view'
+) }}
 
-with blocks as (
+WITH blocks AS (
 
-    select * from {{ ref('gold__blocks') }}
-
+    SELECT
+        *
+    FROM
+        {{ ref('gold__blocks') }}
 )
-
-select * from blocks
+SELECT
+    *
+FROM
+    blocks
