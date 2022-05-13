@@ -4,6 +4,10 @@ version: 2
 models:
   - name: silver__blocks
     description: Information about blocks on the FLOW network and corresponding metadata.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - block_height
 
     columns:
       - name: block_height
