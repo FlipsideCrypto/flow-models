@@ -32,19 +32,26 @@ objs as (
 
     select
         event_id,
-        attribute_key,
-        attribute_value_adj,
-        object_construct(attribute_key, attribute_value_adj) as kvp
+        object_agg(attribute_key, attribute_value_adj::variant) as event_data
     from silver_event_attributes
+    group by 1
 
 ),
 
-array_build as (
+location_object as (
+
     select
         event_id,
-        array_agg(kvp) as event_data
-    from objs
-    group by 1
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_index,
+        event_contract,
+        event_type,
+        coalesce(_event_data_type:location, _event_data_type:Location) as event_data
+    from silver_events
+    where _event_data_fields = '[]'
 ),
 
 
@@ -60,8 +67,15 @@ gold_events as (
         e.event_contract,
         e.event_type,
         a.event_data
-    from silver_events e
-        left join array_build a using (event_id)
+    from objs a
+        left join silver_events e using (event_id)
+),
+
+final as (
+
+    select * from gold_events
+    union
+    select * from location_object
 )
 
-select * from gold_events
+select * from final
