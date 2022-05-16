@@ -7,3 +7,9 @@ sources:
     tables:
       - name: flow_blocks
       - name: flow_txs
+
+  - name: crosschain
+    database: flipside_prod_db
+    schema: crosschain
+    tables:
+      - name: address_labels
