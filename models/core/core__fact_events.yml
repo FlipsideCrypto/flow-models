@@ -12,12 +12,6 @@ models:
             - event_index
 
     columns:
-      - name: event_id
-        description: "{{ doc('event_id') }}"
-        tests:
-          - not_null
-          - unique
-
       - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
@@ -40,8 +34,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
-                - FLOAT  
+                - NUMBER
+                - FLOAT
 
       - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
@@ -76,11 +70,11 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-      
-      - name: event_attributes
+
+      - name: event_data
         description: "{{ doc('event_attributes') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - ARRAY
+                - OBJECT

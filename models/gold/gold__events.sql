@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::date'],
-    unique_key = 'event_id'
+    unique_key =  "CONCAT_WS('-', tx_id, event_id)"
 ) }}
 
 WITH silver_events AS (
@@ -76,12 +76,26 @@ gold_events AS (
 ),
 FINAL AS (
     SELECT
-        *
+      tx_id,
+      block_timestamp,
+      block_height,
+      tx_succeeded,
+      event_index,
+      event_contract,
+      event_type,
+      event_data
     FROM
         gold_events
     UNION
     SELECT
-        *
+      tx_id,
+      block_timestamp,
+      block_height,
+      tx_succeeded,
+      event_index,
+      event_contract,
+      event_type,
+      event_data
     FROM
         location_object
 )
