@@ -1,13 +1,15 @@
-{{
-    config(
-        materialized='view'
-    )
-}}
+{{ config(
+    materialized = 'view'
+) }}
 
-with txs as (
+WITH txs AS (
 
-    select * from {{ ref('gold__transactions') }}
-
+    SELECT
+        *
+    FROM
+        {{ ref('gold__transactions') }}
 )
-
-select * from txs
+SELECT
+    *
+FROM
+    txs

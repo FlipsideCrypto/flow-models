@@ -1,23 +1,24 @@
 {{ config(
-  materialized = 'incremental',
-  cluster_by = ['block_timestamp::DATE'],
-  unique_key = 'tx_id',
-  incremental_strategy = 'delete+insert'
+    materialized = 'incremental',
+    cluster_by = ['block_timestamp::DATE'],
+    unique_key = 'tx_id',
+    incremental_strategy = 'delete+insert'
 ) }}
 
-with
-silver_txs as (
+WITH silver_txs AS (
 
-    select * from {{ ref('silver__transactions') }}
-    {% if is_incremental() %}
-    where _ingested_at::date > CURRENT_DATE - 2
-    {% endif %}
+    SELECT
+        *
+    FROM
+        {{ ref('silver__transactions') }}
 
+{% if is_incremental() %}
+WHERE
+    _ingested_at :: DATE > CURRENT_DATE - 2
+{% endif %}
 ),
-
-gold_txs as (
-
-    select
+gold_txs AS (
+    SELECT
         tx_id,
         block_timestamp,
         block_height,
@@ -31,7 +32,10 @@ gold_txs as (
         transaction_result,
         tx_succeeded,
         error_msg
-    from silver_txs
+    FROM
+        silver_txs
 )
-
-select * from gold_txs
+SELECT
+    *
+FROM
+    gold_txs
