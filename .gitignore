@@ -1,5 +1,5 @@
 
-target/
+target/*
 dbt_modules/
 # newer versions of dbt use this directory instead of dbt_modules for test dependencies
 dbt_packages/
@@ -14,3 +14,8 @@ logs/
 .history/
 **/.DS_Store
 .vscode/
+
+# carve out docs files
+!target/index.html
+!target/catalog.json
+!target/manifest.json
