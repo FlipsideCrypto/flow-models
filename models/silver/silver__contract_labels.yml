@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: silver__event_labels
+  - name: silver__contract_labels
     description: |-
       This table extracts all contract labels referenced in the events item of a Flow transaction.
     tests:
@@ -32,15 +32,6 @@ models:
 
       - name: account_address
         description: "{{ doc('account_address') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: source
-        description: "{{ doc('source') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
