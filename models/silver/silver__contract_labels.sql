@@ -16,18 +16,13 @@ WITH splt AS (
         {{ ref('silver__events') }}
 )
 SELECT
-    DISTINCT *
+    DISTINCT event_contract,
+    ec_s [array_size(ec_s)-1] :: STRING AS contract_name,
+    CONCAT(
+        '0x',
+        ec_s [array_size(ec_s)-2] :: STRING
+    ) AS account_address
 FROM
-    (
-        SELECT
-            event_contract,
-            ec_s [array_size(ec_s)-1] :: STRING AS contract_name,
-            CONCAT(
-                '0x',
-                ec_s [array_size(ec_s)-2] :: STRING
-            ) AS account_address
-        FROM
-            splt
-        WHERE
-            ec_s [0] != 'flow'
-    )
+    splt
+WHERE
+    ec_s [0] != 'flow'
