@@ -39,6 +39,8 @@ models:
   +persist_docs:
     relation: true
     columns: true
+  +re_data_monitored: true
+  +re_data_time_filter: where block_timestamp >= '2022-05-09'
 
 vars:
   "dbt_date:time_zone": GMT
