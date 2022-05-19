@@ -11,10 +11,11 @@ WITH silver_blocks AS (
         *
     FROM
         {{ ref('silver__blocks') }}
+    WHERE
+        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
-WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+AND _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
 ),
 gold_blocks AS (
