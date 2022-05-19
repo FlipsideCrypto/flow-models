@@ -11,6 +11,8 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events') }}
+    WHERE
+        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
 WHERE
@@ -22,6 +24,8 @@ silver_event_attributes AS (
         *
     FROM
         {{ ref('silver__event_attributes') }}
+    WHERE
+        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
 WHERE

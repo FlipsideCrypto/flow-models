@@ -11,6 +11,8 @@ WITH silver_txs AS (
         *
     FROM
         {{ ref('silver__transactions') }}
+    WHERE
+        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
 WHERE

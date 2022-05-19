@@ -4,6 +4,10 @@ version: 2
 models:
   - name: gold__blocks
     description: Information about blocks on the FLOW network and corresponding metadata.
+    tests:
+      - sequence_gaps:
+          column_name: block_height
+          where: BLOCK_TIMESTAMP < CURRENT_DATE
 
     columns:
       - name: block_height
