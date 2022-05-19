@@ -24,7 +24,7 @@ models:
           - recent_tx_gaps:
               column_block: block_height
               column_tx_count: tx_count
-              where: BLOCK_TIMESTAMP >= '2022-05-16' AND BLOCK_TIMESTAMP < CURRENT_DATE
+              where: BLOCK_TIMESTAMP >= '2022-05-09' AND BLOCK_TIMESTAMP < CURRENT_DATE
             
 
 
