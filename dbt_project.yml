@@ -44,3 +44,4 @@ models:
 
 vars:
   "dbt_date:time_zone": GMT
+  re_data:save_test_history: true
