@@ -39,8 +39,23 @@ models:
   +persist_docs:
     relation: true
     columns: true
-  +re_data_monitored: true
-  +re_data_time_filter: where block_timestamp >= '2022-05-09'
+  flow_models:
+    gold__blocks:
+      +re_data_monitored: true
+
+sources:
+  flow_models:
+    prod:
+      flow_blocks:
+        +re_data_monitored: true
+        +re_data_time_filter: ingested_at
+      flow_txs:
+        +re_data_monitored: true
+        +re_data_time_filter: ingested_at
+    crosschain:
+      address_labels:
+        +re_data_monitored: true
+        +re_data_time_filter: ingested_at
 
 vars:
   "dbt_date:time_zone": GMT
