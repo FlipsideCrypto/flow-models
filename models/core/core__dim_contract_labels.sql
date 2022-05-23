@@ -10,8 +10,6 @@ WITH contract_labels AS (
         {{ ref('silver__contract_labels') }}
 )
 SELECT
-    event_contract,
-    contract_name,
-    account_address
+    *
 FROM
     contract_labels
