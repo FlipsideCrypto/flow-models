@@ -46,7 +46,10 @@ jobs:
         run: git add .
 
       - name: commit changed files
-        run: git commit -am "Auto-update docs"
+        run: |
+          git config user.email "abc@xyz"
+          git config user.name "github-actions"
+          git commit -am "Auto-update docs"
 
       - name: push changes to main
         run: git push origin HEAD:main
