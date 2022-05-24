@@ -37,6 +37,9 @@ jobs:
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
 
+      - name: move to docs directory
+        run: cp ./target/{catalog.json, manifest.json, index.html} ./docs/
+
       - name: check for changes
         run: git status
 
