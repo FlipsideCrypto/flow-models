@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: check out main
         uses: actions/checkout@main
-        with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
 
       - uses: actions/setup-python@v1
         with:
