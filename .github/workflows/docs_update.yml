@@ -1,0 +1,42 @@
+name: docs_update
+
+on:
+  push:
+    branches:    
+      - 'main'
+
+env:
+  PROFILES: ./.github/dbt_profiles.yml
+
+jobs:
+  scheduled_run:
+    name: docs_update
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check out main
+        uses: actions/checkout@main
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.7.x"
+
+      - name: install dependencies
+        run: |
+          pip install dbt-snowflake
+          dbt deps
+
+      - name: generate dbt docs
+        run: dbt docs generate
+
+      - name: check for changes
+        run: git status
+
+      - name: stage changed files
+        run: git add .
+
+      - name: commit changed files
+        run: git commit -am "Auto-update docs"
+
+      - name: push changes to main
+        run: git push origin HEAD:main
