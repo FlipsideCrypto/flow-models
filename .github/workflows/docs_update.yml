@@ -6,7 +6,7 @@ on:
       - 'main'
 
 env:
-  PROFILES: ./.github/dbt_profiles.yml
+  PROFILES: ./.dbt/profiles.yml
 
 jobs:
   scheduled_run:
@@ -27,7 +27,7 @@ jobs:
           dbt deps
 
       - name: generate dbt docs
-        run: dbt docs generate
+        run: dbt docs generate --profiles-dir ./.dbt
 
       - name: check for changes
         run: git status
