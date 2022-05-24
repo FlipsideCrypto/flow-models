@@ -22,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
+
       - name: check out main
         uses: actions/checkout@main
 
@@ -45,8 +49,6 @@ jobs:
 
       - name: commit changed files
         run: git commit -am "Auto-update docs"
-        with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: push changes to main
         run: git push origin HEAD:main
