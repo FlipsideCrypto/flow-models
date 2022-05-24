@@ -22,12 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-
       - name: check out main
         uses: actions/checkout@main
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
 
       - uses: actions/setup-python@v1
         with:
