@@ -6,7 +6,7 @@ on:
       - 'main'
 
 env:
-  PROFILES: ./.dbt/profiles.yml
+  ACCOUNT: ${{ dbt_docs.account }}
 
 jobs:
   scheduled_run:
