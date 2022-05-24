@@ -6,7 +6,7 @@ on:
       - 'main'
 
 env:
-  ACCOUNT: ${{ secrets.ACCOUNT }}
+  ACCOUNT: '${{ secrets.ACCOUNT }}'
 
 jobs:
   scheduled_run:
