@@ -40,7 +40,7 @@ jobs:
       - name: move to docs directory
         run: |
           mkdir -p ./docs
-          cp ./target/{catalog.json, manifest.json, index.html} ./docs/
+          cp target/{catalog.json,manifest.json,index.html} docs/
 
       - name: check for changes
         run: git status
