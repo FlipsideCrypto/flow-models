@@ -40,5 +40,11 @@ models:
     relation: true
     columns: true
 
+tests:
+  flow_models:
+    +severity: warn  # default all tests to warn
+    core:
+      +severity: error # heighten severity for public facing tables
+
 vars:
   "dbt_date:time_zone": GMT
