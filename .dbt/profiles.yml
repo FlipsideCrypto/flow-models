@@ -3,7 +3,7 @@ flow:
   outputs:
     dev:
       type: snowflake
-      account: ${{ secrets.ACCOUNT }}
+      account: ${{ dbt_docs.ACCOUNT }}
       role: "{{ env_var('role') }}"
       user: "{{ env_var('user') }}"
       password: "{{ env_var('password') }}"
