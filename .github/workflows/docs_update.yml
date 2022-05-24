@@ -45,6 +45,8 @@ jobs:
 
       - name: commit changed files
         run: git commit -am "Auto-update docs"
-
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: push changes to main
         run: git push origin HEAD:main
