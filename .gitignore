@@ -15,7 +15,4 @@ logs/
 **/.DS_Store
 .vscode/
 
-# carve out docs files
-!target/index.html
-!target/catalog.json
-!target/manifest.json
+.dbt/.user.yml
