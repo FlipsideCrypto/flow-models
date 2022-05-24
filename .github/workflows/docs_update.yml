@@ -6,7 +6,7 @@ on:
       - 'main'
 
 env:
-  ACCOUNT: ${{ dbt_docs.account }}
+  ACCOUNT: ${{ secret.ACCOUNT }}
 
 jobs:
   scheduled_run:
