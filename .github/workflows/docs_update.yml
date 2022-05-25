@@ -36,8 +36,6 @@ jobs:
       - name: move to docs branch
         run: |
           git checkout -b docs
-          git branch --set-upstream-to=origin/docs docs
-          git pull
 
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
@@ -63,5 +61,7 @@ jobs:
           git commit -am "Auto-update docs"
 
       - name: push changes to docs
-        run: git push origin HEAD:docs
+        run: |
+          git push --set-upstream origin docs
+          git push
   
