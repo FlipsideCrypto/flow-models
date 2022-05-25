@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: test profile
+        run: echo ${{ secret. PROFILE }}
+
       - name: check out main
         uses: actions/checkout@main
 
