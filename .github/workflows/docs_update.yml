@@ -22,9 +22,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: docs
+      - name: checkout docs branch
+        run: git checkout -b docs
 
       - uses: actions/setup-python@v1
         with:
