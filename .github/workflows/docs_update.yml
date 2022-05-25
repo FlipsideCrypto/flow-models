@@ -25,9 +25,6 @@ jobs:
       - name: check out main
         uses: actions/checkout@main
 
-      - uses: actions/setup-python@v1
-        with:
-          python-version: "3.7.x"
 
       - name: install dependencies
         run: |
