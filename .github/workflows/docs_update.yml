@@ -33,12 +33,13 @@ jobs:
           pip install dbt-snowflake
           dbt deps
 
+      - name: delete existing docs branch
+        run: git push origin --delete docs
+
       - name: checkout docs branch
         run: |
           git checkout -b docs
-
-      - name: conditional git
-        run: git fetch && git branch --set-upstream-to=origin/docs docs && git pull --no-rebase || git push --set-upstream origin docs
+          git push --set-upstream origin docs
 
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
