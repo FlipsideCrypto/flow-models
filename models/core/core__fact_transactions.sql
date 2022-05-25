@@ -2,14 +2,34 @@
     materialized = 'view'
 ) }}
 
-WITH txs AS (
+WITH silver_txs AS (
 
     SELECT
         *
     FROM
-        {{ ref('gold__transactions') }}
+        {{ ref('silver__transactions') }}
+    WHERE
+        block_timestamp >= '2022-05-09'
+),
+gold_txs AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        chain_id,
+        tx_index,
+        proposer,
+        payer,
+        authorizers,
+        count_authorizers,
+        gas_limit,
+        transaction_result,
+        tx_succeeded,
+        error_msg
+    FROM
+        silver_txs
 )
 SELECT
     *
 FROM
-    txs
+    gold_txs

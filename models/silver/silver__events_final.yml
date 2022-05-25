@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: gold__events
+  - name: silver__events_final
     description: |-
       This table records events from each transaction on the FLOW blockchain.
     tests:
