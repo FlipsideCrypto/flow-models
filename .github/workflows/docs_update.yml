@@ -40,7 +40,8 @@ jobs:
         run: |
           git checkout -b docs
           git push --set-upstream origin docs
-
+        if: true
+        
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
 
