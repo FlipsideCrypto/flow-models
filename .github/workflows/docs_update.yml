@@ -25,7 +25,6 @@ jobs:
       - name: check out main
         uses: actions/checkout@main
 
-
       - name: install dependencies
         run: |
           pip install dbt-snowflake
