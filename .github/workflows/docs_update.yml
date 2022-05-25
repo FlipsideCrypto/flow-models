@@ -22,8 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout docs branch
-        run: git checkout -b docs
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v1
         with:
@@ -34,10 +33,15 @@ jobs:
           pip install dbt-snowflake
           dbt deps
 
+      - name: move to docs branch
+        run: |
+          git checkout -b docs
+          git pull
+
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
 
-      - name: move to docs directory
+      - name: move files to docs directory
         run: |
           mkdir -p ./docs
           cp target/{catalog.json,manifest.json,index.html} docs/
