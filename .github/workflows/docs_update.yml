@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: test profile
-        run: echo ${{ secret.PROFILE }}
+        run: echo ${{ secrets.PROFILE }}
 
       - name: check out main
         uses: actions/checkout@main
