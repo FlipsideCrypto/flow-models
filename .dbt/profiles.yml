@@ -1,4 +1,4 @@
-flow:
+"{{ env_var('PROFILE') }}":
   target: dev
   outputs:
     dev:
