@@ -63,8 +63,7 @@ jobs:
           git config user.email "abc@xyz"
           git config user.name "github-actions"
           git commit -am "Auto-update docs"
-
+          
       - name: push changes to docs
         run: |
           git push
-  
