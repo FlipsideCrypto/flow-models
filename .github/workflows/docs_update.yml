@@ -22,11 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: check out docs branch
       - uses: actions/checkout@v3
         with:
           ref: docs
-          
+
       - uses: actions/setup-python@v1
         with:
           python-version: "3.7.x"
