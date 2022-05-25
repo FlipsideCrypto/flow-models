@@ -22,8 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: check out main
-        uses: actions/checkout@main
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v1
         with:
@@ -34,10 +33,18 @@ jobs:
           pip install dbt-snowflake
           dbt deps
 
+      - name: delete existing docs branch
+        run: git push origin --delete docs || true
+
+      - name: checkout docs branch
+        run: |
+          git checkout -b docs
+          git push --set-upstream origin docs
+        
       - name: generate dbt docs
         run: dbt docs generate --profiles-dir ./.dbt
 
-      - name: move to docs directory
+      - name: move files to docs directory
         run: |
           mkdir -p ./docs
           cp target/{catalog.json,manifest.json,index.html} docs/
@@ -56,7 +63,7 @@ jobs:
           git config user.email "abc@xyz"
           git config user.name "github-actions"
           git commit -am "Auto-update docs"
-
-      - name: push changes to main
-        run: git push origin HEAD:main
-  
+          
+      - name: push changes to docs
+        run: |
+          git push
