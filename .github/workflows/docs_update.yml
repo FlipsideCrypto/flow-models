@@ -36,6 +36,7 @@ jobs:
       - name: move to docs branch
         run: |
           git checkout -b docs
+          git branch --set-upstream-to=origin/docs docs
           git pull
 
       - name: generate dbt docs
