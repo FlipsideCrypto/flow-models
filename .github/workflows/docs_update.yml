@@ -1,0 +1,62 @@
+name: docs_update
+
+on:
+  push:
+    branches:    
+      - 'main'
+
+env:
+  ACCOUNT: '${{ secrets.ACCOUNT }}'
+  ROLE: '${{ secrets.ROLE }}'
+  USER: '${{ secrets.USER }}'
+  PASSWORD: '${{ secrets.PASSWORD }}'
+  REGION: '${{ secrets.REGION }}'
+  DATABASE_DEV: '${{ secrets.DATABASE_DEV }}'
+  DATABASE_PROD: '${{ secrets.DATABASE_PROD }}'
+  WAREHOUSE_DEV: '${{ secrets.WAREHOUSE_DEV }}'
+  WAREHOUSE_PROD: '${{ secrets.WAREHOUSE_PROD }}'
+
+jobs:
+  scheduled_run:
+    name: docs_update
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check out main
+        uses: actions/checkout@main
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.7.x"
+
+      - name: install dependencies
+        run: |
+          pip install dbt-snowflake
+          dbt deps
+
+      - name: generate dbt docs
+        run: dbt docs generate --profiles-dir ./.dbt
+
+      - name: move to docs directory
+        run: |
+          mkdir -p ./docs
+          cp target/{catalog.json,manifest.json,index.html} docs/
+
+      - name: clean up target directory
+        run: dbt clean
+
+      - name: check for changes
+        run: git status
+
+      - name: stage changed files
+        run: git add .
+
+      - name: commit changed files
+        run: |
+          git config user.email "abc@xyz"
+          git config user.name "github-actions"
+          git commit -am "Auto-update docs"
+
+      - name: push changes to main
+        run: git push origin HEAD:main
+  
