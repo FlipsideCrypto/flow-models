@@ -11,11 +11,10 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events') }}
-    WHERE
-        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE -2
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
 {% endif %}
 ),
 silver_event_attributes AS (
@@ -23,11 +22,10 @@ silver_event_attributes AS (
         *
     FROM
         {{ ref('silver__event_attributes') }}
-    WHERE
-        block_timestamp >= '2022-05-09'
 
 {% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE -2
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
 {% endif %}
 ),
 objs AS (
@@ -55,7 +53,8 @@ location_object AS (
         COALESCE(
             _event_data_type :location,
             _event_data_type :Location
-        ) AS event_data
+        ) AS event_data,
+        _ingested_at
     FROM
         silver_events
     WHERE
@@ -71,7 +70,8 @@ gold_events AS (
         e.event_index,
         e.event_contract,
         e.event_type,
-        A.event_data
+        A.event_data,
+        e._ingested_at
     FROM
         objs A
         LEFT JOIN silver_events e USING (event_id)
@@ -85,7 +85,8 @@ FINAL AS (
         event_index,
         event_contract,
         event_type,
-        event_data
+        event_data,
+        _ingested_at
     FROM
         gold_events
     UNION
@@ -97,7 +98,8 @@ FINAL AS (
         event_index,
         event_contract,
         event_type,
-        event_data
+        event_data,
+        _ingested_at
     FROM
         location_object
 )
