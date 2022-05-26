@@ -13,7 +13,8 @@ WITH silver_events AS (
         {{ ref('silver__events') }}
 
 {% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE -2
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
 {% endif %}
 ),
 silver_event_attributes AS (
@@ -23,7 +24,8 @@ silver_event_attributes AS (
         {{ ref('silver__event_attributes') }}
 
 {% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE -2
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
 {% endif %}
 ),
 objs AS (
