@@ -19,7 +19,12 @@ WITH token_prices AS (
             -- Revv
             '12182',
             -- Blocto Token
-            '15139' -- Starly
+            '15139',
+            -- Starly
+            'flow',
+            'revv',
+            'starly',
+            'blocto-token'
         )
 )
 SELECT
