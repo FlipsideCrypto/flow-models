@@ -22,14 +22,30 @@ prices AS (
         recorded_at,
         asset_id,
         NAME AS token,
-        symbol,
+        SPLIT(
+            symbol,
+            '$'
+        ) AS symbol_split,
+        symbol_split [array_size(symbol_split) - 1] :: STRING AS symbol,
         price,
         market_cap,
         provider AS source
     FROM
         token_prices
+),
+FINAL AS (
+    SELECT
+        recorded_at,
+        asset_id,
+        token,
+        symbol,
+        price,
+        market_cap,
+        source
+    FROM
+        prices
 )
 SELECT
     *
 FROM
-    prices
+    FINAL
