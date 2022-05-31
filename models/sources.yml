@@ -13,3 +13,10 @@ sources:
     schema: crosschain
     tables:
       - name: address_labels
+
+  - name: silver
+    database: flipside_prod_db
+    schema: silver
+    tables:
+      - name: market_asset_metadata
+      - name: prices_v2
