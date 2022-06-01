@@ -25,7 +25,7 @@ gold_nfts AS (
         currency,
         tx_succeeded
     FROM
-        silver_txs
+        silver_nfts
 )
 SELECT
     *

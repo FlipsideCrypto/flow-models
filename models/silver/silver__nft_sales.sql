@@ -10,7 +10,7 @@ WITH topshot AS (
     SELECT
         *
     FROM
-        {{ ref('silver__nft_topshot') }}
+        {{ ref('silver__nft_topshot_sales') }}
 
 {% if is_incremental() %}
 WHERE
