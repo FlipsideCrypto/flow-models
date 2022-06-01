@@ -1,0 +1,47 @@
+
+version: 2
+
+models:
+  - name: core__fact_prices
+    description: |-
+      This table provides token price data for FLOW tokens.
+
+
+    columns:
+      - name: timestamp
+        description: "{{ doc('timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: asset_id
+        description: "{{ doc('asset_id') }}"
+        tests:
+          - not_null
+
+      - name: token
+        description: "{{ doc('token') }}"
+        tests:
+          - not_null
+
+      - name: symbol
+        description: "{{ doc('symbol') }}"
+        tests:
+          - not_null
+
+      - name: price_usd
+        description: "{{ doc('price_usd') }}"
+        tests:
+          - not_null
+
+      - name: market_cap
+        description: "{{ doc('market_cap') }}"
+        tests:
+          - not_null
+
+      - name: source
+        description: "{{ doc('source') }}"
+        tests:
+          - not_null

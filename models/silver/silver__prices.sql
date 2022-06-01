@@ -39,7 +39,7 @@ FINAL AS (
         asset_id,
         token,
         symbol,
-        price,
+        price AS price_usd,
         market_cap,
         source
     FROM
