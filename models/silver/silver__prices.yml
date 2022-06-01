@@ -31,8 +31,8 @@ models:
         tests:
           - not_null
 
-      - name: price
-        description: "{{ doc('price') }}"
+      - name: price_usd
+        description: "{{ doc('price_usd') }}"
         tests:
           - not_null
 
