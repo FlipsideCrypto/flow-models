@@ -5,7 +5,11 @@ models:
   - name: silver__prices
     description: |-
       This table provides token price data for FLOW tokens.
-
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_at
+            - asset_id
 
     columns:
       - name: recorded_at
@@ -20,23 +24,43 @@ models:
         description: "{{ doc('asset_id') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - NUMBER
+                - VARCHAR
 
       - name: token
         description: "{{ doc('token') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: symbol
         description: "{{ doc('symbol') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: price_usd
         description: "{{ doc('price_usd') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
 
       - name: source
         description: "{{ doc('source') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
