@@ -51,6 +51,7 @@ models:
               column_type_list:
                 - NUMBER
                 - DOUBLE
+                - FLOAT
 
       - name: source
         description: "{{ doc('source') }}"
