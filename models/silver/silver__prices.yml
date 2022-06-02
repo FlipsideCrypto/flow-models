@@ -36,11 +36,6 @@ models:
         tests:
           - not_null
 
-      - name: market_cap
-        description: "{{ doc('market_cap') }}"
-        tests:
-          - not_null
-
       - name: source
         description: "{{ doc('source') }}"
         tests:

@@ -28,7 +28,6 @@ prices AS (
         ) AS symbol_split,
         symbol_split [array_size(symbol_split) - 1] :: STRING AS symbol,
         price,
-        market_cap,
         provider AS source
     FROM
         token_prices
@@ -40,7 +39,6 @@ FINAL AS (
         token,
         symbol,
         price AS price_usd,
-        market_cap,
         source
     FROM
         prices

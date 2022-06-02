@@ -26,6 +26,7 @@ WITH token_prices AS (
             'starly',
             'blocto-token'
         )
+        AND provider IS NOT NULL
 )
 SELECT
     *

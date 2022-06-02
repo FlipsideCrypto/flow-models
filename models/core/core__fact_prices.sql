@@ -15,7 +15,6 @@ SELECT
     token,
     symbol,
     price_usd,
-    market_cap,
     source
 FROM
     prices
