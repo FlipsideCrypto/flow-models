@@ -1,0 +1,63 @@
+
+version: 2
+
+models:
+  - name: core__fact_prices
+    description: |-
+      This table provides token price data for FLOW tokens.
+
+    columns:
+      - name: timestamp
+        description: "{{ doc('timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: asset_id
+        description: "{{ doc('asset_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - NUMBER
+                - VARCHAR
+
+      - name: token
+        description: "{{ doc('token') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: symbol
+        description: "{{ doc('symbol') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: price_usd
+        description: "{{ doc('price_usd') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
+
+      - name: source
+        description: "{{ doc('source') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
