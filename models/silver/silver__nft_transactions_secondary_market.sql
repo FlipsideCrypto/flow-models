@@ -20,16 +20,34 @@ WHERE
 ),
 listing_data AS (
     SELECT
-        *,
-        event_contract AS marketplace_contract,
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_index AS event_index_listing,
+        event_contract AS event_contract_listing,
+        event_data AS event_data_listing,
         event_data :nftID :: STRING AS nft_id_listing,
         event_data :nftType :: STRING AS nft_collection_listing,
-        event_data :purchased :: BOOLEAN AS purchased -- false indicates a listing was cancelled while true is when the order was executed
+        event_data :purchased :: BOOLEAN AS purchased_listing,
+        _ingested_at
     FROM
         silver_events
     WHERE
         event_type = 'ListingCompleted'
         AND event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+        AND purchased_listing = TRUE
+),
+excl_multi_buys AS (
+    SELECT
+        tx_id,
+        COUNT(1) AS record_count
+    FROM
+        listing_data
+    GROUP BY
+        1
+    HAVING
+        record_count = 1
 ),
 purchase_data AS (
     SELECT
@@ -44,13 +62,14 @@ purchase_data AS (
             SELECT
                 tx_id
             FROM
-                listing_data
+                excl_multi_buys
         )
         AND event_index = 0
 ),
 seller_data AS (
     SELECT
         tx_id,
+        event_index AS event_index_seller,
         event_contract AS nft_collection_seller,
         event_data :from :: STRING AS seller,
         event_data :id :: STRING AS nft_id_seller
@@ -61,7 +80,7 @@ seller_data AS (
             SELECT
                 tx_id
             FROM
-                listing_data
+                excl_multi_buys
         )
         AND event_type = 'Withdraw'
 ),
@@ -78,7 +97,7 @@ deposit_data AS (
             SELECT
                 tx_id
             FROM
-                listing_data
+                excl_multi_buys
         )
         AND event_type = 'Deposit'
 ),
@@ -91,7 +110,12 @@ nft_sales AS (
         LEFT JOIN seller_data USING (tx_id)
         LEFT JOIN deposit_data USING (tx_id)
     WHERE
-        purchased = TRUE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                excl_multi_buys
+        )
 ),
 step_data AS (
     SELECT
@@ -107,12 +131,11 @@ step_data AS (
                 tx_id
             FROM
                 nft_sales
-            WHERE
-                currency = 'A.1654653399040a61.FlowToken'
         )
         AND event_type IN (
             'TokensWithdrawn',
-            'TokensDeposited'
+            'TokensDeposited',
+            'ForwardedDeposit'
         )
 ),
 counterparty_data AS (
@@ -142,10 +165,27 @@ counterparty_data AS (
 ),
 FINAL AS (
     SELECT
-        *
+        ns.tx_id,
+        block_timestamp,
+        block_height,
+        event_contract_listing AS marketplace,
+        event_data_listing,
+        nft_collection_seller AS nft_collection,
+        nft_id_listing AS nft_id,
+        currency,
+        amount AS price,
+        seller,
+        buyer_deposit AS buyer,
+        cd.tokenflow,
+        cd.steps AS num_steps,
+        cd.action AS step_action,
+        cd.step_data,
+        cd.counterparties,
+        tx_succeeded,
+        _ingested_at
     FROM
-        nft_sales
-        LEFT JOIN counterparty_data USING (tx_id)
+        nft_sales ns
+        LEFT JOIN counterparty_data cd USING (tx_id)
 )
 SELECT
     *
