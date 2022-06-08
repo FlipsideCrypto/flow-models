@@ -23,7 +23,7 @@ qualify ROW_NUMBER() over (
     _ingested_at DESC
 ) = 1
 ),
-FINAL AS (
+silver_txs AS (
   SELECT
     tx_id,
     block_timestamp,
@@ -57,6 +57,57 @@ FINAL AS (
     _ingested_at
   FROM
     bronze_txs
+),
+concat_authorizers AS (
+  SELECT
+    tx_id,
+    CONCAT(
+      '0x',
+      VALUE
+    ) AS x_auth
+  FROM
+    silver_txs,
+    LATERAL FLATTEN (
+      input => authorizers
+    )
+),
+authorizers_array AS (
+  SELECT
+    tx_id,
+    ARRAY_AGG(x_auth) AS authorizers
+  FROM
+    concat_authorizers
+  GROUP BY
+    1
+),
+FINAL AS (
+  SELECT
+    t.tx_id,
+    block_timestamp,
+    block_height,
+    chain_id,
+    tx_index,
+    CONCAT(
+      '0x',
+      proposer
+    ) AS proposer,
+    CONCAT(
+      '0x',
+      payer
+    ) AS payer,
+    COALESCE(
+      aa.authorizers,
+      t.authorizers
+    ) AS authorizers,
+    count_authorizers,
+    gas_limit,
+    transaction_result,
+    tx_succeeded,
+    error_msg,
+    _ingested_at
+  FROM
+    silver_txs t
+    LEFT JOIN authorizers_array aa USING (tx_id)
 )
 SELECT
   *
