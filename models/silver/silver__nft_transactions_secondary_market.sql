@@ -4,8 +4,7 @@
     cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
--- v1 = NFTStorefront transactions & FLOW as Currency
--- so, any and all ListingCompleted sales that use FLOW as currency
+
 WITH silver_events AS (
 
     SELECT

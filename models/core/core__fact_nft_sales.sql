@@ -23,7 +23,9 @@ gold_nfts AS (
         seller,
         price,
         currency,
-        tx_succeeded
+        tx_succeeded,
+        tokenflow,
+        counterparties
     FROM
         silver_nfts
 )
