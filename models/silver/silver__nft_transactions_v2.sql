@@ -4,7 +4,8 @@
     cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
-
+-- v2 = only when there's a TokensDeposited event with amount 0 and to the blocto wallet
+-- no currency filter
 WITH silver_events AS (
 
     SELECT

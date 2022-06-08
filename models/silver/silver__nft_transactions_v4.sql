@@ -4,7 +4,7 @@
     cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
--- v1 = NFTStorefront transactions & FLOW as Currency
+-- v4 = looking at the network fee paying address, instead of the royalty collection addr
 WITH silver_events AS (
 
     SELECT
@@ -16,6 +16,17 @@ WITH silver_events AS (
 WHERE
     _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
+),
+blocto_sales AS (
+    SELECT
+        tx_id
+    FROM
+        silver_events
+    WHERE
+        event_type = 'TokensWithdrawn'
+        AND LOWER(
+            event_data :from
+        ) :: STRING = LOWER('0x55AD22F01EF568A1')
 ),
 listing_data AS (
     SELECT
@@ -29,6 +40,12 @@ listing_data AS (
     WHERE
         event_type = 'ListingCompleted'
         AND event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+        AND tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                blocto_sales
+        )
 ),
 purchase_data AS (
     SELECT
@@ -80,73 +97,13 @@ deposit_data AS (
                 listing_data
         )
         AND event_type = 'Deposit'
-),
-nft_sales AS (
-    SELECT
-        *
-    FROM
-        listing_data
-        LEFT JOIN purchase_data USING (tx_id)
-        LEFT JOIN seller_data USING (tx_id)
-        LEFT JOIN deposit_data USING (tx_id)
-    WHERE
-        purchased = TRUE
-),
-step_data AS (
-    SELECT
-        tx_id,
-        event_index,
-        event_type,
-        event_data
-    FROM
-        {{ ref('silver__events_final') }}
-    WHERE
-        tx_id IN (
-            SELECT
-                tx_id
-            FROM
-                nft_sales
-            WHERE
-                currency = 'A.1654653399040a61.FlowToken'
-        )
-        AND event_type IN (
-            'TokensWithdrawn',
-            'TokensDeposited'
-        )
-),
-counterparty_data AS (
-    SELECT
-        tx_id,
-        ARRAY_AGG(OBJECT_CONSTRUCT(event_type, event_data)) within GROUP (
-            ORDER BY
-                event_index
-        ) AS tokenflow,
-        ARRAY_SIZE(tokenflow) AS steps,
-        ARRAY_AGG(event_type) within GROUP (
-            ORDER BY
-                event_index
-        ) AS action,
-        ARRAY_AGG(event_data) within GROUP (
-            ORDER BY
-                event_index
-        ) AS step_data,
-        ARRAY_AGG(COALESCE(event_data :to, event_data :from) :: STRING) within GROUP (
-            ORDER BY
-                event_index
-        ) AS counterparties
-    FROM
-        step_data
-    GROUP BY
-        1
-),
-FINAL AS (
-    SELECT
-        *
-    FROM
-        nft_sales
-        LEFT JOIN counterparty_data USING (tx_id)
 )
 SELECT
     *
 FROM
-    FINAL
+    listing_data
+    LEFT JOIN purchase_data USING (tx_id)
+    LEFT JOIN seller_data USING (tx_id)
+    LEFT JOIN deposit_data USING (tx_id)
+WHERE
+    purchased = TRUE
