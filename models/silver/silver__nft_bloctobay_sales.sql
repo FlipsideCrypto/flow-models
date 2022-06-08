@@ -4,8 +4,7 @@
     cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
--- v3 = same as v2 but no amount = 0 condition
--- ultimately no difference in the data from v2 to v3 so the diff conditons do not matter
+
 WITH silver_events AS (
 
     SELECT
@@ -27,7 +26,7 @@ blocto_sales AS (
         event_type = 'TokensDeposited'
         AND LOWER(
             event_data :to
-        ) :: STRING = LOWER('0x77E38C96FDA5C5C5')
+        ) :: STRING = LOWER('0x77E38C96FDA5C5C5') -- Blocto Bay royalty collector
 ),
 listing_data AS (
     SELECT
@@ -52,7 +51,7 @@ purchase_data AS (
     SELECT
         tx_id,
         event_contract AS currency,
-        event_data :amount :: NUMBER AS amount,
+        event_data :amount :: DOUBLE AS amount,
         event_data :from :: STRING AS buyer_purchase
     FROM
         silver_events

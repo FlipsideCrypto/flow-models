@@ -5,6 +5,7 @@
     unique_key = 'tx_id'
 ) }}
 -- v1 = NFTStorefront transactions & FLOW as Currency
+-- so, any and all ListingCompleted sales that use FLOW as currency
 WITH silver_events AS (
 
     SELECT
@@ -34,7 +35,7 @@ purchase_data AS (
     SELECT
         tx_id,
         event_contract AS currency,
-        event_data :amount :: NUMBER AS amount,
+        event_data :amount :: DOUBLE AS amount,
         event_data :from :: STRING AS buyer_purchase
     FROM
         silver_events

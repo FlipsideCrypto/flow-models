@@ -24,7 +24,7 @@ moment_data AS (
         tx_id,
         event_contract :: STRING AS marketplace,
         event_data :id :: STRING AS nft_id,
-        event_data :price :: NUMBER AS price,
+        event_data :price :: DOUBLE AS price,
         event_data :seller :: STRING AS seller,
         tx_succeeded,
         _ingested_at

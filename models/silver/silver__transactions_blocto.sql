@@ -23,7 +23,7 @@ blocto_txs AS (
     FROM
         silver_txs
     WHERE
-        LOWER(proposer) = LOWER('0x55AD22F01EF568A1')
+        LOWER(payer) = LOWER('0x55AD22F01EF568A1') -- Blocto network fee paying address
 )
 SELECT
     *

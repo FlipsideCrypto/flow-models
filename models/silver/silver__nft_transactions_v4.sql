@@ -6,6 +6,7 @@
 ) }}
 -- v4 = looking at the network fee paying address, instead of the royalty collection addr
 -- 0x55AD22F01EF568A1 is the blocto wallet that pays network fees for anyone using their wallet
+-- theoretically this is NFT sales from Blocto users, no specific platform
 WITH silver_events AS (
 
     SELECT
@@ -52,7 +53,7 @@ purchase_data AS (
     SELECT
         tx_id,
         event_contract AS currency,
-        event_data :amount :: NUMBER AS amount,
+        event_data :amount :: DOUBLE AS amount,
         event_data :from :: STRING AS buyer_purchase
     FROM
         silver_events
