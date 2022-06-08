@@ -16,8 +16,56 @@ WITH topshot AS (
 WHERE
     _ingested_at :: DATE >= CURRENT_DATE - 2
 {% endif %}
+),
+secondary AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__nft_transactions_secondary_market') }}
+
+{% if is_incremental() %}
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE - 2
+{% endif %}
+),
+combo AS (
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        marketplace,
+        nft_collection,
+        nft_id,
+        buyer,
+        seller,
+        price,
+        currency,
+        tx_succeeded,
+        _ingested_at,
+        tokenflow,
+        counterparties
+    FROM
+        topshot
+    UNION
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        marketplace,
+        nft_collection,
+        nft_id,
+        buyer,
+        seller,
+        price,
+        currency,
+        tx_succeeded,
+        _ingested_at,
+        tokenflow,
+        counterparties
+    FROM
+        secondary
 )
 SELECT
     *
 FROM
-    topshot
+    combo
