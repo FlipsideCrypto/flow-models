@@ -5,6 +5,7 @@
     unique_key = 'tx_id'
 ) }}
 -- v4 = looking at the network fee paying address, instead of the royalty collection addr
+-- 0x55AD22F01EF568A1 is the blocto wallet that pays network fees for anyone using their wallet
 WITH silver_events AS (
 
     SELECT

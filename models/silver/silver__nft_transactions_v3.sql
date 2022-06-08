@@ -5,6 +5,7 @@
     unique_key = 'tx_id'
 ) }}
 -- v3 = same as v2 but no amount = 0 condition
+-- ultimately no difference in the data from v2 to v3 so the diff conditons do not matter
 WITH silver_events AS (
 
     SELECT
