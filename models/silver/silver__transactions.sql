@@ -95,7 +95,10 @@ FINAL AS (
       '0x',
       payer
     ) AS payer,
-    aa.authorizers,
+    COALESCE(
+      aa.authorizers,
+      t.authorizers
+    ) AS authorizers,
     count_authorizers,
     gas_limit,
     transaction_result,
