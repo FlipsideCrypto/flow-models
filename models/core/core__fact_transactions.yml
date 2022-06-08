@@ -17,7 +17,11 @@ models:
         tests:
           - not_null
           - unique
-
+          - tx_gaps:
+              column_block: block_height
+              column_tx_count: tx_count
+              where: BLOCK_TIMESTAMP < CURRENT_DATE
+              
       - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
         tests:
