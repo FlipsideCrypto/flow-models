@@ -23,9 +23,13 @@ gold_nfts AS (
         seller,
         price,
         currency,
-        tx_succeeded
+        tx_succeeded,
+        tokenflow,
+        counterparties
     FROM
         silver_nfts
+    WHERE
+        tx_id != '8620792f30d607a35eb5a7ffe6ea2a088d448f1b706e8585ca8ae8697655e6fa'
 )
 SELECT
     *

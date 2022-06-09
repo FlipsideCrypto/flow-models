@@ -4,7 +4,7 @@ version: 2
 models:
   - name: silver__nft_sales
     description: |-
-      NFT market sales on the Flow blockchain.
+      NFT market sales on the Flow blockchain. This table will only contain successful transactions, as failed transactions will not have the requisite events to determine it was an attempted NFT purchase.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -119,3 +119,23 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
+
+      - name: tokenflow
+        description: "{{ doc('tokenflow') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: counterparties
+        description: "{{ doc('counterparties') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT

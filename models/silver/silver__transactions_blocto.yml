@@ -2,13 +2,14 @@
 version: 2
 
 models:
-  - name: silver__nft_topshot_sales
+  - name: silver__transactions_blocto
     description: |-
-      TopShot direct market sales on the Flow blockchain.
+      This table records all the transactions of the FLOW blockchain that are sent from a Blocto Wallet, as determined by the payer address. Blocto subsidizes network fees, so we can infer activity from the payer column.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - block_height
 
     columns:
       - name: tx_id
@@ -16,19 +17,6 @@ models:
         tests:
           - not_null
           - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: block_height
-        description: "{{ doc('block_height') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER    
-                - FLOAT  
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
@@ -41,69 +29,81 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: marketplace
-        description: "{{ doc('marketplace') }}"
+      - name: block_height
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - NUMBER    
+                - FLOAT  
 
-      - name: nft_collection
-        description: "{{ doc('nft_collection') }}"
+      - name: chain_id
+        description: "{{ doc('chain_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+              - STRING
+              - VARCHAR
 
-      - name: nft_id
-        description: "{{ doc('nft_id') }}"
+      - name: tx_index
+        description: tbd
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - NUMBER    
+
+      - name: proposer
+        description: "{{ doc('proposer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+              - STRING
+              - VARCHAR
+
+      - name: payer
+        description: "{{ doc('payer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+              - STRING
+              - VARCHAR
+
+      - name: authorizers
+        description: "{{ doc('authorizers') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: count_authorizers
+        description: "{{ doc('count_authorizers') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
                 - NUMBER
 
-      - name: buyer
-        description: "{{ doc('buyer') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: seller
-        description: "{{ doc('seller') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: price
-        description: "{{ doc('price') }}"
+      - name: gas_limit
+        description: "{{ doc('gas_limit') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - FLOAT
 
-      - name: currency
-        description: "{{ doc('currency') }}"
+      - name: transaction_result
+        description: "{{ doc('transaction_result') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - VARIANT
 
       - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
@@ -113,6 +113,15 @@ models:
               column_type_list:
                 - BOOLEAN
 
+      - name: error_msg
+        description: tbd
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
         tests:
@@ -120,23 +129,3 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
-
-      - name: tokenflow
-        description: "{{ doc('tokenflow') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - OBJECT
-                - VARIANT
-
-      - name: counterparties
-        description: "{{ doc('counterparties') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
-                - OBJECT
-                - VARIANT

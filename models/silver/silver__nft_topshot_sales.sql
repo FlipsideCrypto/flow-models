@@ -24,7 +24,7 @@ moment_data AS (
         tx_id,
         event_contract :: STRING AS marketplace,
         event_data :id :: STRING AS nft_id,
-        event_data :price :: NUMBER AS price,
+        event_data :price :: DOUBLE AS price,
         event_data :seller :: STRING AS seller,
         tx_succeeded,
         _ingested_at
@@ -83,8 +83,65 @@ combo AS (
         moment_data
         LEFT JOIN currency_data USING (tx_id)
         LEFT JOIN nft_data USING (tx_id)
+),
+step_data AS (
+    SELECT
+        tx_id,
+        event_index,
+        event_type,
+        event_data
+    FROM
+        {{ ref('silver__events_final') }}
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                combo
+        )
+        AND event_type IN (
+            'TokensWithdrawn',
+            'TokensDeposited',
+            'ForwardedDeposit'
+        )
+),
+counterparty_data AS (
+    SELECT
+        tx_id,
+        ARRAY_AGG(OBJECT_CONSTRUCT(event_type, event_data)) within GROUP (
+            ORDER BY
+                event_index
+        ) AS tokenflow,
+        ARRAY_AGG(COALESCE(event_data :to, event_data :from) :: STRING) within GROUP (
+            ORDER BY
+                event_index
+        ) AS counterparties
+    FROM
+        step_data
+    GROUP BY
+        1
+),
+FINAL AS (
+    SELECT
+        C.tx_id,
+        block_height,
+        block_timestamp,
+        marketplace,
+        nft_collection,
+        nft_id,
+        buyer,
+        seller,
+        price,
+        currency,
+        tx_succeeded,
+        _ingested_at,
+        cd.tokenflow,
+        cd.counterparties
+    FROM
+        combo C
+        LEFT JOIN counterparty_data cd USING (tx_id)
 )
 SELECT
     *
 FROM
-    combo
+    FINAL
