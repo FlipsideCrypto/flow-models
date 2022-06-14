@@ -13,10 +13,6 @@ WITH swap_contracts AS (
     {{ ref('silver__contract_labels') }}
   WHERE
     contract_name LIKE '%SwapPair%'
-
-{% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE - 2
-{% endif %}
 ),
 swaps_txs AS (
   SELECT
@@ -30,6 +26,10 @@ swaps_txs AS (
       FROM
         swap_contracts
     )
+
+{% if is_incremental() %}
+AND _ingested_at :: DATE >= CURRENT_DATE - 2
+{% endif %}
 ),
 swap_events AS (
   SELECT
