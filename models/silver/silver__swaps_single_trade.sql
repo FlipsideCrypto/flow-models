@@ -142,12 +142,12 @@ combo AS (
         ) AS trader,
         tod.token_amount_token_out AS token_out_amount,
         tod.event_contract_token_out AS token_out_contract,
-        amount_token_in AS token_in_amount,
-        event_contract_token_in AS token_in_contract,
-        swap_side,
-        -- keep these 3 columns bc i can derive fees from the difference in token_out_amount and token_[n]_amount where n = swap_side
-        token_1_amount,
-        token_2_amount,
+        tid.amount_token_in AS token_in_amount,
+        tid.event_contract_token_in AS token_in_contract,
+        -- keep these next 3 columns bc i can derive fees from the difference in token_out_amount and token_[n]_amount where n = swap_side
+        td.swap_side,
+        td.token_1_amount,
+        td.token_2_amount,
         tod._ingested_at
     FROM
         token_out_data tod
