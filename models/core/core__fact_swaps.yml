@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver__swaps_single_trade
+  - name: core__fact_swaps
     description: |-
-      This table records single-pool asset swaps on the Flow blockchain. A single-pool asset swap is one where a liquidity pool exists for the trade such that no routing is required. (i.e. Swapping FUSD to USDT using `A.87f3f233f34b0733.FusdUsdtSwapPair`)
+      This table records asset swaps on the Flow blockchain.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -88,37 +88,3 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: swap_side
-        description: "{{ doc('swap_side') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-
-      - name: token_1_amount
-        description: "{{ doc('token_1_amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: token_2_amount
-        description: "{{ doc('token_2_amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: _ingested_at
-        description: "{{ doc('_ingested_at') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ

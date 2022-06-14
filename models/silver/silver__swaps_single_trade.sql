@@ -88,7 +88,9 @@ token_out_data AS (
         event_contract AS event_contract_token_out,
         event_data AS event_data_token_out,
         event_data :amount :: DOUBLE AS token_amount_token_out,
-        event_data :from :: STRING AS trader_token_out,
+        LOWER(
+            event_data :from :: STRING
+        ) AS trader_token_out,
         _ingested_at
     FROM
         index_id ii
@@ -127,7 +129,9 @@ token_in_data AS (
         trade_data t
         LEFT JOIN swaps_single_trade sst
         ON sst.tx_id = t.tx_id
-        AND t.swap_account = sst.event_data :from :: STRING
+        AND t.swap_account = LOWER(
+            sst.event_data :from :: STRING
+        )
     WHERE
         sst.event_type = 'TokensWithdrawn'
 ),
