@@ -1,7 +1,7 @@
 {{ config(
   materialized = 'incremental',
   cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
-  unique_key = 'block_height',
+  unique_key = "CONCAT_WS('-', tx_id, event_index)",
   incremental_strategy = 'delete+insert'
 ) }}
 
@@ -13,6 +13,10 @@ WITH swap_contracts AS (
     {{ ref('silver__contract_labels') }}
   WHERE
     contract_name LIKE '%SwapPair%'
+
+{% if is_incremental() %}
+AND _ingested_at :: DATE >= CURRENT_DATE - 2
+{% endif %}
 ),
 swaps_txs AS (
   SELECT
