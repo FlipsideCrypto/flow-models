@@ -1,14 +1,13 @@
 version: 2
 
 models:
-  - name: silver__events_final
+  - name: silver__swaps_single_trade
     description: |-
-      This table records events from each transaction on the FLOW blockchain.
+      This table records single-pool asset swaps on the Flow blockchain. A single-pool asset swap is one where a liquidity pool exists for the trade such that no routing is required. (i.e. Swapping FUSD to USDT using `A.87f3f233f34b0733.FusdUsdtSwapPair`)
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
-            - event_index
 
     columns:
       - name: tx_id
@@ -36,47 +35,85 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: tx_succeeded
-        description: "{{ doc('tx_succeeded') }}"
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - STRING
+                - VARCHAR
 
-      - name: event_index
-        description: "{{ doc('event_index') }}"
+      - name: trader
+        description: "{{ doc('trader') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_out_amount
+        description: "{{ doc('token_out_amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_out_contract
+        description: "{{ doc('token_out_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_in_amount
+        description: "{{ doc('token_in_amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_in_contract
+        description: "{{ doc('token_in_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: swap_side
+        description: "{{ doc('swap_side') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
 
-      - name: event_contract
-        description: "{{ doc('event_contract') }}"
+      - name: token_1_amount
+        description: "{{ doc('token_1_amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - NUMBER
+                - FLOAT
 
-      - name: event_type
-        description: "{{ doc('event_type') }}"
+      - name: token_2_amount
+        description: "{{ doc('token_2_amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: event_data
-        description: "{{ doc('event_attributes') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - OBJECT
+                - NUMBER
+                - FLOAT
 
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"

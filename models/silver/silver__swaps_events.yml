@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver__events_final
+  - name: silver__swaps_events
     description: |-
-      This table records events from each transaction on the FLOW blockchain.
+      This table records events from each Swap related transaction on the FLOW blockchain, as determined by an interaction with a SwapPair contract. This is intended to be internal only for downstream usage.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
