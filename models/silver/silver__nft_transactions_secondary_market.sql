@@ -170,6 +170,8 @@ FINAL AS (
         event_contract_listing AS marketplace,
         event_data_listing,
         nft_collection_seller AS nft_collection,
+        event_data_listing :storefrontResourceID :: NUMBER AS storefront_id,
+        event_data_listing :listingResourceID :: NUMBER AS listing_id,
         nft_id_listing AS nft_id,
         currency,
         amount AS price,
