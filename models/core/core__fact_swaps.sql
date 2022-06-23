@@ -17,7 +17,7 @@ WITH single_swaps AS (
     FROM
         {{ ref('silver__swaps_single_trade') }}
     WHERE
-        block_timestamp >= '2022-05-09'
+        block_timestamp >= '2022-04-20'
 )
 SELECT
     *
