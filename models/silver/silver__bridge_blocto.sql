@@ -25,6 +25,10 @@ teleports AS (
         event_contract AS event_contract_teleport,
         event_data :amount :: DOUBLE AS amount_teleport,
         event_data :from AS from_teleport,
+        STRTOK_TO_ARRAY(
+            REPLACE(REPLACE(event_data :from :: STRING, '['), ']'),
+            ', '
+        ) :: ARRAY AS from_teleport_array,
         COALESCE(
             event_data :hash,
             event_data :txHash
