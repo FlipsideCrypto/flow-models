@@ -32,7 +32,8 @@ teleports AS (
         COALESCE(
             event_data :hash,
             event_data :txHash
-        ) :: STRING AS hash_teleport
+        ) :: STRING AS hash_teleport,
+        _ingested_at
     FROM
         events
     WHERE
@@ -59,10 +60,54 @@ fees AS (
                 teleports
         )
         AND event_type = 'FeeCollected'
+),
+deposits AS (
+    SELECT
+        tx_id,
+        event_contract,
+        event_index,
+        event_data :amount :: DOUBLE AS amount_deposits,
+        ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                amount_deposits DESC
+        ) AS rn,
+        event_data :to :: STRING AS to_deposits
+    FROM
+        flow_dev.silver.events_final
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                teleports
+        )
+        AND event_type = 'TokensDeposited'
+    ORDER BY
+        tx_id,
+        amount_deposits DESC
+),
+blocto_inbound AS (
+    SELECT
+        t.tx_id,
+        t.block_timestamp,
+        t.block_height,
+        t.event_contract_teleport AS teleport_contract,
+        d.event_contract AS token_contract,
+        t.amount_teleport,
+        f.amount_fee,
+        d.amount_deposits AS net_amount,
+        d.to_deposits AS flow_wallet_address,
+        'inbound' AS direction,
+        'blocto' AS bridge
+    FROM
+        teleports t
+        LEFT JOIN deposits d USING (tx_id)
+        LEFT JOIN fees f USING (tx_id)
+    WHERE
+        d.rn = 1
 )
 SELECT
-    *,
-    amount_teleport - amount_fee AS net_amount
+    *
 FROM
-    teleports
-    LEFT JOIN fees USING (tx_id)
+    blocto_inbound
