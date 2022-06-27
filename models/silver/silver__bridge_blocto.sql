@@ -1,8 +1,8 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['block_timestamp::date'],
-    unique_key = "CONCAT_WS('-', tx_id, event_index)"
+    cluster_by = ['_ingested_at::date'],
+    unique_key = 'tx_id'
 ) }}
 
 WITH events AS (

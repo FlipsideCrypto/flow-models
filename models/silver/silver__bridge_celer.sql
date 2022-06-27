@@ -1,8 +1,8 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['block_timestamp::date'],
-    unique_key = "CONCAT_WS('-', tx_id, event_index)"
+    cluster_by = ['_ingested_at::date'],
+    unique_key = 'tx_id'
 ) }}
 
 WITH events AS (
@@ -29,10 +29,7 @@ inbound AS (
         REPLACE(REPLACE(event_data :token :: STRING, '.Vault'), '"') AS token_contract,
         event_data :amount :: DOUBLE AS amount,
         event_data :receiver :: STRING AS flow_wallet_address,
-        CONCAT(
-            '0x',
-            event_data :depositor
-        ) :: STRING AS counterparty,
+        REPLACE(CONCAT('0x', event_data :depositor) :: STRING, '"') AS counterparty,
         event_data :refChId :: NUMBER AS chain_id,
         'inbound' AS direction,
         'cbridge' AS bridge,
@@ -57,7 +54,10 @@ outbound AS (
         REPLACE(REPLACE(event_data :token :: STRING, '.Vault'), '"') AS token_contract,
         event_data :amount :: DOUBLE AS amount,
         event_data :burner :: STRING AS flow_wallet_address,
-        event_data :toAddr :: STRING AS counterparty,
+        REPLACE(
+            event_data :toAddr :: STRING,
+            '"'
+        ) AS counterparty,
         event_data :toChain :: NUMBER AS chain_id,
         'outbound' AS direction,
         'cbridge' AS bridge,
