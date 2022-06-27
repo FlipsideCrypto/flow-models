@@ -83,8 +83,60 @@ tbl_union AS (
         *
     FROM
         outbound
+),
+chain_ids AS (
+    SELECT
+        1 AS chain_id,
+        'Ethereum' AS blockchain
+    UNION
+    SELECT
+        56 AS chain_id,
+        'BSC' AS blockchain
+    UNION
+    SELECT
+        137 AS chain_id,
+        'Polygon' AS blockchain
+    UNION
+    SELECT
+        250 AS chain_id,
+        'Fantom' AS blockchain
+    UNION
+    SELECT
+        2222 AS chain_id,
+        'Kava' AS blockchain
+    UNION
+    SELECT
+        9001 AS chain_id,
+        'Evmos' AS blockchain
+    UNION
+    SELECT
+        43114 AS chain_id,
+        'Avalanche' AS blockchain
+    UNION
+    SELECT
+        12340001 AS chain_id,
+        'Flow' AS blockchain
+),
+FINAL AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        bridge_contract,
+        token_contract,
+        amount,
+        flow_wallet_address,
+        counterparty,
+        t.chain_id,
+        l.blockchain,
+        direction,
+        bridge,
+        _ingested_at
+    FROM
+        tbl_union t
+        LEFT JOIN chain_ids l USING (chain_id)
 )
 SELECT
     *
 FROM
-    tbl_union
+    FINAL

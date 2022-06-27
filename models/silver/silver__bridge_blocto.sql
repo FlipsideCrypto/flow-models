@@ -188,12 +188,41 @@ tbl_union AS (
     FROM
         blocto_outbound
 ),
+tele_labels AS (
+    SELECT
+        'A.04ee69443dedf0e4.TeleportCustody' AS teleport_contract,
+        'Ethereum' AS blockchain
+    UNION
+    SELECT
+        'A.0ac14a822e54cc4e.TeleportCustodyBSC' AS teleport_contract,
+        'BSC' AS blockchain
+    UNION
+    SELECT
+        'A.0ac14a822e54cc4e.TeleportCustodySolana' AS teleport_contract,
+        'Solana' AS blockchain
+    UNION
+    SELECT
+        'A.475755d2c9dccc3a.TeleportedSportiumToken' AS teleport_contract,
+        'Ethereum' AS blockchain
+    UNION
+    SELECT
+        'A.bd7e596b12e277df.TeleportCustody' AS teleport_contract,
+        'Ethereum' AS blockchain
+    UNION
+    SELECT
+        'A.c2fa71c36fd5b840.TeleportCustodyBSC' AS teleport_contract,
+        'BSC' AS blockchain
+    UNION
+    SELECT
+        'A.cfdd90d4a00f7b5b.TeleportedTetherToken' AS teleport_contract,
+        'Ethereum' AS blockchain
+),
 FINAL AS (
     SELECT
         tx_id,
         block_timestamp,
         block_height,
-        teleport_contract,
+        t.teleport_contract,
         token_contract,
         gross_amount,
         amount_fee,
@@ -203,10 +232,12 @@ FINAL AS (
             WHEN teleport_direction = 0 THEN 'outbound'
             ELSE 'inbound'
         END AS teleport_direction,
+        l.blockchain,
         bridge,
         _ingested_at
     FROM
-        tbl_union
+        tbl_union t
+        LEFT JOIN tele_labels l USING (teleport_contract)
 )
 SELECT
     *
