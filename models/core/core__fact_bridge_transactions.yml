@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver__bridge_blocto
+  - name: core__fact_bridge_transactions
     description: |-
-      This table parses transactions where tokens are bridged to or from the Flow network via Blocto Teleport.
+      This table parses transactions where tokens are bridged to or from the Flow network.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -35,8 +35,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: teleport_contract
-        description: "{{ doc('teleport_contract') }}"
+      - name: bridge_contract
+        description: "{{ doc('bridge_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -53,28 +53,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: gross_amount
-        description: "{{ doc('gross_amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - DOUBLE
-                - FLOAT
-
-      - name: amount_fee
-        description: "{{ doc('amount_fee') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - DOUBLE
-                - FLOAT
-
-      - name: net_amount
-        description: "{{ doc('net_amount') }}"
+      - name: amount
+        description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -92,8 +72,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: teleport_direction
-        description: "{{ doc('teleport_direction') }}"
+      - name: blockchain
+        description: "{{ doc('blockchain') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -101,8 +81,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: blockchain
-        description: "{{ doc('blockchain') }}"
+      - name: direction
+        description: "{{ doc('direction') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -118,11 +98,3 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: _ingested_at
-        description: "{{ doc('_ingested_at') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
