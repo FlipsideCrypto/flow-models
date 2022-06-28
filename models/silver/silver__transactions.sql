@@ -54,7 +54,8 @@ silver_txs AS (
       transaction_result :error,
       ''
     ) :: STRING AS error_msg,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     bronze_txs
 ),
@@ -104,7 +105,8 @@ FINAL AS (
     transaction_result,
     tx_succeeded,
     error_msg,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     silver_txs t
     LEFT JOIN authorizers_array aa USING (tx_id)

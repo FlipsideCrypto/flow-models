@@ -54,7 +54,8 @@ location_object AS (
             _event_data_type :location,
             _event_data_type :Location
         ) AS event_data,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         silver_events
     WHERE
@@ -71,7 +72,8 @@ gold_events AS (
         e.event_contract,
         e.event_type,
         A.event_data,
-        e._ingested_at
+        e._ingested_at,
+        e._inserted_timestamp
     FROM
         objs A
         LEFT JOIN silver_events e USING (event_id)
@@ -86,7 +88,8 @@ FINAL AS (
         event_contract,
         event_type,
         event_data,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         gold_events
     UNION
@@ -99,7 +102,8 @@ FINAL AS (
         event_contract,
         event_type,
         event_data,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         location_object
 )

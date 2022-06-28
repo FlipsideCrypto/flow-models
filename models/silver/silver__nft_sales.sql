@@ -42,6 +42,7 @@ combo AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         tokenflow,
         counterparties
     FROM
@@ -60,6 +61,7 @@ combo AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         tokenflow,
         counterparties
     FROM

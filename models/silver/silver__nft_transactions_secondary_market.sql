@@ -29,7 +29,8 @@ listing_data AS (
         event_data :nftID :: STRING AS nft_id_listing,
         event_data :nftType :: STRING AS nft_collection_listing,
         event_data :purchased :: BOOLEAN AS purchased_listing,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         silver_events
     WHERE
@@ -183,7 +184,8 @@ FINAL AS (
         cd.step_data,
         cd.counterparties,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)

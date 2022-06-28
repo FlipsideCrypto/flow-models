@@ -31,7 +31,8 @@ events_data AS (
         COALESCE(
             _event_data_type :fields,
             _event_data_type :Fields
-        ) AS event_data_type_fields
+        ) AS event_data_type_fields,
+        _inserted_timestamp
     FROM
         events
 ),
@@ -57,7 +58,8 @@ attributes AS (
             INDEX
         ) AS attribute_id,
         INDEX AS attribute_index,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events_data,
         LATERAL FLATTEN(
@@ -109,7 +111,8 @@ replace_arrays AS (
             decoded_address,
             attribute_value
         ) :: STRING AS attribute_value_adj,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         attributes A
         LEFT JOIN recombine_address USING (attribute_id)
@@ -145,7 +148,8 @@ FINAL AS (
             address_adj,
             attribute_value_adj
         ) AS attribute_value_adj,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         replace_arrays A
         LEFT JOIN address_adjustment USING (attribute_id)

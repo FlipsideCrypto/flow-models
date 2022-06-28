@@ -40,7 +40,8 @@ silver_blocks AS (
       header :parentId,
       header :block_header :parent_id
     ) :: STRING AS parent_id,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     bronze_blocks
 )

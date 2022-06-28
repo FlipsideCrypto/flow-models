@@ -27,7 +27,8 @@ moment_data AS (
         event_data :price :: DOUBLE AS price,
         event_data :seller :: STRING AS seller,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         silver_events
     WHERE
@@ -78,7 +79,8 @@ combo AS (
         price,
         currency,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         moment_data
         LEFT JOIN currency_data USING (tx_id)
@@ -135,6 +137,7 @@ FINAL AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         cd.tokenflow,
         cd.counterparties
     FROM

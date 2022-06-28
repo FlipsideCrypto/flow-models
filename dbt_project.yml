@@ -25,8 +25,8 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 on-run-start:
-  - '{{create_sps()}}'
-  - '{{create_tasks()}}'
+  - "{{create_sps()}}"
+  - "{{create_tasks()}}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -39,10 +39,11 @@ models:
   +persist_docs:
     relation: true
     columns: true
+  +on_schema_change: "append_new_columns"
 
 tests:
   flow_models:
-    +severity: warn  # default all tests to warn
+    +severity: warn # default all tests to warn
     core:
       +severity: error # heighten severity for public facing tables
 

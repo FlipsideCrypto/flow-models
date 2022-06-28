@@ -91,7 +91,8 @@ token_out_data AS (
         LOWER(
             event_data :from :: STRING
         ) AS trader_token_out,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         index_id ii
         LEFT JOIN swaps_single_trade sst USING (
@@ -111,7 +112,8 @@ trade_data AS (
         -- note some are decimal adjusted, some are not. identify by contract
         event_data :token2Amount :: DOUBLE AS token_2_amount,
         l.account_address AS swap_account,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         swaps_single_trade sst
         LEFT JOIN flow_dev.core.dim_contract_labels l USING (event_contract)
@@ -152,7 +154,8 @@ combo AS (
         td.swap_side,
         td.token_1_amount,
         td.token_2_amount,
-        tod._ingested_at
+        tod._ingested_at,
+        tod._inserted_timestamp
     FROM
         token_out_data tod
         LEFT JOIN trade_data td USING (tx_id)
