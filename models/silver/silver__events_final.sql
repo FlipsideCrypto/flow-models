@@ -14,7 +14,12 @@ WITH silver_events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE -2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 silver_event_attributes AS (
@@ -25,7 +30,12 @@ silver_event_attributes AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE -2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 objs AS (
