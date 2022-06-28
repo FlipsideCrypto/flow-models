@@ -11,10 +11,23 @@ WITH events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
+
+{% if is_incremental() %}
+WHERE
+    _ingested_at :: DATE >= CURRENT_DATE -2
+{% endif %}
 ),
 cbridge_txs AS (
     SELECT
-        *
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_index,
+        event_contract,
+        event_type,
+        event_data,
+        _ingested_at
     FROM
         events
     WHERE
@@ -75,12 +88,34 @@ outbound AS (
 ),
 tbl_union AS (
     SELECT
-        *
+        tx_id,
+        block_timestamp,
+        block_height,
+        bridge_contract,
+        token_contract,
+        amount,
+        flow_wallet_address,
+        counterparty,
+        chain_id,
+        direction,
+        bridge,
+        _ingested_at
     FROM
         inbound
     UNION
     SELECT
-        *
+        tx_id,
+        block_timestamp,
+        block_height,
+        bridge_contract,
+        token_contract,
+        amount,
+        flow_wallet_address,
+        counterparty,
+        chain_id,
+        direction,
+        bridge,
+        _ingested_at
     FROM
         outbound
 ),

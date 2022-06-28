@@ -179,12 +179,34 @@ blocto_outbound AS (
 ),
 tbl_union AS (
     SELECT
-        *
+        tx_id,
+        block_timestamp,
+        block_height,
+        teleport_contract,
+        token_contract,
+        gross_amount,
+        amount_fee,
+        net_amount,
+        flow_wallet_address,
+        teleport_direction,
+        bridge,
+        _ingested_at
     FROM
         blocto_inbound
     UNION
     SELECT
-        *
+        tx_id,
+        block_timestamp,
+        block_height,
+        teleport_contract,
+        token_contract,
+        gross_amount,
+        amount_fee,
+        net_amount,
+        flow_wallet_address,
+        teleport_direction,
+        bridge,
+        _ingested_at
     FROM
         blocto_outbound
 ),
