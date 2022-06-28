@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'event_id',
   incremental_strategy = 'delete+insert'
 ) }}
