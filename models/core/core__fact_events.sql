@@ -9,7 +9,7 @@ WITH events_final AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        block_timestamp >= '2022-05-09'
+        block_timestamp >= '2022-04-20'
 ),
 events AS (
     SELECT

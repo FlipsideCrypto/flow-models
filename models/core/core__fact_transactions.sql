@@ -9,7 +9,7 @@ WITH silver_txs AS (
     FROM
         {{ ref('silver__transactions') }}
     WHERE
-        block_timestamp >= '2022-05-09'
+        block_timestamp >= '2022-04-20'
 ),
 gold_txs AS (
     SELECT
