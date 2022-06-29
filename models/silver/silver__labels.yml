@@ -1,11 +1,9 @@
-
 version: 2
 
 models:
   - name: silver__labels
     description: |-
       This table provides labels for addresses on the Flow blockchain.
-
 
     columns:
       - name: _ingested_at
@@ -23,7 +21,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: address
         description: "{{ doc('address') }}"
         tests:
@@ -31,7 +29,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: creator
         description: "{{ doc('creator') }}"
         tests:
@@ -39,7 +37,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: label_type
         description: "{{ doc('label_type') }}"
         tests:
@@ -47,7 +45,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: label_subtype
         description: "{{ doc('label_subtype') }}"
         tests:
@@ -55,7 +53,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: address_name
         description: "{{ doc('address_name') }}"
         tests:
@@ -63,7 +61,7 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-                
+
       - name: project_name
         description: "{{ doc('project_name') }}"
         tests:
