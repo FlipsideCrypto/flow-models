@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_ingested_at::date'],
+    cluster_by = ['_inserted_timestamp::date'],
     unique_key = 'tx_id'
 ) }}
 
@@ -14,7 +14,12 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE -2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 teleport_events AS (
@@ -25,7 +30,8 @@ teleport_events AS (
         event_contract AS teleport_contract_fee,
         event_data :amount :: DOUBLE AS amount_fee,
         event_data :type :: NUMBER AS teleport_direction,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events
     WHERE
@@ -46,7 +52,8 @@ teleports_in AS (
             event_data :hash,
             event_data :txHash
         ) :: STRING AS hash_teleport,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events
     WHERE
@@ -105,7 +112,8 @@ blocto_inbound AS (
         d.to_deposits AS flow_wallet_address,
         f.teleport_direction,
         'blocto' AS bridge,
-        f._ingested_at
+        f._ingested_at,
+        f._inserted_timestamp
     FROM
         teleports_in t
         LEFT JOIN deposits d USING (tx_id)
@@ -171,7 +179,8 @@ blocto_outbound AS (
         w.from_withdraw AS flow_wallet_address,
         f.teleport_direction,
         'blocto' AS bridge,
-        f._ingested_at
+        f._ingested_at,
+        f._inserted_timestamp
     FROM
         teleports_out t
         LEFT JOIN teleports_out_withdraw w USING (tx_id)
@@ -190,7 +199,8 @@ tbl_union AS (
         flow_wallet_address,
         teleport_direction,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         blocto_inbound
     UNION
@@ -206,7 +216,8 @@ tbl_union AS (
         flow_wallet_address,
         teleport_direction,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         blocto_outbound
 ),
@@ -256,7 +267,8 @@ FINAL AS (
         END AS teleport_direction,
         l.blockchain,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         tbl_union t
         LEFT JOIN tele_labels l USING (teleport_contract)

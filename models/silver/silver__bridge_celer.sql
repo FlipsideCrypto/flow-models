@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_ingested_at::date'],
+    cluster_by = ['_inserted_timestamp::date'],
     unique_key = 'tx_id'
 ) }}
 
@@ -14,7 +14,12 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE -2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 cbridge_txs AS (
@@ -27,7 +32,8 @@ cbridge_txs AS (
         event_contract,
         event_type,
         event_data,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events
     WHERE
@@ -46,7 +52,8 @@ inbound AS (
         event_data :refChId :: NUMBER AS chain_id,
         'inbound' AS direction,
         'cbridge' AS bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events
     WHERE
@@ -74,7 +81,8 @@ outbound AS (
         event_data :toChain :: NUMBER AS chain_id,
         'outbound' AS direction,
         'cbridge' AS bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         events
     WHERE
@@ -99,7 +107,8 @@ tbl_union AS (
         chain_id,
         direction,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         inbound
     UNION
@@ -115,7 +124,8 @@ tbl_union AS (
         chain_id,
         direction,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         outbound
 ),
@@ -166,7 +176,8 @@ FINAL AS (
         l.blockchain,
         direction,
         bridge,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         tbl_union t
         LEFT JOIN chain_ids l USING (chain_id)
