@@ -1,6 +1,7 @@
 {{ config(
-    materialized = 'table',
-    cluster_by = ['nft_id'],
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id'
 ) }}
 
@@ -9,15 +10,23 @@ WITH metadata AS (
     SELECT
         *
     FROM
-        {{ source(
-            'flow_external',
-            'topshot_moments_minted_metadata_api'
-        ) }}
-        qualify ROW_NUMBER() over (
-            PARTITION BY id
-            ORDER BY
-                DATA :getMintedMoment :data :acquiredAt :: TIMESTAMP
-        ) = 1
+        {{ ref('bronze__topshot_metadata') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+
+qualify ROW_NUMBER() over (
+    PARTITION BY id
+    ORDER BY
+        DATA :getMintedMoment :data :acquiredAt :: TIMESTAMP
+) = 1
 ),
 FINAL AS (
     SELECT
@@ -38,7 +47,8 @@ FINAL AS (
         DATA :getMintedMoment :data :play :assets :videos :: ARRAY AS video_urls,
         DATA :getMintedMoment :data :play :stats :: OBJECT AS moment_stats_full,
         DATA :getMintedMoment :data :play :statsPlayerGameScores :: OBJECT AS player_stats_game,
-        DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_stats_season_to_date
+        DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_stats_season_to_date,
+        _inserted_timestamp
     FROM
         metadata
     WHERE
