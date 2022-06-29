@@ -36,9 +36,9 @@ FINAL AS (
         DATA :getMintedMoment :data :set :flowName :: STRING AS set_name,
         DATA :getMintedMoment :data :set :flowSeriesNumber :: NUMBER AS set_series_number,
         DATA :getMintedMoment :data :play :assets :videos :: ARRAY AS video_urls,
-        DATA :getMintedMoment :data :play :stats :: OBJECT AS play_stats_full,
-        DATA :getMintedMoment :data :play :statsPlayerGameScores :: OBJECT AS player_game_stats,
-        DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_season_stats
+        DATA :getMintedMoment :data :play :stats :: OBJECT AS moment_stats_full,
+        DATA :getMintedMoment :data :play :statsPlayerGameScores :: OBJECT AS player_stats_game,
+        DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_stats_season_to_date
     FROM
         metadata
     WHERE
