@@ -26,7 +26,6 @@ clean-targets: # directories to be removed by `dbt clean`
 
 on-run-start:
   - '{{create_sps()}}'
-  - '{{create_tasks()}}'
   - '{{create_udfs()}}'
   - '{{sp_create_bulk_get_topshot_moments_minted_metadata()}}'
 
