@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
 
@@ -14,7 +14,12 @@ WITH silver_events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 moment_data AS (
@@ -27,7 +32,8 @@ moment_data AS (
         event_data :price :: DOUBLE AS price,
         event_data :seller :: STRING AS seller,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         silver_events
     WHERE
@@ -78,7 +84,8 @@ combo AS (
         price,
         currency,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         moment_data
         LEFT JOIN currency_data USING (tx_id)
@@ -135,6 +142,7 @@ FINAL AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         cd.tokenflow,
         cd.counterparties
     FROM

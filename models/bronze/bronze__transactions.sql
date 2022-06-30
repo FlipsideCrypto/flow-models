@@ -1,9 +1,8 @@
 {{ config (
-    materialized = 'view'
+  materialized = 'view'
 ) }}
 
 SELECT
-
   record_id,
   tx_id,
   tx_block_index,
@@ -13,8 +12,8 @@ SELECT
   network,
   chain_id,
   tx,
-  ingested_at as _ingested_at
-
+  ingested_at AS _ingested_at,
+  _inserted_timestamp
 FROM
   {{ source(
     'prod',

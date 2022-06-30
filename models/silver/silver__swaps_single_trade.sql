@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id',
     incremental_strategy = 'delete+insert'
 ) }}
@@ -14,7 +14,12 @@ WITH swaps_events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 action_ct AS (
@@ -91,7 +96,8 @@ token_out_data AS (
         LOWER(
             event_data :from :: STRING
         ) AS trader_token_out,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         index_id ii
         LEFT JOIN swaps_single_trade sst USING (
@@ -111,7 +117,8 @@ trade_data AS (
         -- note some are decimal adjusted, some are not. identify by contract
         event_data :token2Amount :: DOUBLE AS token_2_amount,
         l.account_address AS swap_account,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         swaps_single_trade sst
         LEFT JOIN flow_dev.core.dim_contract_labels l USING (event_contract)
@@ -152,7 +159,8 @@ combo AS (
         td.swap_side,
         td.token_1_amount,
         td.token_2_amount,
-        tod._ingested_at
+        tod._ingested_at,
+        tod._inserted_timestamp
     FROM
         token_out_data tod
         LEFT JOIN trade_data td USING (tx_id)

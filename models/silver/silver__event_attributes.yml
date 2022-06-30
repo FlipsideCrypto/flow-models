@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -102,9 +101,17 @@ models:
       - name: attribute_value_adj
         description: "{{ doc('attribute_value_adj') }}"
         tests:
-                
+
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

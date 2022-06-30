@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
 
@@ -14,7 +14,12 @@ WITH topshot AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 secondary AS (
@@ -25,7 +30,12 @@ secondary AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 combo AS (
@@ -42,6 +52,7 @@ combo AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         tokenflow,
         counterparties
     FROM
@@ -60,6 +71,7 @@ combo AS (
         currency,
         tx_succeeded,
         _ingested_at,
+        _inserted_timestamp,
         tokenflow,
         counterparties
     FROM
