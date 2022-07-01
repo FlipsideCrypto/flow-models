@@ -17,12 +17,18 @@ WITH token_prices AS (
             -- Flow
             '6993',
             -- Revv
+            '8075',
+            -- Rally
             '12182',
             -- Blocto Token
             '15139',
             -- Starly
+            '15194',
+            -- Sportium
             'flow',
+            'rally-2',
             'revv',
+            'sportium',
             'starly',
             'blocto-token'
         )
