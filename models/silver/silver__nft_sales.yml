@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -27,8 +26,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
-                - FLOAT  
+                - NUMBER
+                - FLOAT
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
@@ -139,3 +138,11 @@ models:
                 - ARRAY
                 - OBJECT
                 - VARIANT
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

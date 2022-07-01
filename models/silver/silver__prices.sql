@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['recorded_at'],
+    cluster_by = ['recorded_at::DATE'],
     unique_key = "concat_ws( '-', recorded_at, asset_id )"
 ) }}
 

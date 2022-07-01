@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = "CONCAT_WS('-', tx_id, event_index)",
   incremental_strategy = 'delete+insert'
 ) }}
@@ -28,7 +28,12 @@ swaps_txs AS (
     )
 
 {% if is_incremental() %}
-AND _ingested_at :: DATE >= CURRENT_DATE - 2
+AND _inserted_timestamp >= (
+  SELECT
+    MAX(_inserted_timestamp)
+  FROM
+    {{ this }}
+)
 {% endif %}
 ),
 swap_events AS (
@@ -43,6 +48,15 @@ swap_events AS (
       FROM
         swaps_txs
     )
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+  SELECT
+    MAX(_inserted_timestamp)
+  FROM
+    {{ this }}
+)
+{% endif %}
 )
 SELECT
   *

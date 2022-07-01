@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -35,8 +34,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
-                - FLOAT  
+                - NUMBER
+                - FLOAT
 
       - name: chain_id
         description: "{{ doc('chain_id') }}"
@@ -44,8 +43,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
       - name: tx_index
         description: tbd
@@ -53,7 +52,7 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
+                - NUMBER
 
       - name: proposer
         description: "{{ doc('proposer') }}"
@@ -61,8 +60,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
       - name: payer
         description: "{{ doc('payer') }}"
@@ -70,8 +69,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
       - name: authorizers
         description: "{{ doc('authorizers') }}"
@@ -124,6 +123,14 @@ models:
 
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:

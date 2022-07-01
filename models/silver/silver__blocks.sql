@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'block_height',
   incremental_strategy = 'delete+insert'
 ) }}
@@ -14,7 +14,12 @@ WITH bronze_blocks AS (
 
 {% if is_incremental() %}
 WHERE
-  _ingested_at :: DATE >= CURRENT_DATE - 2
+  _inserted_timestamp >= (
+    SELECT
+      MAX(_inserted_timestamp)
+    FROM
+      {{ this }}
+  )
 {% endif %}
 
 qualify ROW_NUMBER() over (
@@ -40,7 +45,8 @@ silver_blocks AS (
       header :parentId,
       header :block_header :parent_id
     ) :: STRING AS parent_id,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     bronze_blocks
 )
