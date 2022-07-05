@@ -26,7 +26,6 @@ clean-targets: # directories to be removed by `dbt clean`
 
 on-run-start:
   - '{{create_sps()}}'
-  - '{{create_tasks()}}'
   - '{{create_udfs()}}'
   - '{{sp_create_bulk_get_topshot_moments_minted_metadata()}}'
 
@@ -41,10 +40,11 @@ models:
   +persist_docs:
     relation: true
     columns: true
+  +on_schema_change: "append_new_columns"
 
 tests:
   flow_models:
-    +severity: warn  # default all tests to warn
+    +severity: warn # default all tests to warn
     core:
       +severity: error # heighten severity for public facing tables
 

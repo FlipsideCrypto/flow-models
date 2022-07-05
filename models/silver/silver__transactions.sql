@@ -1,6 +1,6 @@
 {{ config(
   materialized = 'incremental',
-  cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+  cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'tx_id',
   incremental_strategy = 'delete+insert'
 ) }}
@@ -14,7 +14,12 @@ WITH bronze_txs AS (
 
 {% if is_incremental() %}
 WHERE
-  _ingested_at :: DATE >= CURRENT_DATE - 2
+  _inserted_timestamp >= (
+    SELECT
+      MAX(_inserted_timestamp)
+    FROM
+      {{ this }}
+  )
 {% endif %}
 
 qualify ROW_NUMBER() over (
@@ -54,7 +59,8 @@ silver_txs AS (
       transaction_result :error,
       ''
     ) :: STRING AS error_msg,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     bronze_txs
 ),
@@ -104,7 +110,8 @@ FINAL AS (
     transaction_result,
     tx_succeeded,
     error_msg,
-    _ingested_at
+    _ingested_at,
+    _inserted_timestamp
   FROM
     silver_txs t
     LEFT JOIN authorizers_array aa USING (tx_id)

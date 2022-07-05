@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_ingested_at::DATE, block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id'
 ) }}
 
@@ -14,7 +14,12 @@ WITH silver_events AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 listing_data AS (
@@ -29,7 +34,8 @@ listing_data AS (
         event_data :nftID :: STRING AS nft_id_listing,
         event_data :nftType :: STRING AS nft_collection_listing,
         event_data :purchased :: BOOLEAN AS purchased_listing,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         silver_events
     WHERE
@@ -183,7 +189,8 @@ FINAL AS (
         cd.step_data,
         cd.counterparties,
         tx_succeeded,
-        _ingested_at
+        _ingested_at,
+        _inserted_timestamp
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)

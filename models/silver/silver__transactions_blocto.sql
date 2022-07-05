@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    cluster_by = ['_ingested_at::DATE', 'block_timestamp::DATE'],
+    cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id',
     incremental_strategy = 'delete+insert'
 ) }}
@@ -14,7 +14,12 @@ WITH silver_txs AS (
 
 {% if is_incremental() %}
 WHERE
-    _ingested_at :: DATE >= CURRENT_DATE - 2
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 blocto_txs AS (
