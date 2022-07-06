@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::date'],
-    unique_key = "CONCAT_WS('-', tx_id, event_index)"
+    unique_key = "CONCAT_WS('-', block_timestamp, token_contract)"
 ) }}
 
 WITH swaps AS (
@@ -23,19 +23,21 @@ WITH swaps AS (
         {{ ref('silver__swaps_single_trade') }}
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 stable_out AS (
     SELECT
         block_timestamp,
         token_in_contract AS token_contract,
-        token_out_amount / token_in_amount AS swap_price
+        token_out_amount / token_in_amount AS swap_price,
+        _inserted_timestamp
     FROM
         swaps
     WHERE
@@ -49,7 +51,8 @@ stable_in AS (
     SELECT
         block_timestamp,
         token_out_contract AS token_contract,
-        token_in_amount / token_out_amount AS swap_price
+        token_in_amount / token_out_amount AS swap_price,
+        _inserted_timestamp
     FROM
         swaps
     WHERE
