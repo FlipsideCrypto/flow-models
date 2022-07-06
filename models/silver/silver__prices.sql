@@ -32,6 +32,21 @@ prices AS (
     FROM
         token_prices
 ),
+adj_token_names AS (
+    SELECT
+        recorded_at,
+        asset_id,
+        CASE
+            WHEN token LIKE 'Flow (%' THEN 'Flow'
+            WHEN token = 'Blocto Token' THEN 'Blocto'
+            ELSE token
+        END AS token,
+        symbol,
+        price,
+        source
+    FROM
+        prices
+),
 FINAL AS (
     SELECT
         recorded_at,
@@ -41,7 +56,7 @@ FINAL AS (
         price AS price_usd,
         source
     FROM
-        prices
+        adj_token_names
 )
 SELECT
     *

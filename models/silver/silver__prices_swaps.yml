@@ -1,36 +1,30 @@
 version: 2
 
 models:
-  - name: core__fact_prices
+  - name: silver__prices_swaps
     description: |-
       This table provides token price data for FLOW tokens.
 
     columns:
-      - name: timestamp
-        description: "{{ doc('timestamp') }}"
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
-
-      - name: token
-        description: "{{ doc('token') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: symbol
-        description: "{{ doc('symbol') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: token_contract
         description: "{{ doc('token_contract') }}"
@@ -38,18 +32,26 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
                 - VARCHAR
+                - STRING
 
-      - name: price_usd
-        description: "{{ doc('price_usd') }}"
+      - name: swap_price
+        description: "{{ doc('swap_price') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - DOUBLE
                 - FLOAT
+                - DOUBLE
+                - NUMBER
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
 
       - name: source
         description: "{{ doc('source') }}"

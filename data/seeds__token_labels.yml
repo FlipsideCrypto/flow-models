@@ -1,0 +1,9 @@
+version: 2
+
+seeds:
+  - name: seeds__token_labels
+    config:
+      column_types:
+        token: varchar(48)
+        symbol: varchar(16)
+        token_contract: varchar(96)
