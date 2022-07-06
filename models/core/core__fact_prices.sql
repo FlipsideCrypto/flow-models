@@ -2,8 +2,14 @@
     materialized = 'view'
 ) }}
 
-WITH prices AS (
+WITH token_labels AS (
 
+    SELECT
+        *
+    FROM
+        {{ ref('seeds__token_labels') }}
+),
+prices AS (
     SELECT
         recorded_at AS TIMESTAMP,
         token,
@@ -25,19 +31,25 @@ prices_swaps AS (
 viewnion AS (
     SELECT
         TIMESTAMP,
-        token,
+        p.token,
+        p.symbol,
+        l.token_contract,
         price_usd,
         source
     FROM
-        prices
+        prices p
+        LEFT JOIN token_labels l USING (symbol)
     UNION
     SELECT
         TIMESTAMP,
-        token_contract AS token,
+        l.token,
+        l.symbol,
+        ps.token_contract,
         price_usd,
         source
     FROM
-        prices_swaps
+        prices_swaps ps
+        LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
     *
