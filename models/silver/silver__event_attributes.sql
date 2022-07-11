@@ -149,9 +149,12 @@ FINAL AS (
         attribute_key,
         decoded_address,
         attribute_value,
-        COALESCE(
-            address_adj,
-            attribute_value_adj
+        REPLACE(
+            COALESCE(
+                address_adj,
+                attribute_value_adj
+            ),
+            '"'
         ) AS attribute_value_adj,
         _ingested_at,
         _inserted_timestamp
