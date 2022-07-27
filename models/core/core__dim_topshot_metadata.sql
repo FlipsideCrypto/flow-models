@@ -22,7 +22,7 @@ WITH topshot AS (
         video_urls,
         moment_stats_full,
         player_stats_game,
-        player_stats_season_to_date,
+        player_stats_season_to_date
     FROM
         {{ ref('silver__nft_topshot_metadata') }}
 )
