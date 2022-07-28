@@ -25,12 +25,14 @@ sales AS (
 ),
 all_topshots AS (
     SELECT
-        *
+        event_contract,
+        moment_id
     FROM
         mints
     UNION
     SELECT
-        *
+        event_contract,
+        moment_id
     FROM
         sales
 )
