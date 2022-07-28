@@ -35,7 +35,7 @@ all_topshots AS (
         sales
 )
 SELECT
-    *
+    DISTINCT *
 FROM
     all_topshots
 EXCEPT
