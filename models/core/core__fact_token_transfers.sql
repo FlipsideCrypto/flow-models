@@ -2,7 +2,25 @@
     materialized = 'view'
 ) }}
 
-WITH withdraws AS (
+WITH transfers AS (
+
+SELECT
+    tx_id,
+    COUNT(event_type) AS event_count,
+    MAX(event_index + 1) AS max_index
+FROM 
+    {{ ref('silver__events_final') }}
+WHERE 
+    event_type IN ('TokensDeposited', 'TokensWithdrawn', 'FeesDeducted')
+GROUP BY 
+    tx_id
+HAVING 
+    event_count = max_index
+),
+
+
+
+withdraws AS (
 
 SELECT
     block_height,
@@ -15,6 +33,8 @@ SELECT
 FROM 
     {{ ref('silver__events_final') }}
 WHERE 
+    tx_id IN (SELECT tx_id FROM transfers)
+AND
     event_type = 'TokensWithdrawn'
 AND 
     block_timestamp::date >= '2022-04-20'
@@ -33,6 +53,8 @@ SELECT
 FROM 
     {{ ref('silver__events_final') }}
 WHERE 
+    tx_id IN (SELECT tx_id FROM transfers)
+AND
     event_type = 'TokensDeposited'
 AND 
     block_timestamp::date >= '2022-04-20'
