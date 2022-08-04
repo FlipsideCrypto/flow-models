@@ -70,6 +70,8 @@ attributes AS (
         LATERAL FLATTEN(
             input => event_data_type_fields
         )
+    WHERE
+        VALUE :name != 'publicKey'
 ),
 handle_address_arrays AS (
     SELECT
