@@ -53,8 +53,13 @@ attributes AS (
             VALUE :identifier,
             VALUE :Identifier
         ) :: STRING AS attribute_key,
+        _event_data_fields [index] AS raw_attribute,
         COALESCE(
-            _event_data_fields [index] :Value,
+            _event_data_fields [index] :staticType :typeID,
+            _event_data_fields [index] :value :value :value :value,
+            _event_data_fields [index] :value :value :value,
+            _event_data_fields [index] :value :value,
+            _event_data_fields [index] :value,
             _event_data_fields [index]
         ) AS attribute_value,
         concat_ws(
@@ -70,19 +75,27 @@ attributes AS (
         LATERAL FLATTEN(
             input => event_data_type_fields
         )
-    WHERE
-        VALUE :name != 'publicKey'
 ),
 handle_address_arrays AS (
     SELECT
         attribute_id,
         b.index,
-        LPAD(TRIM(to_char(b.value :: INT, 'XXXXXXX')) :: STRING, 2, '0') AS hex
+        LPAD(
+            TRIM(
+                to_char(COALESCE(b.value :value :: INT, b.value :: INT), 'XXXXXXX')
+            ) :: STRING,
+            2,
+            '0'
+        ) AS hex
     FROM
         attributes A,
         TABLE(FLATTEN(attribute_value, recursive => TRUE)) b
     WHERE
         IS_ARRAY(attribute_value) = TRUE
+        AND (
+            _inserted_timestamp :: DATE BETWEEN '2022-04-10'
+            AND '2022-04-13'
+        )
     ORDER BY
         1,
         2
@@ -111,6 +124,7 @@ replace_arrays AS (
         attribute_index,
         event_contract,
         event_type,
+        raw_attribute,
         attribute_key,
         attribute_value,
         decoded_address,
@@ -148,6 +162,7 @@ FINAL AS (
         attribute_index,
         event_contract,
         event_type,
+        raw_attribute,
         attribute_key,
         decoded_address,
         attribute_value,
