@@ -53,14 +53,14 @@ attributes AS (
             VALUE :identifier,
             VALUE :Identifier
         ) :: STRING AS attribute_key,
-        _event_data_fields [index] AS raw_attribute,
+        _event_data_fields AS raw_attribute,
         COALESCE(
-            _event_data_fields [index] :staticType :typeID,
-            _event_data_fields [index] :value :value :value :value,
-            _event_data_fields [index] :value :value :value,
-            _event_data_fields [index] :value :value,
-            _event_data_fields [index] :value,
-            _event_data_fields [index]
+            raw_attribute [index] :staticType :typeID,
+            raw_attribute [index] :value :value :value :value,
+            raw_attribute [index] :value :value :value,
+            raw_attribute [index] :value :value,
+            raw_attribute [index] :value,
+            raw_attribute
         ) AS attribute_value,
         concat_ws(
             '-',
@@ -76,80 +76,18 @@ attributes AS (
             input => event_data_type_fields
         )
 ),
-handle_address_arrays AS (
-    SELECT
-        attribute_id,
-        b.index,
-        LPAD(
-            TRIM(
-                to_char(COALESCE(b.value :value :: INT, b.value :: INT), 'XXXXXXX')
-            ) :: STRING,
-            2,
-            '0'
-        ) AS hex
-    FROM
-        attributes A,
-        TABLE(FLATTEN(attribute_value, recursive => TRUE)) b
-    WHERE
-        IS_ARRAY(attribute_value) = TRUE
-        AND (
-            _inserted_timestamp :: DATE BETWEEN '2022-04-10'
-            AND '2022-04-13'
-        )
-    ORDER BY
-        1,
-        2
-),
-recombine_address AS (
-    SELECT
-        attribute_id,
-        CONCAT(
-            '0x',
-            ARRAY_TO_STRING(ARRAY_AGG(hex) within GROUP (
-            ORDER BY
-                INDEX ASC), '')
-        ) AS decoded_address
-    FROM
-        handle_address_arrays
-    GROUP BY
-        1
-),
-replace_arrays AS (
-    SELECT
-        A.attribute_id,
-        event_id,
-        tx_id,
-        block_timestamp,
-        event_index,
-        attribute_index,
-        event_contract,
-        event_type,
-        raw_attribute,
-        attribute_key,
-        attribute_value,
-        decoded_address,
-        COALESCE(
-            decoded_address,
-            attribute_value
-        ) :: STRING AS attribute_value_adj,
-        _ingested_at,
-        _inserted_timestamp
-    FROM
-        attributes A
-        LEFT JOIN recombine_address USING (attribute_id)
-),
 address_adjustment AS (
     SELECT
         attribute_id,
-        LENGTH(attribute_value_adj) AS ava_len,
+        LENGTH(attribute_value) AS ava_len,
         CONCAT(
             '0x',
-            LPAD(SPLIT(attribute_value_adj, '0x') [1], 16, '0') :: STRING
+            LPAD(SPLIT(attribute_value, '0x') [1], 16, '0') :: STRING
         ) AS address_adj
     FROM
-        replace_arrays
+        attributes
     WHERE
-        attribute_value_adj LIKE '0x%'
+        attribute_value LIKE '0x%'
         AND ava_len < 19
 ),
 FINAL AS (
@@ -164,19 +102,18 @@ FINAL AS (
         event_type,
         raw_attribute,
         attribute_key,
-        decoded_address,
         attribute_value,
         REPLACE(
             COALESCE(
                 address_adj,
-                attribute_value_adj
+                attribute_value
             ),
             '"'
         ) AS attribute_value_adj,
         _ingested_at,
         _inserted_timestamp
     FROM
-        replace_arrays A
+        attributes A
         LEFT JOIN address_adjustment USING (attribute_id)
 )
 SELECT
