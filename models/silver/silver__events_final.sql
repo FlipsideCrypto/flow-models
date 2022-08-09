@@ -38,15 +38,64 @@ WHERE
     )
 {% endif %}
 ),
+silver_event_attributes_https AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__event_attributes_https') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+all_event_attributes AS (
+    SELECT
+        attribute_id,
+        event_id,
+        tx_id,
+        block_timestamp,
+        event_index,
+        attribute_index,
+        event_contract,
+        event_type,
+        attribute_key,
+        attribute_value_adj AS attribute_value,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        silver_event_attributes
+    UNION
+    SELECT
+        attribute_id,
+        event_id,
+        tx_id,
+        block_timestamp,
+        event_index,
+        attribute_index,
+        event_contract,
+        event_type,
+        attribute_key,
+        attribute_value,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        silver_event_attributes_https
+),
 objs AS (
     SELECT
         event_id,
         OBJECT_AGG(
             attribute_key,
-            attribute_value_adj :: variant
+            attribute_value :: variant
         ) AS event_data
     FROM
-        silver_event_attributes
+        all_event_attributes
     GROUP BY
         1
 ),
@@ -70,6 +119,12 @@ location_object AS (
         silver_events
     WHERE
         _event_data_fields = '[]'
+        AND tx_id NOT IN (
+            SELECT
+                tx_id
+            FROM
+                silver_event_attributes_https
+        )
 ),
 gold_events AS (
     SELECT
