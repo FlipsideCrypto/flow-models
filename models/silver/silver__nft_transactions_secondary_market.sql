@@ -129,7 +129,7 @@ step_data AS (
         event_type,
         event_data
     FROM
-        {{ ref('silver__events_final') }}
+        silver_events
     WHERE
         tx_id IN (
             SELECT
