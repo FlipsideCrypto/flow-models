@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
-    unique_key = 'tx_id'
+    unique_key = 'tx_id',
+    tags = ['nft']
 ) }}
 
 WITH silver_events AS (
@@ -49,6 +50,7 @@ nft_purchase AS (
         event_index,
         block_timestamp,
         block_height,
+        tx_succeeded,
         event_contract AS event_contract_purchase,
         event_data :buyer :: STRING AS buyer_purchase,
         event_data :listingID :: STRING AS listing_id,
@@ -105,6 +107,7 @@ fabricant_nft_sales AS (
         p.block_timestamp,
         p.block_height,
         p.tx_id,
+        p.tx_succeeded,
         p.event_index AS purchase_event_index,
         event_contract_purchase,
         buyer_purchase,
@@ -204,6 +207,7 @@ FINAL AS (
         cd.action AS step_action,
         cd.step_data,
         cd.counterparties,
+        tx_succeeded,
         _ingested_at,
         _inserted_timestamp
     FROM
