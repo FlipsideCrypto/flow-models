@@ -79,5 +79,6 @@ LEFT JOIN
 ON w.tx_id = d.tx_id
 AND w.token_contract = d.token_contract
 AND w.amount = d.amount
+WHERE sender IS NOT NULL
 GROUP BY 
     block_height, block_timestamp, w.tx_id, sender, recipient, w.token_contract, tx_succeeded

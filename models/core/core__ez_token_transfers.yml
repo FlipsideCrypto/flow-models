@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: core__fact_token_transfers
+  - name: core__ez_token_transfers
     description: |-
       This table records all token transfers on the FLOW blockchain.
     tests:
