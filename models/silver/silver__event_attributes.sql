@@ -11,15 +11,16 @@ WITH events AS (
         *
     FROM
         {{ ref('silver__events') }}
+    WHERE
+        _inserted_timestamp :: DATE < '2022-07-18'
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 events_data AS (

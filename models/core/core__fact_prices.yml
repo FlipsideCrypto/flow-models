@@ -6,7 +6,7 @@ models:
       This table provides token price data for FLOW tokens.
 
     columns:
-      - name: timestamp
+      - name: TIMESTAMP
         description: "{{ doc('timestamp') }}"
         tests:
           - not_null
@@ -14,7 +14,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: token
+      - name: TOKEN
         description: "{{ doc('token') }}"
         tests:
           - not_null
@@ -23,7 +23,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: symbol
+      - name: SYMBOL
         description: "{{ doc('symbol') }}"
         tests:
           - not_null
@@ -32,7 +32,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_contract
+      - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract') }}"
         tests:
           - not_null
@@ -41,7 +41,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: price_usd
+      - name: PRICE_USD
         description: "{{ doc('price_usd') }}"
         tests:
           - not_null
@@ -51,7 +51,7 @@ models:
                 - DOUBLE
                 - FLOAT
 
-      - name: source
+      - name: SOURCE
         description: "{{ doc('source') }}"
         tests:
           - not_null

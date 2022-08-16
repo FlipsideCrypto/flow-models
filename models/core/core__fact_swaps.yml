@@ -10,12 +10,12 @@ models:
             - tx_id
 
     columns:
-      - name: tx_id
+      - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -26,7 +26,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -35,7 +35,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: swap_contract
+      - name: SWAP_CONTRACT
         description: "{{ doc('swap_contract') }}"
         tests:
           - not_null
@@ -44,7 +44,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: trader
+      - name: TRADER
         description: "{{ doc('trader') }}"
         tests:
           - not_null
@@ -53,7 +53,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_out_amount
+      - name: TOKEN_OUT_AMOUNT
         description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
@@ -62,7 +62,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: token_out_contract
+      - name: TOKEN_OUT_CONTRACT
         description: "{{ doc('token_out_contract') }}"
         tests:
           - not_null
@@ -71,7 +71,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_in_amount
+      - name: TOKEN_IN_AMOUNT
         description: "{{ doc('token_in_amount') }}"
         tests:
           - not_null
@@ -80,7 +80,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: token_in_contract
+      - name: TOKEN_IN_CONTRACT
         description: "{{ doc('token_in_contract') }}"
         tests:
           - not_null

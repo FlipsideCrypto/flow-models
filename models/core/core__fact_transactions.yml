@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -12,7 +11,7 @@ models:
             - block_height
 
     columns:
-      - name: tx_id
+      - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
@@ -21,8 +20,8 @@ models:
               column_block: block_height
               column_tx_count: tx_count
               where: BLOCK_TIMESTAMP < CURRENT_DATE
-              
-      - name: block_timestamp
+
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -33,51 +32,51 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
-                - FLOAT  
+                - NUMBER
+                - FLOAT
 
-      - name: chain_id
+      - name: CHAIN_ID
         description: "{{ doc('chain_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
-      - name: tx_index
+      - name: TX_INDEX
         description: tbd
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
+                - NUMBER
 
-      - name: proposer
+      - name: PROPOSER
         description: "{{ doc('proposer') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
-      - name: payer
+      - name: PAYER
         description: "{{ doc('payer') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
-      - name: authorizers
+      - name: AUTHORIZERS
         description: "{{ doc('authorizers') }}"
         tests:
           - not_null
@@ -85,7 +84,7 @@ models:
               column_type_list:
                 - ARRAY
 
-      - name: count_authorizers
+      - name: COUNT_AUTHORIZERS
         description: "{{ doc('count_authorizers') }}"
         tests:
           - not_null
@@ -93,7 +92,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: gas_limit
+      - name: GAS_LIMIT
         description: "{{ doc('gas_limit') }}"
         tests:
           - not_null
@@ -101,7 +100,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: transaction_result
+      - name: TRANSACTION_RESULT
         description: "{{ doc('transaction_result') }}"
         tests:
           - not_null
@@ -109,7 +108,7 @@ models:
               column_type_list:
                 - VARIANT
 
-      - name: tx_succeeded
+      - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
@@ -117,7 +116,7 @@ models:
               column_type_list:
                 - BOOLEAN
 
-      - name: error_msg
+      - name: ERROR_MSG
         description: tbd
         tests:
           - not_null

@@ -1,17 +1,16 @@
-
 version: 2
 
 models:
   - name: core__dim_validator_labels
     description: |-
-      This table stores all of the Validator Node IDs and the type of validator, per id. 
+      This table stores all of the Validator Node IDs and the type of validator, per id.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - node_id
 
     columns:
-      - name: node_id
+      - name: NODE_ID
         description: "{{ doc('node_id') }}"
         tests:
           - not_null
@@ -21,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: validator_type
+      - name: VALIDATOR_TYPE
         description: "{{ doc('validator_type') }}"
         tests:
           - not_null
@@ -30,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: project_name
+      - name: PROJECT_NAME
         description: "{{ doc('project_name') }}"
         tests:
           - not_null

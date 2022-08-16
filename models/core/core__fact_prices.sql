@@ -5,7 +5,9 @@
 WITH token_labels AS (
 
     SELECT
-        *
+        token,
+        UPPER(symbol) AS symbol,
+        token_contract
     FROM
         {{ ref('seeds__token_labels') }}
 ),
@@ -13,7 +15,7 @@ prices AS (
     SELECT
         recorded_at AS TIMESTAMP,
         token,
-        symbol,
+        UPPER(symbol) AS symbol,
         price_usd,
         source
     FROM
