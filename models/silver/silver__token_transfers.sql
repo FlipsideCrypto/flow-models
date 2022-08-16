@@ -51,8 +51,17 @@ WHERE
     tx_id IN (SELECT tx_id FROM transfers)
 AND
     event_type = 'TokensWithdrawn'
-AND 
-    block_timestamp::date >= '2022-04-20'
+
+{% if is_incremental() %}
+AND
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+
 GROUP BY
     block_height, _inserted_timestamp, block_timestamp, tx_id, sender, token_contract, amount, tx_succeeded
 
@@ -72,8 +81,17 @@ WHERE
     tx_id IN (SELECT tx_id FROM transfers)
 AND
     event_type = 'TokensDeposited'
-AND 
-    block_timestamp::date >= '2022-04-20'
+
+{% if is_incremental() %}
+AND
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+
 GROUP BY 
     tx_id, _inserted_timestamp, recipient, token_contract, amount
   
