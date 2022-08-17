@@ -25,6 +25,7 @@ WHERE
 flow_staking AS (
     SELECT
         tx_id,
+        event_index,
         block_timestamp,
         block_height,
         tx_succeeded,
@@ -55,7 +56,7 @@ add_auth AS (
             authorizers [0]
         ) :: STRING AS primary_authorizer
     FROM
-        flow_dev.silver.transactions
+        {{ ref('silver__transactions') }}
     WHERE
         tx_id IN (
             SELECT
@@ -63,10 +64,20 @@ add_auth AS (
             FROM
                 flow_staking
         )
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
 ),
 FINAL AS (
     SELECT
         s.tx_id,
+        event_index,
         block_timestamp,
         block_height,
         tx_succeeded,
