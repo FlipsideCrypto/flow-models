@@ -121,7 +121,7 @@ blocto_inbound AS (
     WHERE
         d.rn = 1
 ),
-teleports_out_withdraw AS (
+teleports_out_withdraw_non_fiat AS (
     SELECT
         tx_id,
         event_contract,
@@ -139,6 +139,44 @@ teleports_out_withdraw AS (
                 teleport_direction = 0
         )
         AND event_index = 0
+        AND event_contract != 'A.b19436aae4d94622.FiatToken'
+),
+teleports_out_withdraw_fiat AS (
+    SELECT
+        tx_id,
+        event_contract,
+        event_data :amount :: DOUBLE AS amount_withdraw,
+        event_data :from :: STRING AS from_withdraw
+    FROM
+        events
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                teleport_events
+            WHERE
+                teleport_direction = 0
+        )
+        AND event_index = 1
+        AND event_contract = 'A.b19436aae4d94622.FiatToken'
+),
+teleports_out_withdraw AS (
+    SELECT
+        tx_id,
+        event_contract,
+        amount_withdraw,
+        from_withdraw
+    FROM
+        teleports_out_withdraw_non_fiat
+    UNION
+    SELECT
+        tx_id,
+        event_contract,
+        amount_withdraw,
+        from_withdraw
+    FROM
+        teleports_out_withdraw_fiat
 ),
 teleports_out AS (
     SELECT
