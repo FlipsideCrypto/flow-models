@@ -223,32 +223,10 @@ tbl_union AS (
 ),
 tele_labels AS (
     SELECT
-        'A.04ee69443dedf0e4.TeleportCustody' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.0ac14a822e54cc4e.TeleportCustodyBSC' AS teleport_contract,
-        'BSC' AS blockchain
-    UNION
-    SELECT
-        'A.0ac14a822e54cc4e.TeleportCustodySolana' AS teleport_contract,
-        'Solana' AS blockchain
-    UNION
-    SELECT
-        'A.475755d2c9dccc3a.TeleportedSportiumToken' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.bd7e596b12e277df.TeleportCustody' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.c2fa71c36fd5b840.TeleportCustodyBSC' AS teleport_contract,
-        'BSC' AS blockchain
-    UNION
-    SELECT
-        'A.cfdd90d4a00f7b5b.TeleportedTetherToken' AS teleport_contract,
-        'Ethereum' AS blockchain
+        teleport_contract,
+        blockchain
+    FROM
+        {{ ref('seeds__blocto_teleport_labels') }}
 ),
 FINAL AS (
     SELECT

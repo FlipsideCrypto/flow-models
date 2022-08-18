@@ -131,36 +131,10 @@ tbl_union AS (
 ),
 chain_ids AS (
     SELECT
-        1 AS chain_id,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        56 AS chain_id,
-        'BSC' AS blockchain
-    UNION
-    SELECT
-        137 AS chain_id,
-        'Polygon' AS blockchain
-    UNION
-    SELECT
-        250 AS chain_id,
-        'Fantom' AS blockchain
-    UNION
-    SELECT
-        2222 AS chain_id,
-        'Kava' AS blockchain
-    UNION
-    SELECT
-        9001 AS chain_id,
-        'Evmos' AS blockchain
-    UNION
-    SELECT
-        43114 AS chain_id,
-        'Avalanche' AS blockchain
-    UNION
-    SELECT
-        12340001 AS chain_id,
-        'Flow' AS blockchain
+        chain_id,
+        blockchain
+    FROM
+        {{ ref('seeds__celer_chain_ids') }}
 ),
 FINAL AS (
     SELECT
