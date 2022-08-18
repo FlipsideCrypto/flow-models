@@ -37,5 +37,3 @@ SELECT
     *
 FROM
     all_day_ids
-LIMIT
-    3000
