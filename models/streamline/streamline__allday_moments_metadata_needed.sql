@@ -6,7 +6,7 @@ WITH mints AS (
 
     SELECT
         event_contract,
-        event_data :id :: NUMBER AS nft_id
+        event_data :id :: STRING AS nft_id
     FROM
         {{ ref('silver__events_final') }}
     WHERE
