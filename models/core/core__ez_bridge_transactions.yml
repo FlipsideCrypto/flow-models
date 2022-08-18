@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_nft_sales
+  - name: core__ez_bridge_transactions
     description: |-
-      NFT market sales on the Flow blockchain.
+      This table parses transactions where tokens are bridged to or from the Flow network.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -14,20 +14,6 @@ models:
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: BLOCK_HEIGHT
-        description: "{{ doc('block_height') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
@@ -40,54 +26,8 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: MARKETPLACE
-        description: "{{ doc('marketplace') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: NFT_COLLECTION
-        description: "{{ doc('nft_collection') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: NFT_ID
-        description: "{{ doc('nft_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-                - NUMBER
-
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: SELLER
-        description: "{{ doc('seller') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: PRICE
-        description: "{{ doc('price') }}"
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -95,8 +35,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: CURRENCY
-        description: "{{ doc('currency') }}"
+      - name: BRIDGE_CONTRACT
+        description: "{{ doc('bridge_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -104,30 +44,57 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SUCCEEDED
-        description: "{{ doc('tx_succeeded') }}"
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - STRING
+                - VARCHAR
 
-      - name: TOKENFLOW
-        description: "{{ doc('tokenflow') }}"
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - ARRAY
-                - OBJECT
-                - VARIANT
+                - NUMBER
+                - DOUBLE
+                - FLOAT
 
-      - name: COUNTERPARTIES
-        description: "{{ doc('counterparties') }}"
+      - name: FLOW_WALLET_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - ARRAY
-                - OBJECT
-                - VARIANT
+                - STRING
+                - VARCHAR
+
+      - name: BLOCKCHAIN
+        description: "{{ doc('blockchain') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: DIRECTION
+        description: "{{ doc('direction') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BRIDGE
+        description: "{{ doc('bridge') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
