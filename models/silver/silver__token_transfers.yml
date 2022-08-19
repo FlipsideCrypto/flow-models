@@ -1,21 +1,24 @@
 version: 2
 
 models:
-  - name: core__fact_bridge_transactions
+  - name: silver__token_transfers
     description: |-
-      This table parses transactions where tokens are bridged to or from the Flow network.
+      This table records all token transfers on the FLOW blockchain.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - sender
+            - recipient
+            - token_contract
 
     columns:
-      - name: TX_ID
+      - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
-
-      - name: BLOCK_TIMESTAMP
+              
+      - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -26,25 +29,33 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: BLOCK_HEIGHT
+      - name: block_height
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - NUMBER    
+                - FLOAT  
 
-      - name: BRIDGE_CONTRACT
-        description: "{{ doc('bridge_contract') }}"
+      - name: sender
+        description: "{{ doc('sender') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+              - STRING
+              - VARCHAR
 
-      - name: TOKEN_CONTRACT
+      - name: recipient
+        description: "{{ doc('recipient') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR    
+
+      - name: token_contract
         description: "{{ doc('token_contract') }}"
         tests:
           - not_null
@@ -53,48 +64,19 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: AMOUNT
+      - name: amount
         description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - DOUBLE
                 - FLOAT
 
-      - name: FLOW_WALLET_ADDRESS
-        description: "{{ doc('flow_wallet_address') }}"
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: BLOCKCHAIN
-        description: "{{ doc('blockchain') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: DIRECTION
-        description: "{{ doc('direction') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: BRIDGE
-        description: "{{ doc('bridge') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
+                - BOOLEAN

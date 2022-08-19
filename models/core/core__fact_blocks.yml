@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -10,7 +9,7 @@ models:
           where: BLOCK_TIMESTAMP < CURRENT_DATE
 
     columns:
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -20,7 +19,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -31,7 +30,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: network
+      - name: NETWORK
         description: "{{ doc('network') }}"
         tests:
           - not_null
@@ -40,7 +39,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: chain_id
+      - name: CHAIN_ID
         description: "{{ doc('chain_id') }}"
         tests:
           - not_null
@@ -49,7 +48,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: tx_count
+      - name: TX_COUNT
         description: "{{ doc('tx_count') }}"
         tests:
           - not_null
@@ -57,7 +56,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: id
+      - name: ID
         description: "{{ doc('id') }}"
         tests:
           - not_null
@@ -66,7 +65,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: parent_id
+      - name: PARENT_ID
         description: "{{ doc('parent_id') }}"
         tests:
           - not_null

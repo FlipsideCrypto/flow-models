@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -12,7 +11,7 @@ models:
             - contract_name
 
     columns:
-      - name: event_contract
+      - name: EVENT_CONTRACT
         description: "{{ doc('event_contract') }}"
         tests:
           - not_null
@@ -21,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: contract_name
+      - name: CONTRACT_NAME
         description: "{{ doc('contract_name') }}"
         tests:
           - not_null
@@ -30,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: account_address
+      - name: ACCOUNT_ADDRESS
         description: "{{ doc('account_address') }}"
         tests:
           - not_null

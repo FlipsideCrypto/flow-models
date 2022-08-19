@@ -10,7 +10,7 @@ models:
             - nft_id
 
     columns:
-      - name: nft_id
+      - name: NFT_ID
         description: "{{ doc('nft_id') }}"
         tests:
           - not_null
@@ -20,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: nft_collection
+      - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
         tests:
           - not_null
@@ -29,7 +29,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: nbatopshot_id
+      - name: NBATOPSHOT_ID
         description: "{{ doc('nbatopshot_id') }}"
         tests:
           - not_null
@@ -38,7 +38,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: serial_number
+      - name: SERIAL_NUMBER
         description: "{{ doc('serial_number') }}"
         tests:
           - not_null
@@ -46,7 +46,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: total_circulation
+      - name: TOTAL_CIRCULATION
         description: "{{ doc('total_circulation') }}"
         tests:
           - not_null
@@ -54,7 +54,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: moment_description
+      - name: MOMENT_DESCRIPTION
         description: "{{ doc('moment_description') }}"
         tests:
           - not_null
@@ -63,7 +63,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: player
+      - name: PLAYER
         description: "{{ doc('player') }}"
         tests:
           - not_null
@@ -72,7 +72,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: team
+      - name: TEAM
         description: "{{ doc('team') }}"
         tests:
           - not_null
@@ -81,7 +81,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: season
+      - name: SEASON
         description: "{{ doc('season') }}"
         tests:
           - not_null
@@ -90,7 +90,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: play_category
+      - name: PLAY_CATEGORY
         description: "{{ doc('play_category') }}"
         tests:
           - not_null
@@ -99,7 +99,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: play_type
+      - name: PLAY_TYPE
         description: "{{ doc('play_type') }}"
         tests:
           - not_null
@@ -108,7 +108,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: moment_date
+      - name: MOMENT_DATE
         description: "{{ doc('moment_date') }}"
         tests:
           - not_null
@@ -116,7 +116,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: set_name
+      - name: SET_NAME
         description: "{{ doc('set_name') }}"
         tests:
           - not_null
@@ -125,7 +125,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: set_series_number
+      - name: SET_SERIES_NUMBER
         description: "{{ doc('set_series_number') }}"
         tests:
           - not_null
@@ -133,7 +133,7 @@ models:
               column_type_list:
                 - NUMBER
 
-      - name: video_urls
+      - name: VIDEO_URLS
         description: "{{ doc('video_urls') }}"
         tests:
           - not_null
@@ -141,7 +141,7 @@ models:
               column_type_list:
                 - ARRAY
 
-      - name: moment_stats_full
+      - name: MOMENT_STATS_FULL
         description: "{{ doc('moment_stats_full') }}"
         tests:
           - not_null
@@ -150,7 +150,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: player_stats_game
+      - name: PLAYER_STATS_GAME
         description: "{{ doc('player_stats_game') }}"
         tests:
           - not_null
@@ -159,7 +159,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: player_stats_season_to_date
+      - name: PLAYER_STATS_SEASON_TO_DATE
         description: "{{ doc('player_stats_season_to_date') }}"
         tests:
           - not_null
@@ -167,11 +167,3 @@ models:
               column_type_list:
                 - OBJECT
                 - VARIANT
-
-      - name: _inserted_timestamp
-        description: "{{ doc('_inserted_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ

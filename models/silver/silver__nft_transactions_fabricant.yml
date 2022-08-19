@@ -1,16 +1,16 @@
 version: 2
 
 models:
-  - name: core__fact_nft_sales
+  - name: silver__nft_transactions_fabricant
     description: |-
-      NFT market sales on the Flow blockchain.
+      This table filters all NFT sales that interact with the marketplace contract for fabricant.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
 
     columns:
-      - name: TX_ID
+      - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
@@ -20,7 +20,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: BLOCK_HEIGHT
+      - name: block_height
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -29,7 +29,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: BLOCK_TIMESTAMP
+      - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -40,7 +40,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: MARKETPLACE
+      - name: marketplace
         description: "{{ doc('marketplace') }}"
         tests:
           - not_null
@@ -49,7 +49,16 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: NFT_COLLECTION
+      - name: listing_id
+        description: "{{ doc('listing_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: nft_collection
         description: "{{ doc('nft_collection') }}"
         tests:
           - not_null
@@ -58,7 +67,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: NFT_ID
+      - name: nft_id
         description: "{{ doc('nft_id') }}"
         tests:
           - not_null
@@ -68,34 +77,7 @@ models:
                 - VARCHAR
                 - NUMBER
 
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: SELLER
-        description: "{{ doc('seller') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: PRICE
-        description: "{{ doc('price') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: CURRENCY
+      - name: currency
         description: "{{ doc('currency') }}"
         tests:
           - not_null
@@ -104,15 +86,34 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SUCCEEDED
-        description: "{{ doc('tx_succeeded') }}"
+      - name: price
+        description: "{{ doc('price') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - NUMBER
+                - FLOAT
 
-      - name: TOKENFLOW
+      - name: seller
+        description: "{{ doc('seller') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: buyer
+        description: "{{ doc('buyer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: tokenflow
         description: "{{ doc('tokenflow') }}"
         tests:
           - not_null
@@ -122,7 +123,35 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: COUNTERPARTIES
+      - name: num_steps
+        description: "{{ doc('num_steps') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: step_action
+        description: "{{ doc('step_action') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: step_data
+        description: "{{ doc('step_data') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: counterparties
         description: "{{ doc('counterparties') }}"
         tests:
           - not_null
@@ -131,3 +160,27 @@ models:
                 - ARRAY
                 - OBJECT
                 - VARIANT
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

@@ -1,21 +1,30 @@
 version: 2
 
 models:
-  - name: core__fact_bridge_transactions
+  - name: silver__staking_actions
     description: |-
-      This table parses transactions where tokens are bridged to or from the Flow network.
+      This table provides transaction-level info on FLOW staking activities.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - event_index
 
     columns:
-      - name: TX_ID
+      - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
-      - name: BLOCK_TIMESTAMP
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -26,7 +35,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: BLOCK_HEIGHT
+      - name: block_height
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -35,66 +44,55 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: BRIDGE_CONTRACT
-        description: "{{ doc('bridge_contract') }}"
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - BOOLEAN
 
-      - name: TOKEN_CONTRACT
-        description: "{{ doc('token_contract') }}"
+      - name: delegator
+        description: "{{ doc('delegator') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
                 - VARCHAR
+                - STRING
 
-      - name: AMOUNT
+      - name: action
+        description: "{{ doc('action') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: amount
         description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - DOUBLE
                 - FLOAT
+                - DOUBLE
 
-      - name: FLOW_WALLET_ADDRESS
-        description: "{{ doc('flow_wallet_address') }}"
+      - name: node_id
+        description: "{{ doc('node_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
                 - VARCHAR
+                - STRING
 
-      - name: BLOCKCHAIN
-        description: "{{ doc('blockchain') }}"
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: DIRECTION
-        description: "{{ doc('direction') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: BRIDGE
-        description: "{{ doc('bridge') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
+                - TIMESTAMP_NTZ

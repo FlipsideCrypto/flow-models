@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
-    unique_key = 'tx_id'
+    unique_key = 'tx_id',
+    tags = ['nft']
 ) }}
 
 WITH silver_events AS (
@@ -129,7 +130,7 @@ step_data AS (
         event_type,
         event_data
     FROM
-        {{ ref('silver__events_final') }}
+        silver_events
     WHERE
         tx_id IN (
             SELECT
