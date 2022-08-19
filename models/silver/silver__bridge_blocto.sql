@@ -121,7 +121,7 @@ blocto_inbound AS (
     WHERE
         d.rn = 1
 ),
-teleports_out_withdraw AS (
+teleports_out_withdraw_non_fiat AS (
     SELECT
         tx_id,
         event_contract,
@@ -139,6 +139,44 @@ teleports_out_withdraw AS (
                 teleport_direction = 0
         )
         AND event_index = 0
+        AND event_contract != 'A.b19436aae4d94622.FiatToken'
+),
+teleports_out_withdraw_fiat AS (
+    SELECT
+        tx_id,
+        event_contract,
+        event_data :amount :: DOUBLE AS amount_withdraw,
+        event_data :from :: STRING AS from_withdraw
+    FROM
+        events
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                teleport_events
+            WHERE
+                teleport_direction = 0
+        )
+        AND event_index = 1
+        AND event_contract = 'A.b19436aae4d94622.FiatToken'
+),
+teleports_out_withdraw AS (
+    SELECT
+        tx_id,
+        event_contract,
+        amount_withdraw,
+        from_withdraw
+    FROM
+        teleports_out_withdraw_non_fiat
+    UNION
+    SELECT
+        tx_id,
+        event_contract,
+        amount_withdraw,
+        from_withdraw
+    FROM
+        teleports_out_withdraw_fiat
 ),
 teleports_out AS (
     SELECT
@@ -223,32 +261,10 @@ tbl_union AS (
 ),
 tele_labels AS (
     SELECT
-        'A.04ee69443dedf0e4.TeleportCustody' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.0ac14a822e54cc4e.TeleportCustodyBSC' AS teleport_contract,
-        'BSC' AS blockchain
-    UNION
-    SELECT
-        'A.0ac14a822e54cc4e.TeleportCustodySolana' AS teleport_contract,
-        'Solana' AS blockchain
-    UNION
-    SELECT
-        'A.475755d2c9dccc3a.TeleportedSportiumToken' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.bd7e596b12e277df.TeleportCustody' AS teleport_contract,
-        'Ethereum' AS blockchain
-    UNION
-    SELECT
-        'A.c2fa71c36fd5b840.TeleportCustodyBSC' AS teleport_contract,
-        'BSC' AS blockchain
-    UNION
-    SELECT
-        'A.cfdd90d4a00f7b5b.TeleportedTetherToken' AS teleport_contract,
-        'Ethereum' AS blockchain
+        teleport_contract,
+        blockchain
+    FROM
+        {{ ref('seeds__blocto_teleport_labels') }}
 ),
 FINAL AS (
     SELECT
