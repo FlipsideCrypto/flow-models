@@ -25,10 +25,10 @@ sources:
     schema: bronze
     loader: S3
     tables:
-      - name: topshot_moments_minted_metadata_api
-        description: "External table of topshot moments minted metadata"
+      - name: moments_metadata_api
+        description: "External table of dapper labs moments metadata"
         external:
-          location: "@{{target.database}}.bronze.analytics_external_tables/{{target.database}}/MOMENTS_MINTED_METADATA_API"
+          location: "@{{target.database}}.bronze.analytics_external_tables/{{target.database}}/MOMENTS_MINTED_METADATA_API/"
           file_format: "( type = json, strip_outer_array = TRUE )"
           auto_refresh: true
         columns:

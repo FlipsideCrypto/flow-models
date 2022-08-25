@@ -6,7 +6,7 @@ WITH mints AS (
 
     SELECT
         event_contract,
-        event_data :id :: STRING AS nft_id
+        event_data :id :: STRING AS moment_id
     FROM
         {{ ref('silver__events_final') }}
     WHERE
@@ -16,7 +16,7 @@ WITH mints AS (
 sales AS (
     SELECT
         nft_collection AS event_contract,
-        nft_id
+        nft_id as moment_id
     FROM
         {{ ref('silver__nft_sales') }}
     WHERE
@@ -37,5 +37,9 @@ SELECT
     *
 FROM
     all_day_ids
-LIMIT
-    3000
+EXCEPT 
+select 
+    contract as event_contract,
+    id AS moment_id
+from {{ source('flow_external', 'moments_metadata_api')}}
+where contract = 'A.e4cf4bdc1751c65d.AllDay'
