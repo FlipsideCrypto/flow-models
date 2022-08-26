@@ -11,5 +11,5 @@ SELECT
 FROM
     {{ source(
         'flow_external',
-        'topshot_moments_minted_metadata_api'
+        'moments_metadata_api'
     ) }}

@@ -1,6 +1,5 @@
 {{ config(
     materialized = 'view',
-    post_hook = 'call silver.sp_bulk_get_topshot_moments_minted_metadata()'
 ) }}
 
 WITH mints AS (
@@ -47,7 +46,7 @@ SELECT
 FROM
     {{ source(
         'flow_external',
-        'topshot_moments_minted_metadata_api'
+        'moments_metadata_api'
     ) }}
-LIMIT
-    3000
+WHERE
+    contract = 'A.0b2a3299cc857e29.TopShot'
