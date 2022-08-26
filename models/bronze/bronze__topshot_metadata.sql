@@ -13,3 +13,5 @@ FROM
         'flow_external',
         'moments_metadata_api'
     ) }}
+WHERE
+    contract = 'A.0b2a3299cc857e29.TopShot'
