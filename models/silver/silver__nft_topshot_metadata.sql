@@ -10,16 +10,17 @@ WITH metadata AS (
     SELECT
         *
     FROM
-        {{ ref('bronze__topshot_metadata') }}
+        {{ ref('bronze__moments_metadata') }}
+    WHERE
+        contract = 'A.0b2a3299cc857e29.TopShot'
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
 {% endif %}
 
 qualify ROW_NUMBER() over (
