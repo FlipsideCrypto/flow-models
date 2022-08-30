@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    tags = ['ez']
 ) }}
 
 WITH staking_actions AS (

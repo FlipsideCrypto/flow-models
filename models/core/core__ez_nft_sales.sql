@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['nft']
+    tags = ['nft', 'ez']
 ) }}
 
 WITH silver_nfts AS (
