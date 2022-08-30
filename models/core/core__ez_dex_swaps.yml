@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: core__ez_swaps
+  - name: core__ez_dex_swaps
     description: |-
       This ez_ view is the same data table as the prior `fact_swaps` view. This table records asset swaps on the Flow blockchain and currently supports Blocto and Celer.
     tests:
