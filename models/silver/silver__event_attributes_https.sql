@@ -98,6 +98,9 @@ attributes_2 AS (
         event_type,
         VALUE :name :: STRING AS attribute_key,
         COALESCE(
+            VALUE :value :value :fields,
+            VALUE :value :value :staticType,
+            VALUE :value :value :value :value,
             VALUE :value :value :value,
             VALUE :value :value
         ) AS attribute_value,
