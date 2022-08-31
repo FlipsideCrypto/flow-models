@@ -141,7 +141,7 @@ FINAL AS (
         _inserted_timestamp,
         _cte
     FROM
-        attributes
+        combo
 )
 SELECT
     *
