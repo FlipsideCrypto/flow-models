@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: core__fact_swaps
+  - name: core__ez_bridge_transactions
     description: |-
-      This table records asset swaps on the Flow blockchain.
+      This ez_ view is the same data table as the prior `fact_bridge_transactions` view. This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -35,8 +35,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: SWAP_CONTRACT
-        description: "{{ doc('swap_contract') }}"
+      - name: BRIDGE_CONTRACT
+        description: "{{ doc('bridge_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -44,8 +44,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TRADER
-        description: "{{ doc('trader') }}"
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -53,17 +53,18 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TOKEN_OUT_AMOUNT
-        description: "{{ doc('token_out_amount') }}"
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - DOUBLE
                 - FLOAT
 
-      - name: TOKEN_OUT_CONTRACT
-        description: "{{ doc('token_out_contract') }}"
+      - name: FLOW_WALLET_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -71,17 +72,26 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TOKEN_IN_AMOUNT
-        description: "{{ doc('token_in_amount') }}"
+      - name: BLOCKCHAIN
+        description: "{{ doc('blockchain') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER
-                - FLOAT
+                - STRING
+                - VARCHAR
 
-      - name: TOKEN_IN_CONTRACT
-        description: "{{ doc('token_in_contract') }}"
+      - name: DIRECTION
+        description: "{{ doc('direction') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BRIDGE
+        description: "{{ doc('bridge') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
