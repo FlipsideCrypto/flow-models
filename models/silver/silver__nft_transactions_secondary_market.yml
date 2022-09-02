@@ -8,13 +8,15 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - buyer
+            - nft_collection
+            - nft_id
 
     columns:
       - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
-          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
