@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['ez']
+    tags = ['ez', 'bridge']
 ) }}
 
 WITH blocto AS (
