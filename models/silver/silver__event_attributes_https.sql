@@ -23,6 +23,17 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
+event_nulls AS (
+    SELECT
+        *
+    FROM
+        events
+    WHERE
+        COALESCE (
+            _event_data_type :Fields,
+            _event_data_type :fields
+        ) IS NULL
+),
 events_data AS (
     SELECT
         event_id,
@@ -69,12 +80,53 @@ attributes AS (
         ) AS attribute_id,
         INDEX AS attribute_index,
         _ingested_at,
-        _inserted_timestamp
+        _inserted_timestamp,
+        'attributes' AS _cte
     FROM
         events_data,
         LATERAL FLATTEN(
             input => event_data_type_fields
         )
+),
+attributes_2 AS (
+    SELECT
+        event_id,
+        tx_id,
+        block_timestamp,
+        event_index,
+        event_contract,
+        event_type,
+        VALUE :name :: STRING AS attribute_key,
+        COALESCE(
+            VALUE :value :value :fields,
+            VALUE :value :value :staticType,
+            VALUE :value :value :value :value,
+            VALUE :value :value :value,
+            VALUE :value :value
+        ) AS attribute_value,
+        concat_ws(
+            '-',
+            event_id,
+            INDEX
+        ) AS attribute_id,
+        INDEX AS attribute_index,
+        _ingested_at,
+        _inserted_timestamp,
+        'attributes_2' AS _cte
+    FROM
+        event_nulls,
+        LATERAL FLATTEN(_event_data_fields)
+),
+combo AS (
+    SELECT
+        *
+    FROM
+        attributes
+    UNION
+    SELECT
+        *
+    FROM
+        attributes_2
 ),
 FINAL AS (
     SELECT
@@ -89,11 +141,10 @@ FINAL AS (
         attribute_key,
         attribute_value,
         _ingested_at,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _cte
     FROM
-        attributes
-    WHERE
-        attribute_key IS NOT NULL
+        combo
 )
 SELECT
     *
