@@ -8,6 +8,9 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - trader
+            - swap_contract
+            - token_out_amount
 
     columns:
       - name: TX_ID

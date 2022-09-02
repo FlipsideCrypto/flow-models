@@ -31,6 +31,7 @@ gold_nfts AS (
         silver_nfts
     WHERE
         tx_id NOT IN (
+            -- the following txs have no NFT movement via withdraw/deposit
             '8620792f30d607a35eb5a7ffe6ea2a088d448f1b706e8585ca8ae8697655e6fa',
             '489584d6def5e583d79864046e47b37888c935bfad6b2b17ac67be4b04209f55',
             '0934ec1c9bf6c52cbd11e3e4e39154d147af06c95a8bdbc3936839ed19665090',
@@ -40,7 +41,14 @@ gold_nfts AS (
             'f9c0de48de30624b2f42924f69b8e9ef36fb1995ad37921534131b2f28888027',
             '4b98e11f4482231c7d41c921874c2c0dfacdb0b537020e7e4030d683aebbd98a',
             '6dc3a5bb564d1935ccea5213da686d4f367ffb4a21361e0badc841cb84e2d5dc',
-            '614d1018d5e93711f50dbbeb9b779ba3b7e8577e08c34d69c905cef45239c03e'
+            '614d1018d5e93711f50dbbeb9b779ba3b7e8577e08c34d69c905cef45239c03e',
+            'fbc6ef3a9f3e93fcd86f2e528a0eb81fee227ff0a4807668d12d58546ac40848',
+            'c6b93aaa36cf77e6af54ca4690b15e7da85c52adaf71f8227c9bfaf65c13530f',
+            'f5af123b63b166a172da4c31e06c1b70103ebc746d92674cb94df4b0cb84859e',
+            'cca5fb19473b07adaa96a91f73e69de69270a641d910dde10a6933a3af8ac5f3',
+            -- the following are soulmade packs being broken into components
+            '78b723f39760b1601eaa76493d9f687035384271fbcfc47dc4b03cd906ef4b0a',
+            '67150dc5acd70a950b4d46ae45b3507dddc5da15e751e0597cef03159b05d433'
         )
 )
 SELECT

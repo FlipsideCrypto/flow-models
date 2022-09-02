@@ -71,6 +71,42 @@ purchase_data AS (
                 excl_multi_buys
         )
         AND event_index = 0
+        AND event_type = 'TokensWithdrawn'
+),
+purchase_data_2 AS (
+    SELECT
+        tx_id,
+        event_contract AS currency,
+        event_data :amount :: DOUBLE AS amount,
+        event_data :from :: STRING AS buyer_purchase
+    FROM
+        silver_events
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                excl_multi_buys
+        )
+        AND tx_id NOT IN (
+            SELECT
+                tx_id
+            FROM
+                purchase_data
+        )
+        AND event_index = 1
+        AND event_type = 'TokensWithdrawn'
+),
+purchase_data_final AS (
+    SELECT
+        *
+    FROM
+        purchase_data
+    UNION
+    SELECT
+        *
+    FROM
+        purchase_data_2
 ),
 seller_data AS (
     SELECT
@@ -112,7 +148,7 @@ nft_sales AS (
         *
     FROM
         listing_data
-        LEFT JOIN purchase_data USING (tx_id)
+        LEFT JOIN purchase_data_final USING (tx_id)
         LEFT JOIN seller_data USING (tx_id)
         LEFT JOIN deposit_data USING (tx_id)
     WHERE

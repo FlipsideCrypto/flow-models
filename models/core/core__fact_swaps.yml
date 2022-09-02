@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: core__fact_swaps
+    description: |-
+      deprecating soon ! Note: this data model has been renamed `ez_dex_swaps`. Please reconfigure your queries to use that table as this will be decomissioned.
