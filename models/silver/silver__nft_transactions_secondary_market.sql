@@ -88,6 +88,12 @@ purchase_data_2 AS (
             FROM
                 excl_multi_buys
         )
+        AND tx_id NOT IN (
+            SELECT
+                tx_id
+            FROM
+                purchase_data
+        )
         AND event_index = 1
         AND event_type = 'TokensWithdrawn'
 ),
