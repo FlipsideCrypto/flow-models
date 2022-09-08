@@ -55,12 +55,10 @@ excl_multi_buys AS (
     HAVING
         record_count = 1
 ),
-purchase_data AS (
+first_token_withdraw AS (
     SELECT
         tx_id,
-        event_contract AS currency,
-        event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
+        MIN(event_index) AS min_index
     FROM
         silver_events
     WHERE
@@ -70,43 +68,29 @@ purchase_data AS (
             FROM
                 excl_multi_buys
         )
-        AND event_index = 0
         AND event_type = 'TokensWithdrawn'
-),
-purchase_data_2 AS (
-    SELECT
-        tx_id,
-        event_contract AS currency,
-        event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
-    FROM
-        silver_events
-    WHERE
-        tx_id IN (
-            SELECT
-                tx_id
-            FROM
-                excl_multi_buys
-        )
-        AND tx_id NOT IN (
-            SELECT
-                tx_id
-            FROM
-                purchase_data
-        )
-        AND event_index = 1
-        AND event_type = 'TokensWithdrawn'
+    GROUP BY
+        1
 ),
 purchase_data_final AS (
     SELECT
-        *
+        tx_id,
+        event_contract AS currency,
+        event_data :amount :: DOUBLE AS amount,
+        event_data :from :: STRING AS buyer_purchase,
+        min_index
     FROM
-        purchase_data
-    UNION
-    SELECT
-        *
-    FROM
-        purchase_data_2
+        silver_events
+        LEFT JOIN first_token_withdraw USING (tx_id)
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                excl_multi_buys
+        )
+        AND event_index = min_index
+        AND event_type = 'TokensWithdrawn'
 ),
 seller_data AS (
     SELECT
