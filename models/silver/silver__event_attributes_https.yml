@@ -92,15 +92,12 @@ models:
 
       - name: decoded_address
         description: "{{ doc('decoded_address') }}"
-        tests:
 
       - name: attribute_value
         description: "{{ doc('attribute_value') }}"
-        tests:
 
       - name: attribute_value_adj
         description: "{{ doc('attribute_value_adj') }}"
-        tests:
 
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
