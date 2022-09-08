@@ -23,18 +23,68 @@ WHERE
     )
 {% endif %}
 ),
-listing_data AS (
+-- each market uses a slightly different sale trigger
+fabricant_nft_purchased AS (
     SELECT
         tx_id,
         block_timestamp,
         block_height,
         tx_succeeded,
-        event_index AS event_index_listing,
-        event_contract AS event_contract_listing,
-        event_data AS event_data_listing,
-        event_data :nftID :: STRING AS nft_id_listing,
-        event_data :nftType :: STRING AS nft_collection_listing,
-        event_data :purchased :: BOOLEAN AS purchased_listing,
+        event_contract AS marketplace,
+        event_data,
+        TRUE AS is_purchased,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        silver_events
+    WHERE
+        event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
+        AND event_type = 'NFTPurchased'
+),
+matrix_offers_complete AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_contract AS marketplace,
+        event_data,
+        event_data :purchased :: BOOLEAN AS is_purchased,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        silver_events
+    WHERE
+        event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
+        AND event_type = 'OfferCompleted'
+        AND is_purchased
+),
+olympic_purchases AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_contract AS marketplace,
+        event_data,
+        TRUE AS is_purchased,
+        _ingested_at,
+        _inserted_timestamp
+    FROM
+        silver_events
+    WHERE
+        event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
+        AND event_type = 'PiecePurchased'
+),
+storefront_v1_listing_complete AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_contract AS marketplace,
+        event_data,
+        event_data :purchased :: BOOLEAN AS is_purchased,
         _ingested_at,
         _inserted_timestamp
     FROM
@@ -42,14 +92,35 @@ listing_data AS (
     WHERE
         event_type = 'ListingCompleted'
         AND event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
-        AND purchased_listing = TRUE
+        AND is_purchased
+),
+execution_event AS (
+    SELECT
+        *
+    FROM
+        fabricant_nft_purchased
+    UNION
+    SELECT
+        *
+    FROM
+        matrix_offers_complete
+    UNION
+    SELECT
+        *
+    FROM
+        olympic_purchases
+    UNION
+    SELECT
+        *
+    FROM
+        storefront_v1_listing_complete
 ),
 excl_multi_buys AS (
     SELECT
         tx_id,
         COUNT(1) AS record_count
     FROM
-        listing_data
+        execution_event
     GROUP BY
         1
     HAVING
@@ -72,7 +143,7 @@ first_token_withdraw AS (
     GROUP BY
         1
 ),
-purchase_data_final AS (
+token_withdraw_event AS (
     SELECT
         tx_id,
         event_contract AS currency,
@@ -92,7 +163,7 @@ purchase_data_final AS (
         AND event_index = min_index
         AND event_type = 'TokensWithdrawn'
 ),
-seller_data AS (
+nft_withdraw_event_seller AS (
     SELECT
         tx_id,
         event_index AS event_index_seller,
@@ -110,7 +181,7 @@ seller_data AS (
         )
         AND event_type = 'Withdraw'
 ),
-deposit_data AS (
+nft_deposit_event_buyer AS (
     SELECT
         tx_id,
         event_contract AS nft_collection_deposit,
@@ -129,12 +200,28 @@ deposit_data AS (
 ),
 nft_sales AS (
     SELECT
-        *
+        e.tx_id,
+        e.block_timestamp,
+        e.block_height,
+        e.tx_succeeded,
+        e.is_purchased,
+        e.marketplace,
+        w.currency,
+        w.amount,
+        w.buyer_purchase,
+        s.nft_collection_seller,
+        s.seller,
+        s.nft_id_seller,
+        b.nft_collection_deposit,
+        b.nft_id_deposit,
+        b.buyer_deposit,
+        e._ingested_at,
+        e._inserted_timestamp
     FROM
-        listing_data
-        LEFT JOIN purchase_data_final USING (tx_id)
-        LEFT JOIN seller_data USING (tx_id)
-        LEFT JOIN deposit_data USING (tx_id)
+        execution_event e
+        LEFT JOIN token_withdraw_event w USING (tx_id)
+        LEFT JOIN nft_withdraw_event_seller s USING (tx_id)
+        LEFT JOIN nft_deposit_event_buyer b USING (tx_id)
     WHERE
         tx_id IN (
             SELECT
@@ -161,7 +248,8 @@ step_data AS (
         AND event_type IN (
             'TokensWithdrawn',
             'TokensDeposited',
-            'ForwardedDeposit'
+            'ForwardedDeposit',
+            'RoyaltyDeposited'
         )
 ),
 counterparty_data AS (
@@ -194,12 +282,9 @@ FINAL AS (
         ns.tx_id,
         block_timestamp,
         block_height,
-        event_contract_listing AS marketplace,
-        event_data_listing,
+        marketplace,
         nft_collection_seller AS nft_collection,
-        event_data_listing :storefrontResourceID :: NUMBER AS storefront_id,
-        event_data_listing :listingResourceID :: NUMBER AS listing_id,
-        nft_id_listing AS nft_id,
+        nft_id_seller AS nft_id,
         currency,
         amount AS price,
         seller,
