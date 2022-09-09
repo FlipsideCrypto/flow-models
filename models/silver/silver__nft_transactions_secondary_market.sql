@@ -13,8 +13,8 @@ WITH silver_events AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        -- temp
-        event_data :: STRING != '{}'
+        _inserted_timestamp :: DATE BETWEEN '2022-06-01'
+        AND '2022-07-31'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -42,35 +42,37 @@ sale_trigger AS (
     FROM
         silver_events
     WHERE
-        -- each market uses a slightly different sale trigger
+        is_purchased
+        AND -- each market uses a slightly different sale trigger
         (
-            event_contract = 'A.64f83c60989ce555.ChainmonstersMarketplace'
-            AND event_type = 'CollectionRemovedSaleOffer'
-        )
-        OR (
-            event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
-            AND event_type = 'NFTPurchased'
-        )
-        OR (
-            event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
-            AND event_type = 'OfferCompleted'
-        )
-        OR (
-            event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
-            AND event_type = 'PiecePurchased'
-        )
-        OR (
-            event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
-            AND event_type = 'ListingCompleted'
-        )
-        OR (
-            event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
-            AND event_type IN (
-                'FlovatarPurchased',
-                'FlovatarComponentPurchased'
+            (
+                event_contract = 'A.64f83c60989ce555.ChainmonstersMarketplace'
+                AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
+                AND event_type = 'NFTPurchased'
+            )
+            OR (
+                event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
+                AND event_type = 'OfferCompleted'
+            )
+            OR (
+                event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
+                AND event_type = 'PiecePurchased'
+            )
+            OR (
+                event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
+                AND event_type IN (
+                    'FlovatarPurchased',
+                    'FlovatarComponentPurchased'
+                )
             )
         )
-        AND is_purchased
 ),
 excl_multi_buys AS (
     SELECT
@@ -83,6 +85,34 @@ excl_multi_buys AS (
     HAVING
         record_count = 1
 ),
+omit_nft_nontransfers AS (
+    SELECT
+        tx_id,
+        ARRAY_AGG(
+            DISTINCT event_type
+        ) AS tot_events,
+        ARRAY_SIZE(
+            array_intersection(
+                ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
+                tot_events
+            )
+        ) > 0 AS nft_transferred -- TODO is 0 the correct check or should it be = 2 ?? ... rn this can be replaced with ARRAYS_OVERLAP if all we care about is a single event
+        -- but, presumably, i want existance of 2 (or more, pending below)
+        -- multi-buys are excluded where there are multiple listings completed (in the above CTE)
+        -- but what if 1 listing results in many NFTs being sold?
+        -- that is happening with some nba topshot events so take a look at those next
+    FROM
+        silver_events
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                excl_multi_buys
+        )
+    GROUP BY
+        1
+),
 first_token_withdraw AS (
     SELECT
         tx_id,
@@ -94,7 +124,9 @@ first_token_withdraw AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_type = 'TokensWithdrawn'
     GROUP BY
@@ -116,7 +148,9 @@ token_withdraw_event AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_index = min_index
         AND event_type = 'TokensWithdrawn'
@@ -126,8 +160,14 @@ nft_withdraw_event_seller AS (
         tx_id,
         event_index AS event_index_seller,
         event_contract AS nft_collection_seller,
-        event_data :from :: STRING AS seller,
-        event_data :id :: STRING AS nft_id_seller
+        COALESCE(
+            event_data :from,
+            event_data :address
+        ) :: STRING AS seller,
+        COALESCE(
+            event_data :id,
+            event_data :tokenId
+        ) :: STRING AS nft_id_seller
     FROM
         silver_events
     WHERE
@@ -135,12 +175,14 @@ nft_withdraw_event_seller AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_type IN (
             'Withdraw',
             'FlovatarSaleWithdrawn',
-            'FlovatarComponentSaleWithdrawn'
+            'FlovatarComponentSaleWithdrawn' -- if adding anything new, don't forget about omit_nft_nontransfers check!
         )
 ),
 nft_deposit_event_buyer AS (
@@ -156,7 +198,9 @@ nft_deposit_event_buyer AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_type = 'Deposit'
 ),
@@ -189,7 +233,9 @@ nft_sales AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
 ),
 step_data AS (
