@@ -13,8 +13,8 @@ WITH silver_events AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        _inserted_timestamp :: DATE BETWEEN '2022-06-01'
-        AND '2022-07-31'
+        -- TODO remove this filter, it's for testing only
+        _inserted_timestamp :: DATE <= '2022-09-01'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -96,11 +96,10 @@ omit_nft_nontransfers AS (
                 ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
                 tot_events
             )
-        ) > 0 AS nft_transferred -- TODO is 0 the correct check or should it be = 2 ?? ... rn this can be replaced with ARRAYS_OVERLAP if all we care about is a single event
-        -- but, presumably, i want existance of 2 (or more, pending below)
-        -- multi-buys are excluded where there are multiple listings completed (in the above CTE)
-        -- but what if 1 listing results in many NFTs being sold?
-        -- that is happening with some nba topshot events so take a look at those next
+        ) = 2 AS nft_transferred,
+        count_if(
+            event_type = 'Deposit'
+        ) AS nft_deposits
     FROM
         silver_events
     WHERE
@@ -112,6 +111,8 @@ omit_nft_nontransfers AS (
         )
     GROUP BY
         1
+    HAVING
+        nft_deposits = 1
 ),
 first_token_withdraw AS (
     SELECT
