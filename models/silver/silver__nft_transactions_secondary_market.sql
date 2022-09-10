@@ -12,17 +12,15 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
-    WHERE
-        -- TODO remove this filter, it's for testing only
-        _inserted_timestamp :: DATE <= '2022-09-01'
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 sale_trigger AS (
@@ -50,6 +48,13 @@ sale_trigger AS (
                 AND event_type = 'CollectionRemovedSaleOffer'
             )
             OR (
+                event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
+                AND event_type IN (
+                    'FlovatarPurchased',
+                    'FlovatarComponentPurchased'
+                )
+            )
+            OR (
                 event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
                 AND event_type = 'NFTPurchased'
             )
@@ -58,19 +63,16 @@ sale_trigger AS (
                 AND event_type = 'OfferCompleted'
             )
             OR (
-                event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
-                AND event_type = 'PiecePurchased'
-            )
-            OR (
                 event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
                 AND event_type = 'ListingCompleted'
             )
             OR (
-                event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
-                AND event_type IN (
-                    'FlovatarPurchased',
-                    'FlovatarComponentPurchased'
-                )
+                event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
+                AND event_type = 'PiecePurchased'
+            )
+            OR (
+                event_contract = 'A.5b82f21c0edf76e3.StarlyCardMarket'
+                AND event_type = 'CollectionRemovedSaleOffer'
             )
         )
 ),
@@ -90,11 +92,11 @@ omit_nft_nontransfers AS (
         tx_id,
         ARRAY_AGG(
             DISTINCT event_type
-        ) AS tot_events,
+        ) AS events,
         ARRAY_SIZE(
             array_intersection(
                 ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
-                tot_events
+                events
             )
         ) = 2 AS nft_transferred,
         count_if(
