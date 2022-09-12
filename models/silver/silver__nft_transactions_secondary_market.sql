@@ -12,15 +12,16 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
+    WHERE
+        event_data :: STRING != '{}'
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 sale_trigger AS (
