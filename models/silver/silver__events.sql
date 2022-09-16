@@ -35,7 +35,7 @@ events AS (
     SPLIT(
       IFF(
         VALUE :type = 'Event',
-        VALUE :qualifiedIdentifier,
+        VALUE :eventType :qualifiedIdentifier,
         VALUE :type
       ),
       '.'
