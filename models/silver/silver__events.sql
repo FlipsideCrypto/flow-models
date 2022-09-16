@@ -33,7 +33,11 @@ events AS (
       VALUE :eventIndex
     ) :: NUMBER AS event_index,
     SPLIT(
-      VALUE :type,
+      IFF(
+        VALUE :type = 'Event',
+        VALUE :qualifiedIdentifier,
+        VALUE :type
+      ),
       '.'
     ) AS type_split,
     ARRAY_TO_STRING(
