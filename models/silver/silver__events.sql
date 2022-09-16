@@ -33,8 +33,7 @@ events AS (
       VALUE :eventIndex
     ) :: NUMBER AS event_index,
     SPLIT(
-      IFF(
-        VALUE :type = 'Event',
+      COALESCE(
         VALUE :eventType :qualifiedIdentifier,
         VALUE :type
       ),
