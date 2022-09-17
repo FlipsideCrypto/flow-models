@@ -18,3 +18,5 @@ FROM
         'prod',
         'flow_blocks'
     ) }}
+WHERE
+    _inserted_timestamp :: DATE >= '2022-05-01'
