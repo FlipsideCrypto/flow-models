@@ -24,6 +24,7 @@ WHERE
 ),
 events AS (
   SELECT
+    VALUE,
     tx_id,
     block_timestamp,
     block_height,
@@ -32,9 +33,22 @@ events AS (
       VALUE :event_index,
       VALUE :eventIndex
     ) :: NUMBER AS event_index,
+    VALUE :value :: variant AS event_data,
+    COALESCE(
+      VALUE :value :EventType,
+      VALUE :value :eventType
+    ) :: variant AS event_data_type,
+    COALESCE(
+      VALUE :value :Fields,
+      VALUE :value :fields
+    ) :: variant AS event_data_fields,
     SPLIT(
-      COALESCE(
-        VALUE :eventType :qualifiedIdentifier,
+      IFF(
+        (
+          event_data_type :qualifiedIdentifier LIKE 'A.%'
+          OR event_data_type :qualifiedIdentifier LIKE 'flow%'
+        ),
+        event_data_type :qualifiedIdentifier,
         VALUE :type
       ),
       '.'
@@ -43,15 +57,6 @@ events AS (
       ARRAY_SLICE(type_split, 0, ARRAY_SIZE(type_split) -1),
       '.') AS event_contract,
       type_split [array_size(type_split)-1] :: STRING AS event_type,
-      VALUE :value :: variant AS event_data,
-      COALESCE(
-        VALUE :value :EventType,
-        VALUE :value :eventType
-      ) :: variant AS event_data_type,
-      COALESCE(
-        VALUE :value :Fields,
-        VALUE :value :fields
-      ) :: variant AS event_data_fields,
       concat_ws(
         '-',
         tx_id,
@@ -64,6 +69,8 @@ events AS (
         LATERAL FLATTEN(
           input => transaction_result :events
         )
+      WHERE
+        VALUE :: STRING != 'null'
     ),
     FINAL AS (
       SELECT
