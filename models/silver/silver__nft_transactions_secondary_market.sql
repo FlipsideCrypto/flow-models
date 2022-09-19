@@ -12,55 +12,97 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
+    WHERE
+        event_data :: STRING != '{}'
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
-listing_data AS (
+sale_trigger AS (
     SELECT
         tx_id,
         block_timestamp,
         block_height,
         tx_succeeded,
-        event_index AS event_index_listing,
-        event_contract AS event_contract_listing,
-        event_data AS event_data_listing,
-        event_data :nftID :: STRING AS nft_id_listing,
-        event_data :nftType :: STRING AS nft_collection_listing,
-        event_data :purchased :: BOOLEAN AS purchased_listing,
+        event_contract AS marketplace,
+        event_data,
+        COALESCE(
+            event_data :purchased :: BOOLEAN,
+            TRUE
+        ) AS is_purchased,
         _ingested_at,
         _inserted_timestamp
     FROM
         silver_events
     WHERE
-        event_type = 'ListingCompleted'
-        AND event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
-        AND purchased_listing = TRUE
+        is_purchased
+        AND -- each market uses a slightly different sale trigger
+        (
+            (
+                event_contract = 'A.64f83c60989ce555.ChainmonstersMarketplace'
+                AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
+                AND event_type IN (
+                    'FlovatarPurchased',
+                    'FlovatarComponentPurchased'
+                )
+            )
+            OR (
+                event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
+                AND event_type = 'NFTPurchased'
+            )
+            OR (
+                event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
+                AND event_type = 'OfferCompleted'
+            )
+            OR (
+                event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
+                AND event_type = 'PiecePurchased'
+            )
+            OR (
+                event_contract = 'A.5b82f21c0edf76e3.StarlyCardMarket'
+                AND event_type = 'CollectionRemovedSaleOffer'
+            )
+        )
 ),
 excl_multi_buys AS (
     SELECT
         tx_id,
         COUNT(1) AS record_count
     FROM
-        listing_data
+        sale_trigger
     GROUP BY
         1
     HAVING
         record_count = 1
 ),
-purchase_data AS (
+omit_nft_nontransfers AS (
     SELECT
         tx_id,
-        event_contract AS currency,
-        event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
+        ARRAY_AGG(
+            DISTINCT event_type
+        ) AS events,
+        ARRAY_SIZE(
+            array_intersection(
+                ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
+                events
+            )
+        ) = 2 AS nft_transferred,
+        count_if(
+            event_type = 'Deposit'
+        ) AS nft_deposits
     FROM
         silver_events
     WHERE
@@ -70,15 +112,15 @@ purchase_data AS (
             FROM
                 excl_multi_buys
         )
-        AND event_index = 0
-        AND event_type = 'TokensWithdrawn'
+    GROUP BY
+        1
+    HAVING
+        nft_deposits = 1
 ),
-purchase_data_2 AS (
+first_token_withdraw AS (
     SELECT
         tx_id,
-        event_contract AS currency,
-        event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
+        MIN(event_index) AS min_index
     FROM
         silver_events
     WHERE
@@ -86,35 +128,50 @@ purchase_data_2 AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND tx_id NOT IN (
+        AND event_type = 'TokensWithdrawn'
+    GROUP BY
+        1
+),
+-- 3 most important events are the first TokenWithdraw, then Withdraw and Deposit (NFT movement)
+token_withdraw_event AS (
+    SELECT
+        tx_id,
+        event_contract AS currency,
+        event_data :amount :: DOUBLE AS amount,
+        event_data :from :: STRING AS buyer_purchase,
+        min_index
+    FROM
+        silver_events
+        LEFT JOIN first_token_withdraw USING (tx_id)
+    WHERE
+        tx_id IN (
             SELECT
                 tx_id
             FROM
-                purchase_data
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND event_index = 1
+        AND event_index = min_index
         AND event_type = 'TokensWithdrawn'
 ),
-purchase_data_final AS (
-    SELECT
-        *
-    FROM
-        purchase_data
-    UNION
-    SELECT
-        *
-    FROM
-        purchase_data_2
-),
-seller_data AS (
+nft_withdraw_event_seller AS (
     SELECT
         tx_id,
         event_index AS event_index_seller,
         event_contract AS nft_collection_seller,
-        event_data :from :: STRING AS seller,
-        event_data :id :: STRING AS nft_id_seller
+        COALESCE(
+            event_data :from,
+            event_data :address
+        ) :: STRING AS seller,
+        COALESCE(
+            event_data :id,
+            event_data :tokenId
+        ) :: STRING AS nft_id_seller
     FROM
         silver_events
     WHERE
@@ -122,11 +179,17 @@ seller_data AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND event_type = 'Withdraw'
+        AND event_type IN (
+            'Withdraw',
+            'FlovatarSaleWithdrawn',
+            'FlovatarComponentSaleWithdrawn' -- if adding anything new, don't forget about omit_nft_nontransfers check!
+        )
 ),
-deposit_data AS (
+nft_deposit_event_buyer AS (
     SELECT
         tx_id,
         event_contract AS nft_collection_deposit,
@@ -139,24 +202,44 @@ deposit_data AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_type = 'Deposit'
 ),
 nft_sales AS (
     SELECT
-        *
+        e.tx_id,
+        e.block_timestamp,
+        e.block_height,
+        e.tx_succeeded,
+        e.is_purchased,
+        e.marketplace,
+        w.currency,
+        w.amount,
+        w.buyer_purchase,
+        s.nft_collection_seller,
+        s.seller,
+        s.nft_id_seller,
+        b.nft_collection_deposit,
+        b.nft_id_deposit,
+        b.buyer_deposit,
+        e._ingested_at,
+        e._inserted_timestamp
     FROM
-        listing_data
-        LEFT JOIN purchase_data_final USING (tx_id)
-        LEFT JOIN seller_data USING (tx_id)
-        LEFT JOIN deposit_data USING (tx_id)
+        sale_trigger e
+        LEFT JOIN token_withdraw_event w USING (tx_id)
+        LEFT JOIN nft_withdraw_event_seller s USING (tx_id)
+        LEFT JOIN nft_deposit_event_buyer b USING (tx_id)
     WHERE
         tx_id IN (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
 ),
 step_data AS (
@@ -177,7 +260,8 @@ step_data AS (
         AND event_type IN (
             'TokensWithdrawn',
             'TokensDeposited',
-            'ForwardedDeposit'
+            'ForwardedDeposit',
+            'RoyaltyDeposited'
         )
 ),
 counterparty_data AS (
@@ -210,12 +294,9 @@ FINAL AS (
         ns.tx_id,
         block_timestamp,
         block_height,
-        event_contract_listing AS marketplace,
-        event_data_listing,
-        nft_collection_seller AS nft_collection,
-        event_data_listing :storefrontResourceID :: NUMBER AS storefront_id,
-        event_data_listing :listingResourceID :: NUMBER AS listing_id,
-        nft_id_listing AS nft_id,
+        marketplace,
+        nft_collection_deposit AS nft_collection,
+        nft_id_seller AS nft_id,
         currency,
         amount AS price,
         seller,
