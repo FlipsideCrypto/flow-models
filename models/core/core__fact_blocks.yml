@@ -39,6 +39,15 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: NETWORK_VERSION
+        description: "{{ doc('network_version') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: CHAIN_ID
         description: "{{ doc('chain_id') }}"
         tests:

@@ -16,6 +16,7 @@ gold_blocks AS (
         block_height,
         block_timestamp,
         network,
+        network_version,
         chain_id,
         tx_count,
         id,
