@@ -49,8 +49,36 @@ silver_blocks AS (
     _inserted_timestamp
   FROM
     bronze_blocks
+),
+network_version AS (
+  SELECT
+    root_height,
+    network_version,
+    COALESCE(LAG(root_height) over (
+  ORDER BY
+    network_version DESC) - 1, 'inf' :: FLOAT) AS end_height
+  FROM
+    {{ ref('seeds__network_version') }}
+),
+add_version AS (
+  SELECT
+    block_height,
+    block_timestamp,
+    network,
+    v.network_version,
+    chain_id,
+    tx_count,
+    id,
+    parent_id,
+    _ingested_at,
+    _inserted_timestamp
+  FROM
+    silver_blocks b
+    LEFT JOIN network_version v
+    ON b.block_height BETWEEN v.root_height
+    AND v.end_height
 )
 SELECT
   *
 FROM
-  silver_blocks
+  add_version
