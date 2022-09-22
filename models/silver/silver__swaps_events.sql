@@ -20,7 +20,8 @@ swaps_txs AS (
   FROM
     {{ ref('silver__events_final') }}
   WHERE
-    event_contract IN (
+    event_data :: STRING != '{}'
+    AND event_contract IN (
       SELECT
         event_contract
       FROM
@@ -42,7 +43,8 @@ swap_events AS (
   FROM
     {{ ref('silver__events_final') }}
   WHERE
-    tx_id IN (
+    event_data :: STRING != '{}'
+    AND tx_id IN (
       SELECT
         tx_id
       FROM
