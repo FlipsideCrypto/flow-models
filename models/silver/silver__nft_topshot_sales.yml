@@ -4,12 +4,6 @@ models:
   - name: silver__nft_topshot_sales
     description: |-
       TopShot direct market sales on the Flow blockchain.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_id
-            - buyer
-            - nft_id
 
     columns:
       - name: tx_id

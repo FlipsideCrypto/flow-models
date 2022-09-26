@@ -21,7 +21,10 @@ prices AS (
     SELECT
         recorded_at,
         asset_id,
-        NAME AS token,
+        COALESCE(
+            NAME,
+            INITCAP(SPLIT(asset_id, '-') [0])
+        ) AS token,
         SPLIT(
             symbol,
             '$'
@@ -41,7 +44,15 @@ adj_token_names AS (
             WHEN token = 'Blocto Token' THEN 'Blocto'
             ELSE token
         END AS token,
-        symbol,
+        COALESCE(
+            symbol,
+            CASE
+                WHEN token = 'Flow' THEN 'FLOW'
+                WHEN token = 'Blocto' THEN 'BLT'
+                WHEN token = 'Starly' THEN 'STARLY'
+                ELSE 'Error'
+            END
+        ) AS symbol,
         price,
         source
     FROM
