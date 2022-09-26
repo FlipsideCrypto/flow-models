@@ -9,8 +9,6 @@ WITH silver_nfts AS (
         *
     FROM
         {{ ref('silver__nft_sales') }}
-    WHERE
-        block_timestamp >= '2022-04-20'
 ),
 gold_nfts AS (
     SELECT

@@ -15,8 +15,4 @@ SELECT
 FROM
     {{ ref('silver__token_transfers') }}
 WHERE
-    block_timestamp :: DATE >= '2022-04-20'
-    AND (
-        token_contract = 'A.c38aea683c0c4d38.ZelosAccountingToken'
-        AND recipient IS NOT NULL
-    )
+    token_contract != 'A.c38aea683c0c4d38.ZelosAccountingToken'

@@ -12,6 +12,8 @@ WITH events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
+        -- WHERE
+        --     event_data :: STRING != '{}'
 
 {% if is_incremental() %}
 WHERE
