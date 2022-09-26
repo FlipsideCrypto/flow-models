@@ -92,7 +92,11 @@ objs AS (
         event_id,
         OBJECT_AGG(
             attribute_key,
-            attribute_value :: variant
+            IFF(
+                attribute_value IS NULL,
+                'null',
+                attribute_value
+            ) :: variant
         ) AS event_data
     FROM
         all_event_attributes

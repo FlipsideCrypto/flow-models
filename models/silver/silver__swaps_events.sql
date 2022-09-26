@@ -43,13 +43,13 @@ swap_events AS (
   FROM
     {{ ref('silver__events_final') }}
   WHERE
-    event_data :: STRING != '{}'
-    AND tx_id IN (
+    tx_id IN (
       SELECT
         tx_id
       FROM
         swaps_txs
     )
+    AND event_data :: STRING != '{}'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

@@ -23,16 +23,13 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
-event_nulls AS (
+payload_method AS (
     SELECT
         *
     FROM
         events
     WHERE
-        COALESCE (
-            _event_data_type :Fields,
-            _event_data_type :fields
-        ) IS NULL
+        _try_parse_payload IS NOT NULL
 ),
 events_data AS (
     SELECT
@@ -52,6 +49,8 @@ events_data AS (
         _inserted_timestamp
     FROM
         events
+    WHERE
+        _try_parse_payload IS NULL
 ),
 attributes AS (
     SELECT
@@ -103,7 +102,7 @@ attributes_2 AS (
             VALUE :value :value :value :value,
             VALUE :value :value :value,
             VALUE :value :value
-        ) AS attribute_value,
+        ) :: STRING AS attribute_value,
         concat_ws(
             '-',
             event_id,
@@ -114,8 +113,10 @@ attributes_2 AS (
         _inserted_timestamp,
         'attributes_2' AS _cte
     FROM
-        event_nulls,
-        LATERAL FLATTEN(_event_data_fields)
+        payload_method,
+        LATERAL FLATTEN(
+            _try_parse_payload :value :fields
+        )
 ),
 combo AS (
     SELECT

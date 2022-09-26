@@ -75,7 +75,6 @@ models:
       - name: authorizers
         description: "{{ doc('authorizers') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -83,7 +82,6 @@ models:
       - name: count_authorizers
         description: "{{ doc('count_authorizers') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER

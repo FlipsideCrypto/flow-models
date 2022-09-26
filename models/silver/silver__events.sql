@@ -62,6 +62,7 @@ events AS (
         tx_id,
         event_index
       ) AS event_id,
+      TRY_PARSE_JSON(BASE64_DECODE_STRING(VALUE :payload)) AS try_parse_payload,
       _ingested_at,
       _inserted_timestamp
       FROM
@@ -85,6 +86,7 @@ events AS (
         event_data,
         event_data_type AS _event_data_type,
         event_data_fields AS _event_data_fields,
+        try_parse_payload AS _try_parse_payload,
         _ingested_at,
         _inserted_timestamp
       FROM

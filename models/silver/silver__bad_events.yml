@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: silver__bad_events
+    description: Tracks erroneous events.
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          max_value: 1
