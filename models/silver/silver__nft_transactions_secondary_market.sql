@@ -12,8 +12,6 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
-        -- WHERE
-        --     event_data :: STRING != '{}'
 
 {% if is_incremental() %}
 WHERE
@@ -36,6 +34,12 @@ sale_trigger AS (
         COALESCE(
             event_data :purchased :: BOOLEAN,
             event_data :accepted :: BOOLEAN,
+            IFF(
+                event_data :status = 'sold'
+                OR event_data :status IS NULL,
+                TRUE,
+                FALSE
+            ),
             TRUE
         ) AS is_purchased,
         _ingested_at,
@@ -80,23 +84,14 @@ sale_trigger AS (
             OR (
                 event_contract = 'A.097bafa4e0b48eef.FindMarketAuctionEscrow'
                 AND event_type = 'EnglishAuction'
-                AND LOWER(
-                    event_data :status :: STRING
-                ) = 'sold'
             )
             OR (
                 event_contract = 'A.097bafa4e0b48eef.FindMarketDirectOfferEscrow'
                 AND event_type = 'DirectOffer'
-                AND LOWER(
-                    event_data :status :: STRING
-                ) = 'sold'
             )
             OR (
                 event_contract = 'A.097bafa4e0b48eef.FindMarketSale'
                 AND event_type = 'Sale'
-                AND LOWER(
-                    event_data :status :: STRING
-                ) = 'sold'
             )
             OR (
                 event_contract = 'A.abda6627c70c7f52.GeniaceMarketplace'
@@ -169,6 +164,7 @@ omit_nft_nontransfers AS (
         ARRAY_AGG(
             DISTINCT event_type
         ) AS events,
+        -- don't forget to update below if adding any new movement method !
         ARRAY_SIZE(
             array_intersection(
                 ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
