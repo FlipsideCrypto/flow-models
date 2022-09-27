@@ -12,8 +12,6 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__events_final') }}
-        -- WHERE
-        --     event_data :: STRING != '{}'
 
 {% if is_incremental() %}
 WHERE
@@ -35,6 +33,13 @@ sale_trigger AS (
         event_data,
         COALESCE(
             event_data :purchased :: BOOLEAN,
+            event_data :accepted :: BOOLEAN,
+            IFF(
+                event_data :status = 'sold'
+                OR event_data :status IS NULL,
+                TRUE,
+                FALSE
+            ),
             TRUE
         ) AS is_purchased,
         _ingested_at,
@@ -46,8 +51,24 @@ sale_trigger AS (
         AND -- each market uses a slightly different sale trigger
         (
             (
+                event_contract = 'A.8f9231920da9af6d.AFLPack'
+                AND event_type = 'PackBought'
+            )
+            OR (
+                event_contract = 'A.e2e1689b53e92a82.AniqueMarket'
+                AND event_type = 'CollectiblePurchased'
+            )
+            OR (
+                event_contract = 'A.9969d64233d69723.BlockleteMarket_NFT_V2'
+                AND event_type = 'BlockletePurchased'
+            )
+            OR (
                 event_contract = 'A.64f83c60989ce555.ChainmonstersMarketplace'
                 AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.c8c340cebd11f690.DarkCountryMarket'
+                AND event_type = 'SaleOfferAccepted'
             )
             OR (
                 event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
@@ -61,12 +82,56 @@ sale_trigger AS (
                 AND event_type = 'NFTPurchased'
             )
             OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketAuctionEscrow'
+                AND event_type = 'EnglishAuction'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketDirectOfferEscrow'
+                AND event_type = 'DirectOffer'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketSale'
+                AND event_type = 'Sale'
+            )
+            OR (
+                event_contract = 'A.abda6627c70c7f52.GeniaceMarketplace'
+                AND event_type = 'SaleOfferCompleted'
+            )
+            OR (
+                event_contract = 'A.82ed1b9cba5bb1b3.KaratNFTMarket'
+                AND event_type = 'SaleOfferAccepted'
+            )
+            OR (
                 event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
                 AND event_type = 'OfferCompleted'
             )
             OR (
+                event_contract = 'A.49b8e5d4d66ae880.MintStoreMarketFactory'
+                AND event_type = 'MintStoreItemPurchased'
+            )
+            OR (
+                event_contract = 'A.a49cc0ee46c54bfb.MotoGPNFTStorefront'
+                AND event_type = 'SaleOfferCompleted'
+            )
+            OR (
+                event_contract = 'A.856bd81e73e6752b.PonsNftMarketContract'
+                AND event_type = 'PonsNFTSold'
+            )
+            OR (
+                event_contract = 'A.52cbea4e6f616b8e.PublishedNFTStorefront'
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.489fcc527edc21cf.TuneGOMarket'
+                AND event_type = 'SaleOfferAccepted'
+            )
+            OR (
                 event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
                 AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.85b8bbf926dcddfa.NFTStoreFront'
+                AND event_type = 'ListingSold'
             )
             OR (
                 event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
@@ -75,6 +140,10 @@ sale_trigger AS (
             OR (
                 event_contract = 'A.5b82f21c0edf76e3.StarlyCardMarket'
                 AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.62b3063fbe672fc8.ZeedzMarketplace'
+                AND event_type = 'RemovedListing'
             )
         )
 ),
@@ -95,6 +164,7 @@ omit_nft_nontransfers AS (
         ARRAY_AGG(
             DISTINCT event_type
         ) AS events,
+        -- don't forget to update below if adding any new movement method !
         ARRAY_SIZE(
             array_intersection(
                 ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
