@@ -82,6 +82,7 @@ sale_trigger AS (
                 AND event_type = 'NFTPurchased'
             )
             OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketAuctionEscrow'
                 AND event_type = 'EnglishAuction'
             )
             OR (
