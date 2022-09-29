@@ -82,7 +82,6 @@ sale_trigger AS (
                 AND event_type = 'NFTPurchased'
             )
             OR (
-                event_contract = 'A.097bafa4e0b48eef.FindMarketAuctionEscrow'
                 AND event_type = 'EnglishAuction'
             )
             OR (
@@ -92,6 +91,10 @@ sale_trigger AS (
             OR (
                 event_contract = 'A.097bafa4e0b48eef.FindMarketSale'
                 AND event_type = 'Sale'
+            )
+            OR (
+                event_contract = 'A.8b148183c28ff88f.GaiaOrder'
+                AND event_type = 'OrderClosed'
             )
             OR (
                 event_contract = 'A.abda6627c70c7f52.GeniaceMarketplace'
