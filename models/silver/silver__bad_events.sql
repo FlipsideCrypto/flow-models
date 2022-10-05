@@ -13,6 +13,7 @@ WITH event_key AS (
         block_timestamp,
         _inserted_timestamp,
         event_index,
+        'n/a' AS _index_from_flatten,
         'null_attr_key' AS problem
     FROM
         {{ ref('silver__events_final') }}
@@ -35,6 +36,7 @@ isolated_event AS (
         block_timestamp,
         _inserted_timestamp,
         event_index,
+        _index_from_flatten,
         'cadence' AS problem
     FROM
         {{ ref('silver__events') }}
@@ -57,12 +59,19 @@ missing_event_data AS (
         block_timestamp,
         _inserted_timestamp,
         event_index,
+        _index_from_flatten,
         'no_events' AS problem
     FROM
         {{ ref('silver__events') }}
     WHERE
         _try_parse_payload IS NULL
         AND _attribute_fields IS NULL
+        AND tx_id NOT IN (
+            SELECT
+                tx_id
+            FROM
+                isolated_event
+        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -88,8 +97,20 @@ all_bad AS (
         *
     FROM
         missing_event_data
+),
+FINAL AS (
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        _inserted_timestamp,
+        event_index,
+        _index_from_flatten,
+        problem
+    FROM
+        all_bad
 )
 SELECT
     *
 FROM
-    all_bad
+    FINAL
