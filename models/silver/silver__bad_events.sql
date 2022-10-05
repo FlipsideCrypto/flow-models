@@ -5,10 +5,14 @@
     unique_key = "CONCAT_WS('-', tx_id, event_index)"
 ) }}
 
-WITH events AS (
+WITH event_key AS (
 
     SELECT
-        *
+        tx_id,
+        block_height,
+        block_timestamp,
+        _inserted_timestamp,
+        'null_attr_key' AS problem
     FROM
         {{ ref('silver__events_final') }}
     WHERE
@@ -22,8 +26,67 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
+),
+isolated_event AS (
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        _inserted_timestamp,
+        'cadence' AS problem
+    FROM
+        {{ ref('silver__events') }}
+    WHERE
+        event_index IS NULL
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+),
+missing_event_data AS (
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        _inserted_timestamp,
+        'no_events' AS problem
+    FROM
+        {{ ref('silver__events') }}
+    WHERE
+        _try_parse_payload IS NULL
+        AND _attribute_fields IS NULL
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+),
+all_bad AS (
+    SELECT
+        *
+    FROM
+        event_key
+    UNION
+    SELECT
+        *
+    FROM
+        isolated_event
+    UNION
+    SELECT
+        *
+    FROM
+        missing_event_data
 )
 SELECT
     *
 FROM
-    events
+    all_bad
