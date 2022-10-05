@@ -12,6 +12,7 @@ WITH event_key AS (
         block_height,
         block_timestamp,
         _inserted_timestamp,
+        event_index,
         'null_attr_key' AS problem
     FROM
         {{ ref('silver__events_final') }}
@@ -33,6 +34,7 @@ isolated_event AS (
         block_height,
         block_timestamp,
         _inserted_timestamp,
+        event_index,
         'cadence' AS problem
     FROM
         {{ ref('silver__events') }}
@@ -54,6 +56,7 @@ missing_event_data AS (
         block_height,
         block_timestamp,
         _inserted_timestamp,
+        event_index,
         'no_events' AS problem
     FROM
         {{ ref('silver__events') }}
