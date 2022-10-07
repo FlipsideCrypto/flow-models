@@ -94,6 +94,10 @@ sale_trigger AS (
                 AND event_type = 'Sale'
             )
             OR (
+                event_contract = 'A.097bafa4e0b48eef.FindPack'
+                AND event_type = 'Purchased'
+            )
+            OR (
                 event_contract = 'A.8b148183c28ff88f.GaiaOrder'
                 AND event_type = 'OrderClosed'
             )
@@ -183,7 +187,9 @@ num_triggers AS (
                 -- AFLPack
                 event_data :saleOfferId,
                 -- tunego
-                event_data :nftId -- pons doesn't do order ids
+                event_data :nftId,
+                -- pons doesn't do order ids
+                event_data :packId -- find pack
             )
         ) AS sale_ids,
         ARRAY_AGG(
@@ -208,7 +214,9 @@ num_triggers AS (
                 -- AFLPack
                 event_data :saleOfferId,
                 -- tunego
-                event_data :nftId -- pons doesn't do order ids
+                event_data :nftId,
+                -- pons doesn't do order ids
+                event_data :packId -- find pack
             )
         ) AS dist_sale_ids,
         COUNT(1) AS sale_trigger_count,
