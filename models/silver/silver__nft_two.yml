@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: silver__nft_two
+    description: |-
+      This table filters all NFT sales that interact with the general purpose contract `A.4eb8a10cb9f87357.NFTStorefront`. Transactions that purchase multiple NFTs in a single transaction are presently excluded from this table!
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - seller
+            - buyer
+            - nft_collection
+            - nft_id

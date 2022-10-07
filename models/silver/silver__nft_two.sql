@@ -445,8 +445,33 @@ FINAL AS (
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)
+),
+dedupe_gaia AS (
+    SELECT
+        *
+    FROM
+        FINAL
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                num_triggers
+            WHERE
+                sale_trigger_count = 2
+                AND num_sales = 1
+        ) qualify ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                marketplace
+        ) = 1
 )
 SELECT
     *
 FROM
     FINAL
+EXCEPT
+SELECT
+    *
+FROM
+    dedupe_gaia
