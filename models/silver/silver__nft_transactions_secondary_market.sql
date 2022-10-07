@@ -151,16 +151,72 @@ sale_trigger AS (
             )
         )
 ),
-excl_multi_buys AS (
+num_triggers AS (
     SELECT
         tx_id,
-        COUNT(1) AS record_count
+        -- storing the marketplace contract interactions
+        ARRAY_AGG(marketplace) within GROUP (
+            ORDER BY
+                marketplace
+        ) AS marketplaces,
+        -- compare total sales (by listing id) with distinct to eliminate the case where 2 marketplaces
+        -- (general & gaia) are called for 1 sale
+        ARRAY_AGG(
+            COALESCE(
+                event_data :orderId,
+                -- general
+                event_data :listingResourceID,
+                --  gaia, zeedz
+                event_data :saleItemID,
+                --chainmonster
+                event_data :itemID,
+                --starly, darkcountry
+                event_data :id,
+                -- olympic pin, flovatar, fina
+                event_data :saleOfferResourceID,
+                -- moto gp
+                event_data :bidId,
+                -- matrix
+                event_data :listingID,
+                -- fabricant
+                event_data :templateId,
+                -- AFLPack
+                event_data :saleOfferId,
+                -- tunego
+                event_data :nftId -- pons doesn't do order ids
+            )
+        ) AS sale_ids,
+        ARRAY_AGG(
+            DISTINCT COALESCE(
+                event_data :orderId,
+                -- general
+                event_data :listingResourceID,
+                --  gaia, zeedz
+                event_data :saleItemID,
+                --chainmonster
+                event_data :itemID,
+                --starly, darkcountry
+                event_data :id,
+                -- olympic pin, flovatar, fina
+                event_data :saleOfferResourceID,
+                -- moto gp
+                event_data :bidId,
+                -- matrix
+                event_data :listingID,
+                -- fabricant
+                event_data :templateId,
+                -- AFLPack
+                event_data :saleOfferId,
+                -- tunego
+                event_data :nftId -- pons doesn't do order ids
+            )
+        ) AS dist_sale_ids,
+        COUNT(1) AS sale_trigger_count,
+        ARRAY_SIZE(dist_sale_ids) AS num_sales
     FROM
         sale_trigger
     GROUP BY
         1
-    HAVING
-        record_count = 1
 ),
 omit_nft_nontransfers AS (
     SELECT
@@ -185,7 +241,9 @@ omit_nft_nontransfers AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                num_triggers
+            WHERE
+                num_sales < 2
         )
     GROUP BY
         1
@@ -387,8 +445,33 @@ FINAL AS (
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)
+),
+dedupe_gaia AS (
+    SELECT
+        *
+    FROM
+        FINAL
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                num_triggers
+            WHERE
+                sale_trigger_count = 2
+                AND num_sales = 1
+        ) qualify ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                marketplace
+        ) = 1
 )
 SELECT
     *
 FROM
     FINAL
+EXCEPT
+SELECT
+    *
+FROM
+    dedupe_gaia
