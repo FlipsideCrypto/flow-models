@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__event_attributes
+  - name: silver__event_attributes_https
     description: |-
       This table cleans and transform attributes from each event in the events table.
     tests:
@@ -40,6 +40,9 @@ models:
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -89,15 +92,12 @@ models:
 
       - name: decoded_address
         description: "{{ doc('decoded_address') }}"
-        tests:
 
       - name: attribute_value
         description: "{{ doc('attribute_value') }}"
-        tests:
 
       - name: attribute_value_adj
         description: "{{ doc('attribute_value_adj') }}"
-        tests:
 
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
@@ -106,6 +106,9 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
