@@ -97,6 +97,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
+                - DOUBLE
 
       - name: CURRENCY
         description: "{{ doc('currency') }}"
