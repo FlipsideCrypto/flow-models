@@ -49,5 +49,3 @@ SELECT
     *
 FROM
     combo
-WHERE
-    block_timestamp >= '2022-04-20'

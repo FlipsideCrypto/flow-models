@@ -29,9 +29,23 @@ models:
 
       - name: authorizers
         description: "{{ doc('authorizers') }}"
+<<<<<<< HEAD
 
       - name: count_authorizers
         description: "{{ doc('count_authorizers') }}"
+=======
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: count_authorizers
+        description: "{{ doc('count_authorizers') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+>>>>>>> main
 
       - name: gas_limit
         description: "{{ doc('gas_limit') }}"

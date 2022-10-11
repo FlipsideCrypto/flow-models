@@ -9,8 +9,6 @@ WITH staking_actions AS (
         *
     FROM
         {{ ref('silver__staking_actions') }}
-    WHERE
-        block_timestamp :: DATE >= '2022-04-20'
 ),
 FINAL AS (
     SELECT

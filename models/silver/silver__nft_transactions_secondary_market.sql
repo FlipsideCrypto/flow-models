@@ -23,44 +23,245 @@ WHERE
     )
 {% endif %}
 ),
-listing_data AS (
+sale_trigger AS (
     SELECT
         tx_id,
         block_timestamp,
         block_height,
         tx_succeeded,
-        event_index AS event_index_listing,
-        event_contract AS event_contract_listing,
-        event_data AS event_data_listing,
-        event_data :nftID :: STRING AS nft_id_listing,
-        event_data :nftType :: STRING AS nft_collection_listing,
-        event_data :purchased :: BOOLEAN AS purchased_listing,
+        event_contract AS marketplace,
+        event_data,
+        COALESCE(
+            event_data :purchased :: BOOLEAN,
+            event_data :accepted :: BOOLEAN,
+            IFF(
+                event_data :status = 'sold'
+                OR event_data :status IS NULL,
+                TRUE,
+                FALSE
+            ),
+            TRUE
+        ) AS is_purchased,
         _ingested_at,
         _inserted_timestamp
     FROM
         silver_events
     WHERE
-        event_type = 'ListingCompleted'
-        AND event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
-        AND purchased_listing = TRUE
+        is_purchased
+        AND -- each market uses a slightly different sale trigger
+        (
+            (
+                event_contract = 'A.8f9231920da9af6d.AFLPack'
+                AND event_type = 'PackBought'
+            )
+            OR (
+                event_contract = 'A.e2e1689b53e92a82.AniqueMarket'
+                AND event_type = 'CollectiblePurchased'
+            )
+            OR (
+                event_contract = 'A.9969d64233d69723.BlockleteMarket_NFT_V2'
+                AND event_type = 'BlockletePurchased'
+            )
+            OR (
+                event_contract = 'A.64f83c60989ce555.ChainmonstersMarketplace'
+                AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.c8c340cebd11f690.DarkCountryMarket'
+                AND event_type = 'SaleOfferAccepted'
+            )
+            OR (
+                event_contract = 'A.921ea449dffec68a.FlovatarMarketplace'
+                AND event_type IN (
+                    'FlovatarPurchased',
+                    'FlovatarComponentPurchased'
+                )
+            )
+            OR (
+                event_contract = 'A.09e03b1f871b3513.TheFabricantMarketplace'
+                AND event_type = 'NFTPurchased'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketAuctionEscrow'
+                AND event_type = 'EnglishAuction'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketDirectOfferEscrow'
+                AND event_type = 'DirectOffer'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindMarketSale'
+                AND event_type = 'Sale'
+            )
+            OR (
+                event_contract = 'A.097bafa4e0b48eef.FindPack'
+                AND event_type = 'Purchased'
+            )
+            OR (
+                event_contract = 'A.8b148183c28ff88f.GaiaOrder'
+                AND event_type = 'OrderClosed'
+            )
+            OR (
+                event_contract = 'A.abda6627c70c7f52.GeniaceMarketplace'
+                AND event_type = 'SaleOfferCompleted'
+            )
+            OR (
+                event_contract = 'A.82ed1b9cba5bb1b3.KaratNFTMarket'
+                AND event_type = 'SaleOfferAccepted'
+            )
+            OR (
+                event_contract = 'A.2162bbe13ade251e.MatrixMarketOpenOffer'
+                AND event_type = 'OfferCompleted'
+            )
+            OR (
+                event_contract = 'A.49b8e5d4d66ae880.MintStoreMarketFactory'
+                AND event_type = 'MintStoreItemPurchased'
+            )
+            OR (
+                event_contract = 'A.a49cc0ee46c54bfb.MotoGPNFTStorefront'
+                AND event_type = 'SaleOfferCompleted'
+            )
+            OR (
+                event_contract = 'A.856bd81e73e6752b.PonsNftMarketContract'
+                AND event_type = 'PonsNFTSold'
+            )
+            OR (
+                event_contract = 'A.52cbea4e6f616b8e.PublishedNFTStorefront'
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.489fcc527edc21cf.TuneGOMarket'
+                AND event_type = 'SaleOfferAccepted'
+            )
+            OR (
+                event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.85b8bbf926dcddfa.NFTStoreFront'
+                AND event_type = 'ListingSold'
+            )
+            OR (
+                event_contract = 'A.85b075e08d13f697.OlympicPinMarket'
+                AND event_type = 'PiecePurchased'
+            )
+            OR (
+                event_contract = 'A.5b82f21c0edf76e3.StarlyCardMarket'
+                AND event_type = 'CollectionRemovedSaleOffer'
+            )
+            OR (
+                event_contract = 'A.62b3063fbe672fc8.ZeedzMarketplace'
+                AND event_type = 'RemovedListing'
+            )
+        )
 ),
-excl_multi_buys AS (
+num_triggers AS (
     SELECT
         tx_id,
-        COUNT(1) AS record_count
+        -- storing the marketplace contract interactions
+        ARRAY_AGG(marketplace) within GROUP (
+            ORDER BY
+                marketplace
+        ) AS marketplaces,
+        -- compare total sales (by listing id) with distinct to eliminate the case where 2 marketplaces
+        -- (general & gaia) are called for 1 sale
+        ARRAY_AGG(
+            COALESCE(
+                event_data :orderId,
+                -- general
+                event_data :listingResourceID,
+                --  gaia, zeedz
+                event_data :saleItemID,
+                --chainmonster
+                event_data :itemID,
+                --starly, darkcountry
+                event_data :id,
+                -- olympic pin, flovatar, fina
+                event_data :saleOfferResourceID,
+                -- moto gp
+                event_data :bidId,
+                -- matrix
+                event_data :listingID,
+                -- fabricant
+                event_data :templateId,
+                -- AFLPack
+                event_data :saleOfferId,
+                -- tunego
+                event_data :nftId,
+                -- pons doesn't do order ids
+                event_data :packId -- find pack
+            )
+        ) AS sale_ids,
+        ARRAY_AGG(
+            DISTINCT COALESCE(
+                event_data :orderId,
+                -- general
+                event_data :listingResourceID,
+                --  gaia, zeedz
+                event_data :saleItemID,
+                --chainmonster
+                event_data :itemID,
+                --starly, darkcountry
+                event_data :id,
+                -- olympic pin, flovatar, fina
+                event_data :saleOfferResourceID,
+                -- moto gp
+                event_data :bidId,
+                -- matrix
+                event_data :listingID,
+                -- fabricant
+                event_data :templateId,
+                -- AFLPack
+                event_data :saleOfferId,
+                -- tunego
+                event_data :nftId,
+                -- pons doesn't do order ids
+                event_data :packId -- find pack
+            )
+        ) AS dist_sale_ids,
+        COUNT(1) AS sale_trigger_count,
+        ARRAY_SIZE(dist_sale_ids) AS num_sales
     FROM
-        listing_data
+        sale_trigger
+    GROUP BY
+        1
+),
+omit_nft_nontransfers AS (
+    SELECT
+        tx_id,
+        ARRAY_AGG(
+            DISTINCT event_type
+        ) AS events,
+        -- don't forget to update below if adding any new movement method !
+        ARRAY_SIZE(
+            array_intersection(
+                ['Deposit', 'Withdraw', 'FlovatarSaleWithdrawn', 'FlovatarComponentSaleWithdrawn'],
+                events
+            )
+        ) = 2 AS nft_transferred,
+        count_if(
+            event_type = 'Deposit'
+        ) AS nft_deposits
+    FROM
+        silver_events
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                num_triggers
+            WHERE
+                num_sales < 2
+        )
     GROUP BY
         1
     HAVING
-        record_count = 1
+        nft_deposits = 1
 ),
-purchase_data AS (
+first_token_withdraw AS (
     SELECT
         tx_id,
-        event_contract AS currency,
-        event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
+        MIN(event_index) AS min_index
     FROM
         silver_events
     WHERE
@@ -68,53 +269,50 @@ purchase_data AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND event_index = 0
         AND event_type = 'TokensWithdrawn'
+    GROUP BY
+        1
 ),
-purchase_data_2 AS (
+-- 3 most important events are the first TokenWithdraw, then Withdraw and Deposit (NFT movement)
+token_withdraw_event AS (
     SELECT
         tx_id,
         event_contract AS currency,
         event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS buyer_purchase
+        event_data :from :: STRING AS buyer_purchase,
+        min_index
     FROM
         silver_events
+        LEFT JOIN first_token_withdraw USING (tx_id)
     WHERE
         tx_id IN (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND tx_id NOT IN (
-            SELECT
-                tx_id
-            FROM
-                purchase_data
-        )
-        AND event_index = 1
+        AND event_index = min_index
         AND event_type = 'TokensWithdrawn'
 ),
-purchase_data_final AS (
-    SELECT
-        *
-    FROM
-        purchase_data
-    UNION
-    SELECT
-        *
-    FROM
-        purchase_data_2
-),
-seller_data AS (
+nft_withdraw_event_seller AS (
     SELECT
         tx_id,
         event_index AS event_index_seller,
         event_contract AS nft_collection_seller,
-        event_data :from :: STRING AS seller,
-        event_data :id :: STRING AS nft_id_seller
+        COALESCE(
+            event_data :from,
+            event_data :address
+        ) :: STRING AS seller,
+        COALESCE(
+            event_data :id,
+            event_data :tokenId
+        ) :: STRING AS nft_id_seller
     FROM
         silver_events
     WHERE
@@ -122,11 +320,17 @@ seller_data AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
-        AND event_type = 'Withdraw'
+        AND event_type IN (
+            'Withdraw',
+            'FlovatarSaleWithdrawn',
+            'FlovatarComponentSaleWithdrawn' -- if adding anything new, don't forget about omit_nft_nontransfers check!
+        )
 ),
-deposit_data AS (
+nft_deposit_event_buyer AS (
     SELECT
         tx_id,
         event_contract AS nft_collection_deposit,
@@ -139,24 +343,44 @@ deposit_data AS (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
         AND event_type = 'Deposit'
 ),
 nft_sales AS (
     SELECT
-        *
+        e.tx_id,
+        e.block_timestamp,
+        e.block_height,
+        e.tx_succeeded,
+        e.is_purchased,
+        e.marketplace,
+        w.currency,
+        w.amount,
+        w.buyer_purchase,
+        s.nft_collection_seller,
+        s.seller,
+        s.nft_id_seller,
+        b.nft_collection_deposit,
+        b.nft_id_deposit,
+        b.buyer_deposit,
+        e._ingested_at,
+        e._inserted_timestamp
     FROM
-        listing_data
-        LEFT JOIN purchase_data_final USING (tx_id)
-        LEFT JOIN seller_data USING (tx_id)
-        LEFT JOIN deposit_data USING (tx_id)
+        sale_trigger e
+        LEFT JOIN token_withdraw_event w USING (tx_id)
+        LEFT JOIN nft_withdraw_event_seller s USING (tx_id)
+        LEFT JOIN nft_deposit_event_buyer b USING (tx_id)
     WHERE
         tx_id IN (
             SELECT
                 tx_id
             FROM
-                excl_multi_buys
+                omit_nft_nontransfers
+            WHERE
+                nft_transferred
         )
 ),
 step_data AS (
@@ -177,7 +401,8 @@ step_data AS (
         AND event_type IN (
             'TokensWithdrawn',
             'TokensDeposited',
-            'ForwardedDeposit'
+            'ForwardedDeposit',
+            'RoyaltyDeposited'
         )
 ),
 counterparty_data AS (
@@ -210,12 +435,9 @@ FINAL AS (
         ns.tx_id,
         block_timestamp,
         block_height,
-        event_contract_listing AS marketplace,
-        event_data_listing,
-        nft_collection_seller AS nft_collection,
-        event_data_listing :storefrontResourceID :: NUMBER AS storefront_id,
-        event_data_listing :listingResourceID :: NUMBER AS listing_id,
-        nft_id_listing AS nft_id,
+        marketplace,
+        nft_collection_deposit AS nft_collection,
+        nft_id_seller AS nft_id,
         currency,
         amount AS price,
         seller,
@@ -231,8 +453,33 @@ FINAL AS (
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)
+),
+dedupe_gaia AS (
+    SELECT
+        *
+    FROM
+        FINAL
+    WHERE
+        tx_id IN (
+            SELECT
+                tx_id
+            FROM
+                num_triggers
+            WHERE
+                sale_trigger_count = 2
+                AND num_sales = 1
+        ) qualify ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                marketplace
+        ) = 1
 )
 SELECT
     *
 FROM
     FINAL
+EXCEPT
+SELECT
+    *
+FROM
+    dedupe_gaia

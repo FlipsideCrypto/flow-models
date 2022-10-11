@@ -4,6 +4,14 @@ models:
   - name: silver__nft_sales
     description: |-
       NFT market sales on the Flow blockchain. This table will only contain successful transactions, as failed transactions will not have the requisite events to determine it was an attempted NFT purchase.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - seller
+            - buyer
+            - nft_collection
+            - nft_id
 
     columns:
       - name: tx_id
@@ -32,6 +40,13 @@ models:
 
       - name: price
         description: "{{ doc('price') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
 
       - name: currency
         description: "{{ doc('currency') }}"

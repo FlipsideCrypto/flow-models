@@ -19,3 +19,5 @@ FROM
     'prod',
     'flow_txs'
   ) }}
+WHERE
+  _inserted_timestamp :: DATE >= '2022-05-01'

@@ -24,6 +24,7 @@ WHERE
 ),
 events AS (
   SELECT
+    VALUE,
     tx_id,
     block_timestamp,
     block_height,
@@ -32,28 +33,36 @@ events AS (
       VALUE :event_index,
       VALUE :eventIndex
     ) :: NUMBER AS event_index,
+    VALUE :value :: variant AS event_data,
+    COALESCE(
+      VALUE :value :EventType,
+      VALUE :value :eventType
+    ) :: variant AS event_data_type,
+    COALESCE(
+      VALUE :value :Fields,
+      VALUE :value :fields
+    ) :: variant AS event_data_fields,
     SPLIT(
-      VALUE :type,
+      IFF(
+        (
+          event_data_type :qualifiedIdentifier LIKE 'A.%'
+          OR event_data_type :qualifiedIdentifier LIKE 'flow%'
+        ),
+        event_data_type :qualifiedIdentifier,
+        VALUE :type
+      ),
       '.'
     ) AS type_split,
     ARRAY_TO_STRING(
       ARRAY_SLICE(type_split, 0, ARRAY_SIZE(type_split) -1),
       '.') AS event_contract,
       type_split [array_size(type_split)-1] :: STRING AS event_type,
-      VALUE :value :: variant AS event_data,
-      COALESCE(
-        VALUE :value :EventType,
-        VALUE :value :eventType
-      ) :: variant AS event_data_type,
-      COALESCE(
-        VALUE :value :Fields,
-        VALUE :value :fields
-      ) :: variant AS event_data_fields,
       concat_ws(
         '-',
         tx_id,
         event_index
       ) AS event_id,
+      TRY_PARSE_JSON(BASE64_DECODE_STRING(VALUE :payload)) AS try_parse_payload,
       _ingested_at,
       _inserted_timestamp
       FROM
@@ -61,6 +70,8 @@ events AS (
         LATERAL FLATTEN(
           input => transaction_result :events
         )
+      WHERE
+        VALUE :: STRING != 'null'
     ),
     FINAL AS (
       SELECT
@@ -75,6 +86,7 @@ events AS (
         event_data,
         event_data_type AS _event_data_type,
         event_data_fields AS _event_data_fields,
+        try_parse_payload AS _try_parse_payload,
         _ingested_at,
         _inserted_timestamp
       FROM
