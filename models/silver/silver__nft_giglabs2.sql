@@ -204,6 +204,7 @@ FINAL AS (
         p.block_timestamp,
         p.block_height,
         p._inserted_timestamp,
+        'Gigantik Primary Market' as marketplace,
         p.missing,
         p.currency,
         p.amount,
