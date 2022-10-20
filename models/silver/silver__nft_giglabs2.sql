@@ -120,6 +120,22 @@ gig_sales_events AS (
                 gig_nfts
         )
 ),
+missing_contract AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        _inserted_timestamp,
+        event_contract AS currency,
+        event_data :amount :: DOUBLE AS amount,
+        event_data :from :: STRING AS forwarded_from,
+        TRUE AS missing
+    FROM
+        gig_sales_events
+    WHERE
+        event_index = 0
+        AND event_type = 'TokensWithdrawn'
+),
 purchase_amt AS (
     SELECT
         tx_id,
@@ -128,11 +144,29 @@ purchase_amt AS (
         _inserted_timestamp,
         'A.ead892083b3e2c6c.DapperUtilityCoin' AS currency,
         event_data :amount :: DOUBLE AS amount,
-        event_data :from :: STRING AS forwarded_from
+        event_data :from :: STRING AS forwarded_from,
+        FALSE AS missing
     FROM
         gig_sales_events
     WHERE
         event_type = 'ForwardedDeposit'
+        AND tx_id NOT IN (
+            SELECT
+                tx_id
+            FROM
+                missing_contract
+        )
+),
+triage AS (
+    SELECT
+        *
+    FROM
+        missing_contract
+    UNION
+    SELECT
+        *
+    FROM
+        purchase_amt
 ),
 withdraw_event AS (
     SELECT
@@ -170,6 +204,7 @@ FINAL AS (
         p.block_timestamp,
         p.block_height,
         p._inserted_timestamp,
+        p.missing,
         p.currency,
         p.amount,
         p.forwarded_from,
@@ -181,7 +216,7 @@ FINAL AS (
         w.nft_collection = d.nft_collection AS collection_check,
         w.nft_id = d.nft_id AS nft_id_check
     FROM
-        purchase_amt p
+        triage p
         LEFT JOIN withdraw_event w USING (
             tx_id,
             block_timestamp,
