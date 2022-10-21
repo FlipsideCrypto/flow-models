@@ -51,6 +51,10 @@ sale_trigger AS (
         AND -- each market uses a slightly different sale trigger
         (
             (
+                event_contract = 'A.30cf5dcf6ea8d379.AeraPack'
+                AND event_type = 'Purchased'
+            )
+            OR (
                 event_contract = 'A.8f9231920da9af6d.AFLPack'
                 AND event_type = 'PackBought'
             )
@@ -122,6 +126,14 @@ sale_trigger AS (
                 AND event_type = 'SaleOfferCompleted'
             )
             OR (
+                event_contract = 'A.b8ea91944fd51c43.Offers'
+                AND event_type = 'OfferCompleted'
+            )
+            OR (
+                event_contract = 'A.b8ea91944fd51c43.OffersV2'
+                AND event_type = 'OfferCompleted'
+            )
+            OR (
                 event_contract = 'A.856bd81e73e6752b.PonsNftMarketContract'
                 AND event_type = 'PonsNFTSold'
             )
@@ -135,6 +147,10 @@ sale_trigger AS (
             )
             OR (
                 event_contract = 'A.4eb8a10cb9f87357.NFTStorefront' -- general storefront
+                AND event_type = 'ListingCompleted'
+            )
+            OR (
+                event_contract = 'A.4eb8a10cb9f87357.NFTStorefrontV2' -- funds move in 2ND TOKEN MVMT not FIRST
                 AND event_type = 'ListingCompleted'
             )
             OR (
@@ -187,9 +203,11 @@ num_triggers AS (
                 -- AFLPack
                 event_data :saleOfferId,
                 -- tunego
+                event_data :offerId,
+                -- OffersV2
                 event_data :nftId,
                 -- pons doesn't do order ids
-                event_data :packId -- find pack
+                event_data :packId -- find pack, aera
             )
         ) AS sale_ids,
         ARRAY_AGG(
@@ -214,9 +232,11 @@ num_triggers AS (
                 -- AFLPack
                 event_data :saleOfferId,
                 -- tunego
+                event_data :offerId,
+                -- OffersV2
                 event_data :nftId,
                 -- pons doesn't do order ids
-                event_data :packId -- find pack
+                event_data :packId -- find pack, aera
             )
         ) AS dist_sale_ids,
         COUNT(1) AS sale_trigger_count,
@@ -358,7 +378,11 @@ nft_sales AS (
         e.is_purchased,
         e.marketplace,
         w.currency,
-        w.amount,
+        IFF(
+            e.marketplace = 'A.4eb8a10cb9f87357.NFTStorefrontV2',
+            e.event_data :salePrice :: DOUBLE,
+            w.amount
+        ) AS amount,
         w.buyer_purchase,
         s.nft_collection_seller,
         s.seller,
