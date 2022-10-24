@@ -1,6 +1,0 @@
-version: 2
-
-models:
-  - name: core__fact_bridge_transactions
-    description: |-
-      deprecating soon ! Note: this data model has been renamed `ez_bridge_transactions`. Please reconfigure your queries to use that table as this will be decomissioned.
