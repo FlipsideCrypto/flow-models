@@ -4,7 +4,15 @@ models:
   - name: silver__nft_giglabs
     description: |-
       NFT primary market sales for Giglabs marketplaces.
-
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - seller
+            - buyer
+            - nft_collection
+            - nft_id
+            
     columns:
       - name: tx_id
         description: "{{ doc('tx_id') }}"
