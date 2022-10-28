@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: silver__nft_giglabs
+    description: |-
+      NFT primary market sales for Giglabs marketplaces.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - seller
+            - buyer
+            - nft_collection
+            - nft_id
+            
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: marketplace
+        description: "{{ doc('marketplace') }}"
+        tests:
+         - not_null
+         
+      - name: nft_collection
+        description: "{{ doc('nft_collection') }}"
+        tests:
+         - not_null
+
+      - name: nft_id
+        description: "{{ doc('nft_id') }}"
+        tests:
+         - not_null
+
+      - name: buyer
+        description: "{{ doc('buyer') }}"
+        tests:
+         - not_null
+
+      - name: seller
+        description: "{{ doc('seller') }}"
+        tests:
+         - not_null
+
+      - name: price
+        description: "{{ doc('price') }}"
+        tests:
+         - not_null
+
+      - name: currency
+        description: "{{ doc('currency') }}"
+        tests:
+         - not_null
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+
+      - name: tokenflow
+        description: "{{ doc('tokenflow') }}"
+
+      - name: counterparties
+        description: "{{ doc('counterparties') }}"
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
