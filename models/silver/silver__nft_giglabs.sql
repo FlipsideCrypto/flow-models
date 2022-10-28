@@ -183,7 +183,7 @@ withdraw_event AS (
         _inserted_timestamp,
         event_contract AS nft_collection,
         event_data :from :: STRING AS seller,
-        event_data :id :: NUMBER AS nft_id
+        event_data :id :: STRING AS nft_id
     FROM
         gig_sales_events
     WHERE
@@ -198,7 +198,7 @@ deposit_event AS (
         _inserted_timestamp,
         event_contract AS nft_collection,
         event_data :to :: STRING AS buyer,
-        event_data :id :: NUMBER AS nft_id
+        event_data :id :: STRING AS nft_id
     FROM
         gig_sales_events
     WHERE
