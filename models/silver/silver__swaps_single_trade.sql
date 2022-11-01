@@ -56,8 +56,14 @@ single_trade AS (
     FROM
         step_ct
     WHERE
-        ob :Trade = 1
-        AND ob :Swap IS NULL
+        COALESCE(
+            ob :Trade,
+            0
+        ) < 2
+        AND COALESCE(
+            ob :Swap,
+            0
+        ) < 2
 ),
 swaps_single_trade AS (
     SELECT
@@ -112,18 +118,38 @@ trade_data AS (
         event_type,
         event_contract AS event_contract_trade,
         event_data AS event_data_trade,
-        event_data :side :: NUMBER AS swap_side,
-        event_data :token1Amount :: DOUBLE AS token_1_amount,
-        -- note some are decimal adjusted, some are not. identify by contract
-        event_data :token2Amount :: DOUBLE AS token_2_amount,
+        COALESCE(
+            event_data :side,
+            event_data :direction
+        ) :: NUMBER AS swap_side,
+        COALESCE(
+            event_data :token1Amount,
+            IFF(
+                swap_side = 1,
+                event_data :inTokenAmount,
+                event_data :outTokenAmount
+            )
+        ) :: DOUBLE AS token_1_amount,
+        COALESCE(
+            event_data :token2Amount,
+            IFF(
+                swap_side = 0,
+                event_data :inTokenAmount,
+                event_data :outTokenAmount
+            )
+        ) :: DOUBLE AS token_2_amount,
         l.account_address AS swap_account,
         _ingested_at,
         _inserted_timestamp
     FROM
         swaps_single_trade sst
-        LEFT JOIN {{ ref('silver__contract_labels') }} l USING (event_contract)
+        LEFT JOIN {{ ref('silver__contract_labels') }}
+        l USING (event_contract)
     WHERE
-        event_type = 'Trade'
+        event_type IN (
+            'Trade',
+            'Swap'
+        )
 ),
 token_in_data AS (
     SELECT
@@ -155,11 +181,6 @@ combo AS (
         tod.event_contract_token_out AS token_out_contract,
         tid.amount_token_in AS token_in_amount,
         tid.event_contract_token_in AS token_in_contract,
-        -- keep these next 3 columns bc i can derive fees from the difference in token_out_amount and token_[n]_amount where n = swap_side
-        td.swap_side,
-        td.token_1_amount,
-        td.token_2_amount,
-        tod._ingested_at,
         tod._inserted_timestamp
     FROM
         token_out_data tod
