@@ -4,9 +4,8 @@
     unique_key = "CONCAT_WS('-', tx_id, swap_index)",
     incremental_strategy = 'delete+insert'
 ) }}
--- TODO reminder the direction impacts if it is token in or out 
+-- TODO reminder the direction impacts if it is token in or out
 -- probably just a conditional, but still need to impldment
-
 WITH swap_events AS (
 
     SELECT
@@ -60,6 +59,15 @@ token_withdraws AS (
             ORDER BY
                 event_index
         ) - 1 AS token_index,
+        RANK() over (
+            PARTITION BY CONCAT(
+                tx_id,
+                event_data :amount :: STRING,
+                event_data :from :: STRING
+            )
+            ORDER BY
+                event_index
+        ) - 1 AS unique_order,
         event_contract,
         event_data,
         _inserted_timestamp
@@ -93,6 +101,15 @@ token_deposits AS (
             ORDER BY
                 event_index
         ) - 1 AS token_index,
+        RANK() over (
+            PARTITION BY CONCAT(
+                tx_id,
+                event_data :amount :: STRING,
+                event_data :to :: STRING
+            )
+            ORDER BY
+                event_index
+        ) - 1 AS unique_order,
         event_contract,
         event_data,
         _inserted_timestamp
@@ -121,24 +138,24 @@ link_token_movement AS (
         w.block_timestamp,
         w.block_height,
         w._inserted_timestamp,
-        w.token_index,
-        w.event_index AS event_index_w,
-        d.event_index AS event_index_d,
-        token_index AS transfer_index,
+        -- set transfer index based on execution via deposit, not withdraw, event
+        RANK() over (
+            PARTITION BY w.tx_id
+            ORDER BY
+                d.event_index
+        ) - 1 AS transfer_index,
         w.event_data :from :: STRING AS withdraw_from,
         d.event_data :to :: STRING AS deposit_to,
         w.event_data :amount :: DOUBLE AS amount,
         w.event_contract AS token_contract,
-        w.token_index = d.token_index AS token_check,
-        w.event_contract = d.event_contract AS contract_check,
-        w.event_data :amount :: DOUBLE = d.event_data :amount :: DOUBLE AS amount_check
+        w.event_contract = d.event_contract AS contract_check
     FROM
         token_withdraws w
-        LEFT JOIN token_deposits d USING (
-            tx_id,
-            token_index,
-            event_contract
-        )
+        LEFT JOIN token_deposits d
+        ON w.tx_id = d.tx_id
+        AND w.event_contract = d.event_contract
+        AND w.event_data :amount :: STRING = d.event_data :amount :: STRING
+        AND w.unique_order = d.unique_order
 ),
 restructure AS (
     SELECT
@@ -184,7 +201,7 @@ restructure AS (
                 3
             ) -- blocto takes a 0.3% fee out of the initial outToken
         )
-        AND transfer_index >= swap_index
+        AND transfer_index >= swap_index -- TODO check that this assumption is correct
         LEFT JOIN (
             SELECT
                 tx_id,
@@ -238,7 +255,7 @@ FINAL AS (
         withdraws :from0 :: STRING AS token_out_source,
         tokens :token0 :: STRING AS token_out_contract,
         amounts :amount0 :: DOUBLE AS token_out_amount,
-        tokens :token1 :: STRING AS token_in_destination,
+        deposits :to1 :: STRING AS token_in_destination,
         tokens :token1 :: STRING AS token_in_contract,
         amounts :amount1 :: DOUBLE AS token_in_amount,
         _inserted_timestamp
