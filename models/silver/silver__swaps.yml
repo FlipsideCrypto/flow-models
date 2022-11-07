@@ -46,6 +46,9 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: swap_index
+        description: "{{ doc('swap_index') }}"
+
       - name: trader
         description: "{{ doc('trader') }}"
         tests:
@@ -54,6 +57,9 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: token_out_source
+        description: "{{ doc('token_out_source') }}"
 
       - name: token_out_amount
         description: "{{ doc('token_out_amount') }}"
@@ -72,6 +78,9 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: token_in_destination
+        description: "{{ doc('token_in_destination') }}"
 
       - name: token_in_amount
         description: "{{ doc('token_in_amount') }}"
