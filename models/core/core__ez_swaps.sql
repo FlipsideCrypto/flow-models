@@ -14,6 +14,7 @@ SELECT
     token_out_contract,
     token_out_amount,
     token_in_destination,
-    token_in_contract token_in_amount
+    token_in_contract,
+    token_in_amount
 FROM
     {{ ref('silver__swaps') }}
