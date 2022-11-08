@@ -91,6 +91,32 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: swap_side
+        description: "{{ doc('swap_side') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: token_1_amount
+        description: "{{ doc('token_1_amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_2_amount
+        description: "{{ doc('token_2_amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
 
