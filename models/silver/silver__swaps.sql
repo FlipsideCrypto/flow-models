@@ -4,8 +4,7 @@
     unique_key = "CONCAT_WS('-', tx_id, swap_index)",
     incremental_strategy = 'delete+insert'
 ) }}
--- TODO reminder the direction impacts if it is token in or out
--- probably just a conditional, but still need to impldment
+
 WITH swap_events AS (
 
     SELECT
