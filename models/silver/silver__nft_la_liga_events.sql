@@ -19,6 +19,16 @@ WITH la_liga AS (
             'SetCreated',
             'SeriesCreated'
         )
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
+),
 )
 SELECT
     *
