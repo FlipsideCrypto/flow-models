@@ -28,7 +28,6 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
-),
 )
 SELECT
     *
