@@ -5,12 +5,28 @@
     incremental_strategy = 'delete+insert'
 ) }}
 
-WITH swap_events AS (
+WITH events AS (
 
     SELECT
         *
     FROM
         {{ ref('silver__swaps_events') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+swap_events AS (
+    SELECT
+        *
+    FROM
+        events
     WHERE
         -- I will fix these in AN-2401
         tx_id NOT IN (
@@ -27,23 +43,21 @@ WITH swap_events AS (
             '21841218a9fc14a2532fcc3e5a550761bb2b02fb4eab31cef4c5efb51e2f9d82',
             '89fbf6fa71481142d876c6a88ebf52c6fdb26f741985ef2af57e6101edf57a07',
             'e87d4b15f08a816244adc2ba1bcf630b3cb3b29582e946090bed8c7a459e39a6'
-        ) 
-        -- exclude non-swap interation with swap pool
+        ) -- exclude non-swap interation with swap pool
         AND tx_id NOT IN (
             SELECT
                 DISTINCT tx_id
             FROM
-                {{ ref('silver__swaps_events') }}
+                events
             WHERE
                 event_type = 'RewardTokensWithdrawn'
                 OR event_type = 'NFTReceived'
-        ) 
-        -- PierPair needs a bespoke model as it does not deposit traded token to Pool contract
+        ) -- PierPair needs a bespoke model as it does not deposit traded token to Pool contract
         AND tx_id NOT IN (
             SELECT
                 DISTINCT tx_id
             FROM
-                {{ ref('silver__swaps_events') }}
+                events
             WHERE
                 event_contract LIKE '%PierPair%'
         )
@@ -211,8 +225,7 @@ restructure AS (
         LEFT JOIN pool_info p
         ON p.tx_id = t.tx_id
         AND (
-            p.in_token_amount = t.amount
-            -- blocto takes a 0.3% fee
+            p.in_token_amount = t.amount -- blocto takes a 0.3% fee
             OR ROUND((p.in_token_amount / 0.997) - t.amount) = 0
             OR p.out_token_amount = t.amount
             OR ROUND((p.out_token_amount / 0.997) - t.amount) = 0
