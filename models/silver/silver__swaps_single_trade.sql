@@ -121,7 +121,8 @@ trade_data AS (
         _inserted_timestamp
     FROM
         swaps_single_trade sst
-        LEFT JOIN {{ ref('silver__contract_labels') }} l USING (event_contract)
+        LEFT JOIN {{ ref('silver__contract_labels') }}
+        l USING (event_contract)
     WHERE
         event_type = 'Trade'
 ),
