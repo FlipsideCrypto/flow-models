@@ -45,8 +45,7 @@ swap_events AS (
             WHERE
                 event_contract LIKE '%PierPair%'
         )
-)
-,
+),
 pool_info AS (
     SELECT
         tx_id,
@@ -89,8 +88,7 @@ pool_info AS (
             'Trade',
             'Swap'
         )
-)
-,
+),
 token_withdraws AS (
     SELECT
         tx_id,
@@ -124,9 +122,7 @@ token_withdraws AS (
             FROM
                 pool_info
         )
-)
-
-,
+),
 token_deposits AS (
     SELECT
         tx_id,
@@ -185,9 +181,7 @@ link_token_movement AS (
         AND w.event_contract = d.event_contract
         AND w.event_data :amount :: STRING = d.event_data :amount :: STRING
         AND w.unique_order = d.unique_order
-)
-
-,
+),
 restructure AS (
     SELECT
         t.tx_id,
@@ -205,6 +199,14 @@ restructure AS (
         sub.trader,
         ARRAYS_OVERLAP(ARRAY_CONSTRUCT(t.withdraw_from, t.deposit_to), ARRAY_CONSTRUCT(pool_address, sub.trader)) AS transfer_involve_pool_or_trader,
         t.amount,
+p.in_token_amount = t.amount as in_check_unadj,
+(p.in_token_amount / 0.997) - t.amount as in_not_round,
+ROUND((p.in_token_amount / 0.997) - t.amount) as in_round,
+ROUND((p.in_token_amount / 0.997) - t.amount) = 0 as in_check,
+p.out_token_amount = t.amount as out_check_unadj,
+(p.out_token_amount / 0.997) - t.amount as out_not_round,
+ROUND((p.out_token_amount / 0.997) - t.amount) as out_round,
+ROUND((p.out_token_amount / 0.997) - t.amount) = 0 as out_check,
         t.token_contract,
         p.pool_contract,
         p.direction,
@@ -233,58 +235,74 @@ restructure AS (
         ON t.tx_id = sub.tx_id
     WHERE
         swap_index IS NOT NULL -- exclude the network fee token movement
-        AND transfer_involve_pool_or_trader
+        AND (
+            (
+                transfer_involve_pool_or_trader
+                AND pool_contract NOT LIKE '%PierPair%'
+            )
+            OR (
+                pool_contract LIKE '%PierPair%'
+                AND transfer_index - swap_index BETWEEN 0
+                AND 1
+            )
+        )
 )
-select * from restructure order by tx_id, transfer_index limit 100
-{# 
-,
-pool_token_alignment AS (
-    SELECT
-        tx_id,
-        pool_contract,
-        swap_index,
-        OBJECT_AGG(CONCAT('token', token_position), token_contract :: variant) AS tokens,
-        OBJECT_AGG(CONCAT('amount', token_position), amount) AS amounts,
-        OBJECT_AGG(CONCAT('from', token_position), withdraw_from :: variant) AS withdraws,
-        OBJECT_AGG(CONCAT('to', token_position), deposit_to :: variant) AS deposits
-    FROM
-        restructure
-    GROUP BY
-        1,
-        2,
-        3
-),
-boilerplate AS (
-    SELECT
-        tx_id,
-        block_timestamp,
-        block_height,
-        _inserted_timestamp,
-        withdraw_from AS trader
-    FROM
-        link_token_movement
-    WHERE
-        transfer_index = 0
-),
-FINAL AS (
-    SELECT
-        tx_id,
-        block_timestamp,
-        block_height,
-        pool_contract AS swap_contract,
-        swap_index,
-        trader,
-        withdraws :from0 :: STRING AS token_out_source,
-        tokens :token0 :: STRING AS token_out_contract,
-        amounts :amount0 :: DOUBLE AS token_out_amount,
-        deposits :to1 :: STRING AS token_in_destination,
-        tokens :token1 :: STRING AS token_in_contract,
-        amounts :amount1 :: DOUBLE AS token_in_amount,
-        _inserted_timestamp
-    FROM
-        boilerplate
-        LEFT JOIN pool_token_alignment USING (tx_id)
-)
+SELECT
+    *
+FROM
+    restructure
+ORDER BY
+    tx_id,
+    swap_index,
+    token_position
+LIMIT
+    100 {#, pool_token_alignment AS (
+        SELECT
+            tx_id,
+            pool_contract,
+            swap_index,
+            OBJECT_AGG(CONCAT('token', token_position), token_contract :: variant) AS tokens,
+            OBJECT_AGG(CONCAT('amount', token_position), amount) AS amounts,
+            OBJECT_AGG(CONCAT('from', token_position), withdraw_from :: variant) AS withdraws,
+            OBJECT_AGG(CONCAT('to', token_position), deposit_to :: variant) AS deposits
+        FROM
+            restructure
+        GROUP BY
+            1,
+            2,
+            3
+    ),
+    boilerplate AS (
+        SELECT
+            tx_id,
+            block_timestamp,
+            block_height,
+            _inserted_timestamp,
+            withdraw_from AS trader
+        FROM
+            link_token_movement
+        WHERE
+            transfer_index = 0
+    ),
+    FINAL AS (
+        SELECT
+            tx_id,
+            block_timestamp,
+            block_height,
+            pool_contract AS swap_contract,
+            swap_index,
+            trader,
+            withdraws :from0 :: STRING AS token_out_source,
+            tokens :token0 :: STRING AS token_out_contract,
+            amounts :amount0 :: DOUBLE AS token_out_amount,
+            deposits :to1 :: STRING AS token_in_destination,
+            tokens :token1 :: STRING AS token_in_contract,
+            amounts :amount1 :: DOUBLE AS token_in_amount,
+            _inserted_timestamp
+        FROM
+            boilerplate
+            LEFT JOIN pool_token_alignment USING (tx_id)
+    )
 SELECT
     *
 FROM
