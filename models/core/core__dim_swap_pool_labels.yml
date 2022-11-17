@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: core__dim_swap_pool_labels
+    description: |-
+      This table takes swap pool/pair creation events and models out the relevant info, such as contracts for the token pairs, when it was deployed, and the address of the vault where tokens seem to be held.
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: deployment_timestamp
+        description: "{{ doc('deployment_timestamp') }}"
+
+      - name: token0_contract
+        description: "{{ doc('token0_contract') }}"
+
+      - name: token1_contract
+        description: "{{ doc('token1_contract') }}"
+
+      - name: pool_id
+        description: "{{ doc('pool_id') }}"
+
+      - name: vault_address
+        description: "{{ doc('vault_address') }}"
+
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"
