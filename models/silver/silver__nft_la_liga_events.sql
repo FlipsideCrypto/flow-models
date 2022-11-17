@@ -13,12 +13,6 @@ WITH la_liga AS (
         {{ ref('silver__events_final') }}
     WHERE
         event_contract ILIKE '%87ca73a41bb50ad5%'
-        AND event_type IN (
-            'PlayCreated',
-            'EditionCreated',
-            'SetCreated',
-            'SeriesCreated'
-        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
