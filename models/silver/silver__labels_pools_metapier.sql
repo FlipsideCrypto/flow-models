@@ -76,6 +76,25 @@ pairs AS (
     FROM
         token_withdraws
 ),
+escrow AS (
+    SELECT
+        tx_id,
+        event_data :address :: STRING AS vault_address
+    FROM
+        pier_events
+    WHERE
+        event_contract = 'flow'
+        AND event_type = 'AccountCreated'
+),
+pool_addr AS (
+    SELECT
+        tx_id,
+        event_contract AS swap_contract
+    FROM
+        pier_events
+    WHERE
+        event_type = 'Mint'
+),
 FINAL AS (
     SELECT
         C.tx_id,
@@ -83,10 +102,14 @@ FINAL AS (
         C.token0_contract,
         C.token1_contract,
         p.pool_id,
+        e.vault_address,
+        pa.swap_contract,
         C._inserted_timestamp
     FROM
         pairs C
         LEFT JOIN pierpools p USING (tx_id)
+        LEFT JOIN escrow e USING (tx_id)
+        LEFT JOIN pool_addr pa USING (tx_id)
     WHERE
         token1_contract IS NOT NULL
 )
