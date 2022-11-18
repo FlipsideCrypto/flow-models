@@ -16,7 +16,7 @@ WITH mints AS (
 sales AS (
     SELECT
         nft_collection AS event_contract,
-        nft_id as moment_id
+        nft_id AS moment_id
     FROM
         {{ ref('silver__nft_sales') }}
     WHERE
@@ -37,9 +37,14 @@ SELECT
     *
 FROM
     all_day_ids
-EXCEPT 
-select 
-    contract as event_contract,
+EXCEPT
+SELECT
+    contract AS event_contract,
     id AS moment_id
-from {{ source('flow_external', 'moments_metadata_api')}}
-where contract = 'A.e4cf4bdc1751c65d.AllDay'
+FROM
+    {{ source(
+        'bronze_streamline',
+        'moments_minted_metadata_api'
+    ) }}
+WHERE
+    contract = 'A.e4cf4bdc1751c65d.AllDay'
