@@ -39,6 +39,22 @@ WHERE
     )
 {% endif %}
 ),
+giglabs AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__nft_giglabs') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
 combo AS (
     SELECT
         tx_id,
@@ -52,7 +68,6 @@ combo AS (
         price,
         currency,
         tx_succeeded,
-        _ingested_at,
         _inserted_timestamp,
         tokenflow,
         counterparties
@@ -71,12 +86,29 @@ combo AS (
         price,
         currency,
         tx_succeeded,
-        _ingested_at,
         _inserted_timestamp,
         tokenflow,
         counterparties
     FROM
         secondary_mkts
+    UNION
+    SELECT
+        tx_id,
+        block_height,
+        block_timestamp,
+        marketplace,
+        nft_collection,
+        nft_id,
+        buyer,
+        seller,
+        price,
+        currency,
+        tx_succeeded,
+        _inserted_timestamp,
+        tokenflow,
+        counterparties
+    FROM
+        giglabs
 )
 SELECT
     *

@@ -8,7 +8,7 @@ WITH mints AS (
         event_contract,
         event_data :momentID :: STRING AS moment_id
     FROM
-        {{ ref('silver__events_final') }}
+        {{ ref('silver__nft_moments') }}
     WHERE
         event_contract = 'A.0b2a3299cc857e29.TopShot'
         AND event_type = 'MomentMinted'

@@ -8,6 +8,8 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - trader
+            - swap_contract
 
     columns:
       - name: tx_id

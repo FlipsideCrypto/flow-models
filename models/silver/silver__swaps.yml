@@ -1,36 +1,17 @@
 version: 2
 
 models:
-  - name: silver__event_attributes
+  - name: silver__swaps
     description: |-
-      This table cleans and transform attributes from each event in the events table.
+      This table records asset swaps on the Flow blockchain.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
-            - event_index
-            - attribute_index
+            - trader
+            - swap_index
 
     columns:
-      - name: attribute_id
-        description: "{{ doc('attribute_id') }}"
-        tests:
-          - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: event_id
-        description: "{{ doc('event_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
       - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
@@ -40,28 +21,57 @@ models:
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: event_index
-        description: "{{ doc('event_index') }}"
+      - name: block_height
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
-      - name: attribute_index
-        description: "{{ doc('attribute_index') }}"
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: swap_index
+        description: "{{ doc('swap_index') }}"
+
+      - name: trader
+        description: "{{ doc('trader') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_out_source
+        description: "{{ doc('token_out_source') }}"
+
+      - name: token_out_amount
+        description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+                - FLOAT
 
-      - name: event_contract
-        description: "{{ doc('event_contract') }}"
+      - name: token_out_contract
+        description: "{{ doc('token_out_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -69,35 +79,26 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: event_type
-        description: "{{ doc('event_type') }}"
+      - name: token_in_destination
+        description: "{{ doc('token_in_destination') }}"
+
+      - name: token_in_amount
+        description: "{{ doc('token_in_amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_in_contract
+        description: "{{ doc('token_in_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: attribute_key
-        description: "{{ doc('attribute_key') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: decoded_address
-        description: "{{ doc('decoded_address') }}"
-        tests:
-
-      - name: attribute_value
-        description: "{{ doc('attribute_value') }}"
-        tests:
-
-      - name: attribute_value_adj
-        description: "{{ doc('attribute_value_adj') }}"
-        tests:
 
       - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
