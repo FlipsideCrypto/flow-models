@@ -44,7 +44,8 @@ events_data AS (
         _ingested_at,
         COALESCE(
             _event_data_type :fields,
-            _event_data_type :Fields
+            _event_data_type :Fields,
+            _event_data_fields
         ) AS event_data_type_fields,
         _inserted_timestamp
     FROM
