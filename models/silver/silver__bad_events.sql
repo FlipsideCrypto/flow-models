@@ -106,7 +106,8 @@ FINAL AS (
         _inserted_timestamp,
         event_index,
         _index_from_flatten,
-        problem
+        problem,
+        CURRENT_TIMESTAMP as _bad_event_record_date
     FROM
         all_bad
 )
