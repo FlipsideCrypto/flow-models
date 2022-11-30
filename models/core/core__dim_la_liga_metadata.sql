@@ -1,5 +1,6 @@
 {{ config (
-    materialized = 'view'
+    materialized = 'view',
+    enabled=false
 ) }}
 
 SELECT
@@ -25,4 +26,8 @@ SELECT
     play_half,
     player_data_id
 FROM
+    -- TODO
+    -- probably remap this to select from the new dapper metadata silver table
+    -- but this is all useless if moments cannot be linked to plays
+    -- and all we have on chain rn are play IDs
     {{ ref('silver__nft_la_liga_play_metadata') }}
