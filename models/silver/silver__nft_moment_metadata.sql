@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    cluster_by = ['nft_id'],
+    cluster_by = ['play_id'],
     unique_key = 'tx_id',
     incremental_strategy = 'delete+insert'
 ) }}

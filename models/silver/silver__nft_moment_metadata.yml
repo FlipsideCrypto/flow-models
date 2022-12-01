@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: silver__nft_moment_metadata
+    description: |-
+      Cleaned PlayCreated events.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - collection
+            - play_id
