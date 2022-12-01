@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: silver__nft_la_liga_moments_minted
+    description: |-
+      Cleaned MomentNFTMinted events.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - event_contract
+            - nft_id

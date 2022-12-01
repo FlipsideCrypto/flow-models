@@ -27,7 +27,7 @@ play_metadata AS (
     SELECT
         tx_id,
         block_timestamp,
-        event_contract AS collection,
+        event_contract,
         event_data :id :: NUMBER AS play_id,
         VALUE :key :value :: STRING AS column_header,
         VALUE :value :value :: STRING AS column_value,
@@ -40,7 +40,7 @@ neat_object AS (
     SELECT
         tx_id,
         block_timestamp,
-        collection,
+        event_contract,
         play_id,
         OBJECT_AGG(
             column_header :: variant,
