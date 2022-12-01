@@ -35,9 +35,7 @@ org AS (
         event_data :seriesID :: STRING AS series_id,
         event_data :setID :: STRING AS set_id,
         event_data :tier :: STRING AS tier,
-        _inserted_timestamp,
-        'abc' as new,
-        event_data
+        _inserted_timestamp
     FROM
         events
 )
