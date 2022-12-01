@@ -29,6 +29,7 @@ events AS (
     block_timestamp,
     block_height,
     tx_succeeded,
+    INDEX AS _index_from_flatten,
     COALESCE(
       VALUE :event_index,
       VALUE :eventIndex
@@ -70,8 +71,6 @@ events AS (
         LATERAL FLATTEN(
           input => transaction_result :events
         )
-      WHERE
-        VALUE :: STRING != 'null'
     ),
     FINAL AS (
       SELECT
@@ -87,6 +86,8 @@ events AS (
         event_data_type AS _event_data_type,
         event_data_fields AS _event_data_fields,
         try_parse_payload AS _try_parse_payload,
+        _event_data_type :fields AS _attribute_fields,
+        _index_from_flatten,
         _ingested_at,
         _inserted_timestamp
       FROM
