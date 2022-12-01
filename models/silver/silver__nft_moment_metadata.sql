@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     cluster_by = ['play_id'],
-    unique_key = 'tx_id',
+    unique_key = "concat_ws('-', collection, play_id)",
     incremental_strategy = 'delete+insert'
 ) }}
 
