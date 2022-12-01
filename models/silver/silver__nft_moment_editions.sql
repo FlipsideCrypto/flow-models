@@ -2,7 +2,8 @@
     materialized = 'incremental',
     cluster_by = ['_inserted_timestamp'],
     unique_key = "concat_ws('-', event_contract, edition_id)",
-    incremental_strategy = 'delete+insert'
+    incremental_strategy = 'delete+insert',
+    tags = ['nft', 'dapper']
 ) }}
 
 WITH events AS (
@@ -12,8 +13,12 @@ WITH events AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        event_contract ILIKE '%87ca73a41bb50ad5%'
-        AND event_type = 'EditionCreated'
+        event_type = 'EditionCreated'
+        AND event_contract IN (
+            'A.e4cf4bdc1751c65d.AllDay',
+            'A.b715b81853fef53f.AllDay',
+            'A.87ca73a41bb50ad5.Golazos'            
+        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

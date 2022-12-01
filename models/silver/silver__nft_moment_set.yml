@@ -1,14 +1,14 @@
 version: 2
 
 models:
-  - name: silver__nft_moment_metadata
+  - name: silver__nft_moment_set
     description: |-
-      Cleaned PlayCreated events, which is what records the metadata on-chain.
+      Cleaned SetCreated events.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - event_contract
-            - play_id
+            - set_id
     columns:
       - name: tx_id
         description: "{{ doc('tx_id') }}"
@@ -16,7 +16,9 @@ models:
         description: "{{ doc('block_timestamp') }}"
       - name: event_contract
         description: "{{ doc('event_contract') }}"
-      - name: play_id
-        description: "{{ doc('play_id') }}"
+      - name: set_id
+        description: "{{ doc('set_id') }}"
+      - name: set_name
+        description: "{{ doc('set_name') }}"
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"

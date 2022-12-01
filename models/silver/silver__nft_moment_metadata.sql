@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'incremental',
     cluster_by = ['play_id'],
-    unique_key = "concat_ws('-', collection, play_id)",
-    incremental_strategy = 'delete+insert'
+    unique_key = "concat_ws('-', event_contract, play_id)",
+    incremental_strategy = 'delete+insert',
+    tags = ['nft', 'dapper']
 ) }}
 
 WITH play_creation AS (
@@ -13,6 +14,18 @@ WITH play_creation AS (
         {{ ref('silver__events_final') }}
     WHERE
         event_type = 'PlayCreated'
+        
+{# 
+currently includes the following contracts
+A.c38aea683c0c4d38.Eternal
+A.b715b81853fef53f.AllDay
+A.67af7ecf76556cd3.ABD
+A.0b2a3299cc857e29.TopShot
+A.5c0992b465832a94.TKNZ
+A.e4cf4bdc1751c65d.AllDay
+A.87ca73a41bb50ad5.Golazos
+ #}
+
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -36,12 +49,13 @@ play_metadata AS (
         play_creation,
         LATERAL FLATTEN(input => TRY_PARSE_JSON(event_data :metadata))
 ),
-neat_object AS (
+FINAL AS (
     SELECT
         tx_id,
         block_timestamp,
         event_contract,
         play_id,
+        _inserted_timestamp,
         OBJECT_AGG(
             column_header :: variant,
             column_value :: variant
@@ -52,9 +66,10 @@ neat_object AS (
         1,
         2,
         3,
-        4
+        4,
+        5
 )
 SELECT
     *
 FROM
-    neat_object
+    FINAL

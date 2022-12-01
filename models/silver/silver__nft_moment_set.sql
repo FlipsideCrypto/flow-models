@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'incremental',
     cluster_by = ['_inserted_timestamp'],
-    unique_key = "concat_ws('-', event_contract, edition_id)",
-    incremental_strategy = 'delete+insert'
+    unique_key = "concat_ws('-', event_contract, set_id)",
+    incremental_strategy = 'delete+insert',
+    tags = ['nft', 'dapper']
 ) }}
 
 WITH events AS (
@@ -12,8 +13,8 @@ WITH events AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        event_contract ILIKE '%87ca73a41bb50ad5%'
-        AND event_type = 'MomentNFTMinted'
+        event_type = 'SetCreated'
+        AND ARRAY_CONTAINS('name' :: variant, object_keys(event_data))
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -29,12 +30,13 @@ org AS (
         tx_id,
         block_timestamp,
         event_contract,
-        event_data :editionID :: STRING AS edition_id,
-        event_data :id :: STRING AS nft_id,
-        event_data :serialNumber :: STRING AS serial_number,
+        event_data :id :: STRING AS set_id,
+        event_data :name :: STRING AS set_name,
         _inserted_timestamp
     FROM
         events
+    WHERE
+        set_id IS NOT NULL
 )
 SELECT
     *
