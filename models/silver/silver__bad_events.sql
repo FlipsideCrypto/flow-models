@@ -5,6 +5,10 @@
     unique_key = "CONCAT_WS('-', tx_id, event_index)"
 ) }}
 
+{# 
+    Prior bad events check
+ #}
+
 WITH event_key AS (
 
     SELECT
