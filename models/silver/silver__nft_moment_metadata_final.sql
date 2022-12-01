@@ -1,8 +1,7 @@
 {{ config(
-    materialized = 'incremental',
+    materialized = 'table',
     cluster_by = ['_inserted_timestamp'],
     unique_key = "concat_ws('-',event_contract,edition_id,nft_id)",
-    incremental_strategy = 'delete+insert',
     tags = ['nft', 'dapper']
 ) }}
 
@@ -12,75 +11,30 @@ WITH moments AS (
         *
     FROM
         {{ ref('silver__nft_moment_minted') }}
-
-{% if is_incremental() %}
-WHERE _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
 ),
 metadata AS (
     SELECT
         *
     FROM
         {{ ref('silver__nft_moment_metadata') }}
-
-{% if is_incremental() %}
-WHERE _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
 ),
 editions AS (
     SELECT
         *
     FROM
         {{ ref('silver__nft_moment_editions') }}
-
-{% if is_incremental() %}
-WHERE _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
 ),
 series AS (
     SELECT
         *
     FROM
         {{ ref('silver__nft_moment_series') }}
-
-{% if is_incremental() %}
-WHERE _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
 ),
 set_nm AS (
     SELECT
         *
     FROM
         {{ ref('silver__nft_moment_set') }}
-
-{% if is_incremental() %}
-WHERE _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
 ),
 FINAL AS (
     SELECT
@@ -99,7 +53,8 @@ FINAL AS (
         e.edition_id,
         e.tier,
         pl.metadata,
-        m._inserted_timestamp
+        m._inserted_timestamp,
+        sn._inserted_timestamp AS _inserted_timestamp_set
     FROM
         moments m
         LEFT JOIN editions e USING (
