@@ -29,8 +29,6 @@ org AS (
         tx_id,
         block_timestamp,
         event_contract,
-        event_data :contentEditionID :: STRING AS content_edition_id,
-        event_data :contentID :: STRING AS content_id,
         event_data :momentID :: STRING AS moment_id,
         event_data :serialNumber :: STRING AS serial_number,
         event_data :seriesID :: STRING AS series_id,
