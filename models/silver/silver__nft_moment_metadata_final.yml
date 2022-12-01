@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: silver__nft_moment_metadata_final
+    description: |-
+      Cleaned PlayCreated events.
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+      - name: event_contract
+        description: "{{ doc('event_contract') }}"
+      - name: nft_id
+        description: "{{ doc('nft_id') }}"
+      - name: serial_number
+        description: "{{ doc('serial_number') }}"
+      - name: max_mint_size
+        description: "{{ doc('max_mint_size') }}"
+      - name: play_id
+        description: "{{ doc('play_id') }}"
+      - name: series_id
+        description: "{{ doc('series_id') }}"
+      - name: series_name
+        description: "{{ doc('series_name') }}"
+      - name: set_id
+        description: "{{ doc('set_id') }}"
+      - name: set_name
+        description: "{{ doc('set_name') }}"
+      - name: edition_id
+        description: "{{ doc('edition_id') }}"
+      - name: tier
+        description: "{{ doc('tier') }}"
+      - name: metadata
+        description: "{{ doc('metadata') }}"
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null

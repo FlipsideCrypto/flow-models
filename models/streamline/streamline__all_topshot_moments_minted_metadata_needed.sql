@@ -45,8 +45,8 @@ SELECT
     id AS moment_id
 FROM
     {{ source(
-        'flow_external',
-        'moments_metadata_api'
+        'bronze_streamline',
+        'moments_minted_metadata_api'
     ) }}
 WHERE
     contract = 'A.0b2a3299cc857e29.TopShot'

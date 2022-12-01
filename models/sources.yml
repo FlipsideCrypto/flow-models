@@ -21,47 +21,8 @@ sources:
       - name: market_asset_metadata
       - name: prices_v2
 
-  - name: flow_external
-    schema: bronze
-    loader: S3
+  - name: bronze_streamline
+    database: streamline
+    schema: flow
     tables:
-      - name: moments_metadata_api
-        description: "External table of dapper labs moments metadata"
-        external:
-          location: "@{{target.database}}.bronze.analytics_external_tables/{{target.database}}/MOMENTS_MINTED_METADATA_API/"
-          file_format: "( type = json, strip_outer_array = TRUE )"
-          auto_refresh: true
-        columns:
-          - name: contract
-            data_type: string 
-            description: "the contract for minting belonging to a certain collection"
-          - name: id
-            data_type: string 
-            description: "id of the NFT"
-          - name: data
-            data_type: variant
-            description: ""
-      - name: rarible_collections_api
-        description: "External table of collections available on rarible"
-        external:
-          location: "@{{target.database}}.bronze.analytics_external_tables/{{target.database}}/RARIBLE_COLLECTIONS_API"
-          file_format: "( type = json, strip_outer_array = TRUE )"
-          auto_refresh: true
-      - name: rarible_nft_metadata_api
-        description: "External table of collections available on rarible"
-        external:
-          location: "@{{target.database}}.bronze.analytics_external_tables/{{target.database}}/RARIBLE_NFT_METADATA_API"
-          file_format: "( type = json, strip_outer_array = TRUE )"
-          auto_refresh: true
-        columns:
-          - name: contract
-            data_type: string 
-            description: "the contract for minting belonging to a certain collection"
-          - name: id
-            data_type: string 
-            description: "id of the NFT"
-          - name: data
-            data_type: variant
-            description: ""
-        
-    
+      - name: moments_minted_metadata_api    
