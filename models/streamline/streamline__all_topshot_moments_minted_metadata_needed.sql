@@ -41,7 +41,7 @@ FROM
     all_topshots
 EXCEPT
 SELECT
-    nft_collection as contract,
+    nft_collection as event_contract,
     nft_id AS moment_id
 FROM
     {{ ref('silver__nft_topshot_metadata') }}
