@@ -7,6 +7,9 @@ models:
       - sequence_gaps:
           column_name: block_height
           where: BLOCK_TIMESTAMP < CURRENT_DATE
+          config:
+            severity: warn
+            error_if: "> 500"
 
     columns:
       - name: BLOCK_HEIGHT
