@@ -39,12 +39,7 @@ FROM
     all_day_ids
 EXCEPT
 SELECT
-    contract AS event_contract,
-    id AS moment_id
+    nft_collection AS event_contract,
+    nft_id AS moment_id
 FROM
-    {{ source(
-        'bronze_streamline',
-        'moments_minted_metadata_api'
-    ) }}
-WHERE
-    contract = 'A.e4cf4bdc1751c65d.AllDay'
+    {{ ref('silver__nft_allday_metadata') }}

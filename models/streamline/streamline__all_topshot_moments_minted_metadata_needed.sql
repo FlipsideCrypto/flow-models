@@ -41,12 +41,7 @@ FROM
     all_topshots
 EXCEPT
 SELECT
-    contract,
-    id AS moment_id
+    nft_collection as event_contract,
+    nft_id AS moment_id
 FROM
-    {{ source(
-        'bronze_streamline',
-        'moments_minted_metadata_api'
-    ) }}
-WHERE
-    contract = 'A.0b2a3299cc857e29.TopShot'
+    {{ ref('silver__nft_topshot_metadata') }}
