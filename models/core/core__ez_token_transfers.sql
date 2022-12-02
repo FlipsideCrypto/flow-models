@@ -15,4 +15,7 @@ SELECT
 FROM
     {{ ref('silver__token_transfers') }}
 WHERE
-    token_contract != 'A.c38aea683c0c4d38.ZelosAccountingToken'
+    token_contract NOT IN (
+        'A.c38aea683c0c4d38.ZelosAccountingToken',
+        'A.f1b97c06745f37ad.SwapPair'
+    )
