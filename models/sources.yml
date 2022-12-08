@@ -29,6 +29,7 @@ sources:
 
   - name: crosschain_v2
     database: crosschain
-    schema: core
+    schema: silver
     tables:
-      - name: fact_hourly_prices
+      - name: hourly_prices_coin_gecko
+      - name: hourly_prices_coin_market_cap

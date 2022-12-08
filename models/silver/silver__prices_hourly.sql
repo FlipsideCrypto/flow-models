@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['recorded_hour'],
+    cluster_by = ['_inserted_timestamp::date'],
     unique_key = "concat_ws( '-', recorded_hour, id )"
 ) }}
 -- model named prices hourly but core view is hourly prices
@@ -15,9 +15,9 @@ WITH token_prices AS (
 
 {% if is_incremental() %}
 WHERE
-    recorded_hour >= (
+    _inserted_timestamp >= (
         SELECT
-            MAX(recorded_hour)
+            MAX(_inserted_timestamp)
         FROM
             {{ this }}
     )
@@ -32,7 +32,8 @@ prices AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        _inserted_timestamp
     FROM
         token_prices
 ),
@@ -55,7 +56,8 @@ adj_token_names AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        _inserted_timestamp
     FROM
         prices
 ),
@@ -68,7 +70,8 @@ FINAL AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        _inserted_timestamp
     FROM
         adj_token_names
 )
