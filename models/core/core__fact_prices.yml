@@ -3,7 +3,7 @@ version: 2
 models:
   - name: core__fact_prices
     description: |-
-      This table provides token price data for FLOW tokens.
+      deprecating soon! This table is being deprecated in favor of the hourly prices table. Please move work over to that table.
 
     columns:
       - name: TIMESTAMP
