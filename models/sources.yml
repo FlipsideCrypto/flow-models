@@ -26,3 +26,9 @@ sources:
     schema: flow
     tables:
       - name: moments_minted_metadata_api    
+
+  - name: crosschain_v2
+    database: crosschain
+    schema: core
+    tables:
+      - name: fact_hourly_prices
