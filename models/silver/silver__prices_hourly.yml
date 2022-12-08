@@ -1,0 +1,32 @@
+
+version: 2
+
+models:
+  - name: silver__prices_hourly
+    description: |-
+      This table provides hourly token price data for FLOW tokens from CoinGecko and CoinMarketCap.
+  
+    columns:
+      - name: recorded_hour
+        description: "{{ doc('recorded_hour') }}"
+
+      - name: id
+        description: "{{ doc('asset_id') }}"
+
+      - name: token
+        description: "{{ doc('token') }}"
+
+      - name: open
+        description: "{{ doc('open') }}"
+
+      - name: high
+        description: "{{ doc('high') }}"
+
+      - name: low
+        description: "{{ doc('low') }}"
+
+      - name: close
+        description: "{{ doc('asset_id') }}"
+
+      - name: provider
+        description: "{{ doc('provider') }}"
