@@ -2,7 +2,7 @@
     materialized = 'table',
     cluster_by = ['_inserted_timestamp'],
     unique_key = "concat_ws('-',event_contract,edition_id,nft_id)",
-    tags = ['nft', 'dapper']
+    tags = ['nft', 'dapper', 'nft-metadata']
 ) }}
 
 WITH moments AS (
@@ -10,13 +10,13 @@ WITH moments AS (
     SELECT
         *
     FROM
-        {{ ref('silver__nft_moment_minted') }}
+        {{ ref('silver__nft_moment_nft_minted') }}
 ),
-metadata AS (
+play_created AS (
     SELECT
         *
     FROM
-        {{ ref('silver__nft_moment_metadata') }}
+        {{ ref('silver__nft_moment_play_created') }}
 ),
 editions AS (
     SELECT
@@ -61,7 +61,7 @@ FINAL AS (
             event_contract,
             edition_id
         )
-        LEFT JOIN metadata pl USING (
+        LEFT JOIN play_created pl USING (
             event_contract,
             play_id
         )

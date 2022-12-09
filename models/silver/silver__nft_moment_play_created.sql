@@ -3,7 +3,7 @@
     cluster_by = ['play_id'],
     unique_key = "concat_ws('-', event_contract, play_id)",
     incremental_strategy = 'delete+insert',
-    tags = ['nft', 'dapper']
+    tags = ['nft', 'dapper', 'topshot', 'nft-metadata']
 ) }}
 
 WITH play_creation AS (

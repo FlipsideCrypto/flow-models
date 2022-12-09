@@ -11,7 +11,7 @@ models:
             - nft_id
 
     columns:
-      - name: nft_collection
+      - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
         tests:
           - not_null
@@ -26,7 +26,8 @@ models:
       - name: max_mint_size
         description: "{{ doc('max_mint_size') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
       - name: play_id
         description: "{{ doc('play_id') }}"
         tests:
@@ -34,11 +35,13 @@ models:
       - name: series_id
         description: "{{ doc('series_id') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
       - name: series_name
         description: "{{ doc('series_name') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
       - name: set_id
         description: "{{ doc('set_id') }}"
         tests:
@@ -46,16 +49,25 @@ models:
       - name: set_name
         description: "{{ doc('set_name') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
       - name: edition_id
         description: "{{ doc('edition_id') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
+      - name: edition_name
+        description: "{{ doc('edition_name') }}"
       - name: tier
         description: "{{ doc('tier') }}"
         tests:
-          - not_null
+          - not_null:
+              where: NFT_COLLECTION != 'A.0b2a3299cc857e29.TopShot'
       - name: metadata
         description: "{{ doc('metadata') }}"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT

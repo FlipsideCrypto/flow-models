@@ -1,9 +1,9 @@
 {{ config(
     materialized = 'incremental',
     cluster_by = ['_inserted_timestamp'],
-    unique_key = "concat_ws('-', event_contract, moment_id)",
+    unique_key = "concat_ws('-', event_contract, edition_id)",
     incremental_strategy = 'delete+insert',
-    tags = ['nft', 'dapper']
+    tags = ['nft', 'dapper', 'nft-metadata']
 ) }}
 
 WITH events AS (
@@ -13,7 +13,7 @@ WITH events AS (
     FROM
         {{ ref('silver__events_final') }}
     WHERE
-        event_type = 'MomentMinted'
+        event_type = 'MomentNFTMinted'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -29,10 +29,9 @@ org AS (
         tx_id,
         block_timestamp,
         event_contract,
-        event_data :momentID :: STRING AS moment_id,
+        event_data :editionID :: STRING AS edition_id,
+        event_data :id :: STRING AS nft_id,
         event_data :serialNumber :: STRING AS serial_number,
-        event_data :seriesID :: STRING AS series_id,
-        event_data :setID :: STRING AS set_id,
         _inserted_timestamp
     FROM
         events

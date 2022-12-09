@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__nft_moment_metadata
+  - name: silver__nft_moment_play_created
     description: |-
       Cleaned PlayCreated events, which is what records the metadata on-chain.
     tests:

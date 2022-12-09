@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: silver__nft_moment_topshot_subeditions
+    description: |-
+      Cleaned Subedtion events for NBA TopShot for the metadata table.
+    columns:
+      - name: subedition_id
+        description: "{{ doc('subedition_id') }}"
+      - name: edition_name
+        description: "{{ doc('edition_name') }}"
+      - name: edition_metadata
+        description: "{{ doc('edition_metadata') }}"
+      - name: nft_id
+        description: "{{ doc('nft_id') }}"
+      - name: play_id
+        description: "{{ doc('play_id') }}"
+      - name: set_id
+        description: "{{ doc('set_id') }}"
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"

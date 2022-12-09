@@ -1,9 +1,10 @@
 version: 2
 
 models:
-  - name: silver__nft_moment_minted
+  - name: silver__nft_moment_nft_minted
     description: |-
-      Cleaned MomentNFTMinted events.
+      Cleaned MomentNFTMinted events, which is different from MomentMinted events in silver__nft_moment_minted model.
+      Expected values are used to track which contracts use this structure.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -19,14 +20,17 @@ models:
         tests:
           - accepted_values:
               values:
-                - "A.e4cf4bdc1751c65d.AllDay"
-                - "A.b715b81853fef53f.AllDay"
-                - "A.87ca73a41bb50ad5.Golazos"
-      - name: serial_number
-        description: "{{ doc('serial_number') }}"
-      - name: edition_id
-        description: "{{ doc('edition_id') }}"
+                - "A.c38aea683c0c4d38.Eternal"
+                - "A.d4ad4740ee426334.Moments"
+                - "A.67af7ecf76556cd3.ABD"
+                - "A.0b2a3299cc857e29.TopShot"
       - name: nft_id
         description: "{{ doc('nft_id') }}"
+      - name: serial_number
+        description: "{{ doc('serial_number') }}"
+      - name: set_id
+        description: "{{ doc('set_id') }}"
+      - name: series_id
+        description: "{{ doc('series_id') }}"
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"

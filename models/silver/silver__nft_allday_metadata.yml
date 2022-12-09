@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: silver__nft_allday_metadata
+    description: |-
+      Data for NFL AllDay Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
+
+    columns:
+      - name: NFT_ID
+        description: "{{ doc('nft_id') }}"
+
+      - name: NFT_COLLECTION
+        description: "{{ doc('nft_collection') }}"
+
+      - name: NFLALLDAY_ID
+        description: "{{ doc('nflallday_id') }}"
+
+      - name: SERIAL_NUMBER
+        description: "{{ doc('serial_number') }}"
+
+      - name: TOTAL_CIRCULATION
+        description: "{{ doc('total_circulation') }}"
+
+      - name: MOMENT_DESCRIPTION
+        description: "{{ doc('moment_description') }}"
+
+      - name: PLAYER
+        description: "{{ doc('player') }}"
+
+      - name: TEAM
+        description: "{{ doc('team') }}"
+
+      - name: SEASON
+        description: "{{ doc('season') }}"
+
+      - name: WEEK
+        description: "{{ doc('week') }}"
+
+      - name: CLASSIFICATION
+        description: "{{ doc('classification') }}"
+
+      - name: PLAY_TYPE
+        description: "{{ doc('play_type') }}"
+
+      - name: MOMENT_DATE
+        description: "{{ doc('moment_date') }}"
+
+      - name: SERIES
+        description: "{{ doc('series') }}"
+
+      - name: SET_NAME
+        description: "{{ doc('set_name') }}"
+
+      - name: VIDEO_URLS
+        description: "{{ doc('video_urls') }}"
+
+      - name: MOMENT_STATS_FULL
+        description: "{{ doc('moment_stats_full') }}"
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
