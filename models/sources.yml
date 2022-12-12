@@ -26,3 +26,10 @@ sources:
     schema: flow
     tables:
       - name: moments_minted_metadata_api    
+
+  - name: crosschain_v2
+    database: crosschain
+    schema: silver
+    tables:
+      - name: hourly_prices_coin_gecko
+      - name: hourly_prices_coin_market_cap
