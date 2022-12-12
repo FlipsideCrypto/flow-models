@@ -1,3 +1,7 @@
+{{ config(
+    severity = "error"
+) }}
+
 SELECT
     DATEDIFF(
         SECOND,
