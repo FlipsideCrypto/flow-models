@@ -25,7 +25,7 @@ AND _inserted_date >= (
 )
 AND _inserted_timestamp > (
     SELECT
-        MAX(_inserted_date)
+        MAX(_inserted_timestamp)
     FROM
         {{ this }}
 )
