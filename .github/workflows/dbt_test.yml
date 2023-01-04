@@ -4,11 +4,10 @@ run-name: dbt_test_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every hour" (see https://crontab.guru)
-    - cron: '0 */1 * * *'
-
+    # Run at 1600 UTC daily (see https://crontab.guru)
+    - cron: '0 16 * * *'
 env:
-  DBT_PROFILES_DIR: ./
+  DBT_PROFILES_DIR: .dbt/
 
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"

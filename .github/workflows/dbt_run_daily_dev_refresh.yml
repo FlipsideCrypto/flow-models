@@ -8,7 +8,7 @@ on:
     - cron: '0 8 * * *'
 
 env:
-  DBT_PROFILES_DIR: ./
+  DBT_PROFILES_DIR: .dbt/
 
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
@@ -39,4 +39,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run-operation run_sp_create_prod_clonepi
+          dbt run-operation run_sp_create_prod_clone

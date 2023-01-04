@@ -8,7 +8,7 @@ on:
     - cron: '0 */1 * * *'
 
 env:
-  DBT_PROFILES_DIR: ./
+  DBT_PROFILES_DIR: .dbt/
 
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"

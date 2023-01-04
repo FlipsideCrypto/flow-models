@@ -1,4 +1,4 @@
-name: docs_update
+name: dbt_docs_update
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  DBT_PROFILES_DIR: ./
+  DBT_PROFILES_DIR: .dbt/
 
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
