@@ -6,20 +6,23 @@ on:
       - "main"
 
 env:
+  DBT_PROFILES_DIR: ./
+
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
   USER: "${{ secrets.USER }}"
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ secrets.REGION }}"
-  DATABASE_DEV: "${{ secrets.DATABASE_DEV }}"
-  DATABASE_PROD: "${{ secrets.DATABASE_PROD }}"
-  WAREHOUSE_DEV: "${{ secrets.WAREHOUSE_DEV }}"
-  WAREHOUSE_PROD: "${{ secrets.WAREHOUSE_PROD }}"
+  DATABASE: "${{ secrets.DATABASE }}"
+  WAREHOUSE: "${{ secrets.WAREHOUSE }}"
+  SCHEMA: "${{ secrets.SCHEMA }}"
 
 jobs:
   scheduled_run:
     name: docs_update
     runs-on: ubuntu-latest
+    environment: 
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
@@ -30,25 +33,19 @@ jobs:
 
       - name: install dependencies
         run: |
-          pip install dbt-snowflake
+          pip install dbt-snowflake==1.3.0
           dbt deps
-
-      - name: delete existing docs branch
-        run: git push origin --delete docs || true
-
       - name: checkout docs branch
         run: |
-          git checkout -b docs
-          git push --set-upstream origin docs
-
+          git checkout -B docs origin/main
+          
       - name: generate dbt docs
-        run: dbt docs generate -t prod --profiles-dir ./.dbt
+        run: dbt docs generate -t prod
 
       - name: move files to docs directory
         run: |
           mkdir -p ./docs
           cp target/{catalog.json,manifest.json,index.html} docs/
-
       - name: clean up target directory
         run: dbt clean
 
@@ -63,7 +60,6 @@ jobs:
           git config user.email "abc@xyz"
           git config user.name "github-actions"
           git commit -am "Auto-update docs"
-
       - name: push changes to docs
         run: |
-          git push
+          git push -f --set-upstream origin docs
