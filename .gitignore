@@ -17,4 +17,3 @@ logs/
 
 .dbt/.user.yml
 .env
-dbt-env/
