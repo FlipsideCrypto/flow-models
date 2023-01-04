@@ -6,6 +6,14 @@ on:
     branches:
       - "main"
     inputs:
+      environment:
+        type: choice 
+        description: DBT Run Environment
+        required: true
+        options:
+          - dev
+          - prod
+        default: dev
       warehouse:
         type: choice 
         description: Snowflake warehouse
@@ -36,7 +44,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment: 
-      name: workflow_prod
+      name: workflow_${{ inputs.environment }}
     strategy:
       matrix:
         command: ${{fromJson(inputs.dbt_command)}}
