@@ -17,3 +17,5 @@ logs/
 
 .dbt/.user.yml
 .env
+
+.github/workflows/.dbt/.user.yml
