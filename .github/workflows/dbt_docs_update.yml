@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  DBT_PROFILES_DIR: /.github/workflows/.dbt/
+  DBT_PROFILES_DIR: ./.github/workflows/.dbt/
 
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
