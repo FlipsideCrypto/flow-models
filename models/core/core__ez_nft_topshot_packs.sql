@@ -18,7 +18,6 @@ gold_nfts AS (
         marketplace,
         nft_id,
         buyer,
-        seller,
         tx_succeeded
     FROM
         silver_nfts

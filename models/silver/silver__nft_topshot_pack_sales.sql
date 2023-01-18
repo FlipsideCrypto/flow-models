@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merghe',
+    incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = ['tx_id','nft_id'],
     tags = ['nft']
@@ -23,15 +23,14 @@ WHERE
     )
 {% endif %}
 ),
-assumed_pack_buys AS (
+nft_txs AS (
     SELECT
         tx_id,
+        event_index,
         block_height,
         block_timestamp,
-        event_data :id :: INT AS nft_id,
         tx_succeeded,
-        event_index,
-        event_data :from :: STRING AS seller,
+        event_data :id :: INT AS nft_id,
         _inserted_timestamp
     FROM
         silver_events
@@ -43,11 +42,11 @@ SELECT
     A.tx_id,
     A.block_height,
     A.block_timestamp,
-    'topshot pack purchase' AS marketplace,
+    'topshot pack' AS marketplace,
     NULL AS nft_collection,
     A.nft_id,
     b.event_data :to :: STRING buyer,
-    A.seller AS seller,
+    NULL AS seller,
     NULL price,
     NULL currency,
     A.tx_succeeded,
@@ -58,7 +57,10 @@ SELECT
     ) AS pack_id,
     A._inserted_timestamp
 FROM
-    assumed_pack_buys A
+    nft_txs A
     JOIN silver_events b
     ON A.tx_id = b.tx_id
-    AND A.event_index + 1 = b.event_index
+    AND A.nft_id = b.event_data :id :: INT
+WHERE
+    event_data :to IS NOT NULL
+    AND A.event_index <> b.event_index
