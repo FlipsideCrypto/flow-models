@@ -1,6 +1,13 @@
 {{ config(
     materialized = 'view',
-    tags = ['ez', 'bridge']
+    tags = ['ez', 'bridge'],
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'BRIDGE'
+            }
+        }
+    }
 ) }}
 
 WITH blocto AS (

@@ -1,6 +1,13 @@
 {{ config (
     materialized = 'view',
-    tags = ['nft', 'dapper']
+    tags = ['nft', 'dapper'],
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'NFT, ALLDAY, GOLAZOS, TOPSHOT'
+            }
+        }
+    }
 ) }}
 
 SELECT

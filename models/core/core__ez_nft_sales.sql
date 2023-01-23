@@ -1,6 +1,13 @@
 {{ config(
     materialized = 'view',
-    tags = ['nft', 'ez']
+    tags = ['nft', 'ez'],
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'NFT'
+            }
+        }
+    }
 ) }}
 
 WITH silver_nfts AS (
