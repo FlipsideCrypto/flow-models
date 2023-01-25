@@ -46,4 +46,4 @@ jobs:
 
       - name: Log test results
         run: |
-          python python/dbt_test_alert.py
+          python python_scripts/test_alert/dbt_test_alert.py
