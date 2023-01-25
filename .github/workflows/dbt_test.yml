@@ -7,8 +7,8 @@ on:
     # Run at 1600 UTC daily (see https://crontab.guru)
     - cron: '0 16 * * *'
 env:
-  DBT_PROFILES_DIR: ./.github/workflows/.dbt/
-
+  DBT_PROFILES_DIR: "${{ secrets.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ secrets.DBT_VERSION }}"
   ACCOUNT: "${{ secrets.ACCOUNT }}"
   ROLE: "${{ secrets.ROLE }}"
   USER: "${{ secrets.USER }}"
@@ -18,24 +18,14 @@ env:
   WAREHOUSE: "${{ secrets.WAREHOUSE }}"
   SCHEMA: "${{ secrets.SCHEMA }}"
 
+concurrency:
+  group: ${{ github.workflow }}
 
 jobs:
-  run_dbt_jobs:
-    runs-on: ubuntu-latest
-    environment: 
-      name: workflow_prod
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v1
-        with:
-          python-version: "3.7.x"
-
-      - name: install dependencies
-        run: |
-          pip3 install dbt-snowflake==1.3.0 cli_passthrough requests click
-          dbt deps
-      - name: Run DBT Jobs
-        run: |
-          dbt test
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    with:
+      dbt_command: "[\"dbt test\"]"
+      environment: workflow_prod
+      warehouse: ${{ vars.WAREHOUSE }}
+    secrets: inherit 
