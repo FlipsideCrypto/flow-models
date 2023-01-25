@@ -72,7 +72,7 @@ def create_message(**kwargs):
                     },
                     {
                         "title": "Failed Tests:",
-                        "value": "\n".join(kwargs["messages"]["fail"]),
+                        "value": "\n".join(kwargs["messages"]["fail"]) if len(kwargs["messages"]["fail"]) > 0 else "None :)",
                         "short": False
                     }
                 ],
