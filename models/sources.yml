@@ -9,8 +9,8 @@ sources:
       - name: flow_txs
 
   - name: crosschain
-    database: flipside_prod_db
-    schema: crosschain
+    database: crosschain
+    schema: core
     tables:
       - name: address_labels
 
@@ -25,7 +25,7 @@ sources:
     database: streamline
     schema: flow
     tables:
-      - name: moments_minted_metadata_api    
+      - name: moments_minted_metadata_api
 
   - name: crosschain_v2
     database: crosschain
