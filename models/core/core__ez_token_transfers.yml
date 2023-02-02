@@ -11,6 +11,11 @@ models:
             - sender
             - recipient
             - token_contract
+            - amount
+          config:
+            severity: warn
+            error_if: ">10"
+
 
     columns:
       - name: tx_id
