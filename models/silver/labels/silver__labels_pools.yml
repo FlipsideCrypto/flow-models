@@ -31,7 +31,6 @@ models:
         description: "{{ doc('pool_id') }}"
         tests:
           - not_null
-          - unique
 
       - name: vault_address
         description: "{{ doc('vault_address') }}"

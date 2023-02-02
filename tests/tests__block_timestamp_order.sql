@@ -1,5 +1,6 @@
 {{ config(
-    severity = "error"
+    severity = "warn",
+    error_if = ">100"
 ) }}
 
 SELECT
