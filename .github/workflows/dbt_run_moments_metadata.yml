@@ -26,7 +26,9 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
-      dbt_command: "[\"dbt run-operation run_bulk_get_topshot_moments_metadata\", \"dbt run-operation run_bulk_get_nfl_allday_moments_metadata\"]"
+      dbt_command: >
+        dbt run-operation run_bulk_get_topshot_moments_metadata; 
+        dbt run-operation run_bulk_get_nfl_allday_moments_metadata;
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
