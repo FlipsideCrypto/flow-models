@@ -43,7 +43,8 @@ swap_events AS (
             '21841218a9fc14a2532fcc3e5a550761bb2b02fb4eab31cef4c5efb51e2f9d82',
             '89fbf6fa71481142d876c6a88ebf52c6fdb26f741985ef2af57e6101edf57a07',
             'e87d4b15f08a816244adc2ba1bcf630b3cb3b29582e946090bed8c7a459e39a6',
-            '0d23365c045573c2d69a908810fcc9d6e73cdbc4760ada7a4398e3e1c1f5e1d9'
+            '0d23365c045573c2d69a908810fcc9d6e73cdbc4760ada7a4398e3e1c1f5e1d9',
+            '531304befc9dbd61b6b29b22e52f98336ccd1801d4f75c8e1a7c05cc5244a6c6'
         ) -- exclude non-swap interation with swap pool
         AND tx_id NOT IN (
             SELECT
