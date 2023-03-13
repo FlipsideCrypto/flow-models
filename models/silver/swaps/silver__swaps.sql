@@ -28,25 +28,7 @@ swap_events AS (
     FROM
         events
     WHERE
-        -- I will fix these in AN-2401
         tx_id NOT IN (
-            'dc8678e4a1f873b600e1a6122c89eb96fe405837a33321c45455a85c8a609ff8',
-            '7e39d74ca2b99f425afbfc1bd5e8690d761ade53b6552393ff057852cfb36beb',
-            'b57bbd020e5bf807237d8a7ab198d144fae86d6c73d6cdd8f8aae09e417b3c59',
-            'e17ae0a8a2e4e1b955eeddbdc65514146d0b944bff8e216f038108a88e5f847d',
-            'd65d666bcb0f441aabca8d38179b39a36a4f5e8bb01c6bb60a1579206a0e2b84',
-            '48e4647c9c6553d4e7234fabe669951cb6ed5c55b061445e36fe54a55ffc5db2',
-            '7e8820674a5af348e7d467d6fe937bf86209e30f6e2e259d90c435b4b5fd4d04',
-            '2820e24a3b125524a9e244343db9aba060abbe36aa6b263c31f3c5aaec636f47',
-            '5634cab1bde50d1cf6b8b8f8eeace0740e6545ff2827ab51284505749da1340b',
-            '30664076d42769e48761b6b8c0048a47ec40b90c17770f2b6456cf64e839561c',
-            '21841218a9fc14a2532fcc3e5a550761bb2b02fb4eab31cef4c5efb51e2f9d82',
-            '89fbf6fa71481142d876c6a88ebf52c6fdb26f741985ef2af57e6101edf57a07',
-            'e87d4b15f08a816244adc2ba1bcf630b3cb3b29582e946090bed8c7a459e39a6',
-            '0d23365c045573c2d69a908810fcc9d6e73cdbc4760ada7a4398e3e1c1f5e1d9',
-            '531304befc9dbd61b6b29b22e52f98336ccd1801d4f75c8e1a7c05cc5244a6c6'
-        ) -- exclude non-swap interation with swap pool
-        AND tx_id NOT IN (
             SELECT
                 DISTINCT tx_id
             FROM
@@ -247,6 +229,28 @@ restructure AS (
         swap_index IS NOT NULL -- exclude the network fee token movement
         AND transfer_involve_pool_or_trader
 ),
+-- there are some cases where the same token is transferred multiple times in a single swap
+-- causing an error with object agg
+excl_dup_transfer AS (
+    SELECT
+        tx_id,
+        pool_contract,
+        swap_index,
+        CONCAT(
+            'token',
+            token_position
+        ),
+        COUNT(1) AS identical_transfer_count
+    FROM
+        restructure
+    GROUP BY
+        1,
+        2,
+        3,
+        4
+    HAVING
+        identical_transfer_count > 1
+),
 pool_token_alignment AS (
     SELECT
         tx_id,
@@ -258,6 +262,13 @@ pool_token_alignment AS (
         OBJECT_AGG(CONCAT('to', token_position), deposit_to :: variant) AS deposits
     FROM
         restructure
+    WHERE
+        tx_id NOT IN (
+            SELECT
+                DISTINCT tx_id
+            FROM
+                excl_dup_transfer
+        )
     GROUP BY
         1,
         2,
@@ -274,6 +285,12 @@ boilerplate AS (
         link_token_movement
     WHERE
         transfer_index = 0
+        AND tx_id NOT IN (
+            SELECT
+                DISTINCT tx_id
+            FROM
+                excl_dup_transfer
+        )
 ),
 FINAL AS (
     SELECT
