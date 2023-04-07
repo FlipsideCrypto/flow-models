@@ -1,5 +1,5 @@
-name: dbt_run_scheduled
-run-name: dbt_run_scheduled
+name: dbt_2
+run-name: dbt_2
 
 on:
   workflow_dispatch:
