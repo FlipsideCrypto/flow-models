@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@alter_workflow_var
     with:
       dbt_command: >
         dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
