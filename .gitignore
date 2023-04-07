@@ -19,3 +19,5 @@ logs/
 .env
 
 .github/workflows/.dbt/.user.yml
+
+local*
