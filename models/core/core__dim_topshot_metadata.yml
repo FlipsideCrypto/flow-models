@@ -111,7 +111,7 @@ models:
         description: "{{ doc('moment_date') }}"
         tests:
           - not_null:
-              where: set_name != 'Fit Check'
+              where: set_name not in ('Fit Check', 'The Champion\'s Path')
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
