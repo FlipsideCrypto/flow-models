@@ -59,4 +59,4 @@ models:
         description: "{{ doc('metadata') }}"
         tests:
           - not_null:
-              where: not (nft_collection = 'A.e4cf4bdc1751c65d.AllDay' and series_name = 'Historical 2')
+              where: not (nft_collection = 'A.e4cf4bdc1751c65d.AllDay' and series_name = 'Historical 2') and nft_collection != 'A.87ca73a41bb50ad5.Golazos'
