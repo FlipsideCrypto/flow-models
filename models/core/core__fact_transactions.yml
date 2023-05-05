@@ -20,9 +20,6 @@ models:
               column_block: block_height
               column_tx_count: tx_count
               where: BLOCK_TIMESTAMP < CURRENT_DATE
-              config:
-                severity: warn
-                error_if: "> 5000"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
