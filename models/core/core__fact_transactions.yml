@@ -19,7 +19,7 @@ models:
           - tx_gaps:
               column_block: block_height
               column_tx_count: tx_count
-              where: BLOCK_TIMESTAMP < CURRENT_DATE
+              where: BLOCK_TIMESTAMP::DATE < CURRENT_DATE
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
