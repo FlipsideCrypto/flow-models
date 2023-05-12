@@ -4,9 +4,9 @@
 CREATE TABLE if NOT EXISTS {{ target.database }}.bronze_api.flow_api_check(
     tx_id VARCHAR,
     block_height NUMBER,
-    sample_index NUMBER,
     res VARIANT,
-    _request_timestamp TIMESTAMP_NTZ
+    _request_timestamp TIMESTAMP_NTZ,
+    has_events BOOLEAN
   );
 {% endset %}
   {% do run_query(create_table) %}
@@ -14,61 +14,102 @@ CREATE TABLE if NOT EXISTS {{ target.database }}.bronze_api.flow_api_check(
 {% set livequery %}
 {% set step = 1 %}
 
+
 CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.flow_txs_api() 
-RETURNS BOOLEAN 
+RETURNS OBJECT
 LANGUAGE SQL 
 EXECUTE AS CALLER
 AS $$
+DECLARE
+  counter NUMBER DEFAULT 0;
+  UPDATE_FLAG_SUCCESS VARCHAR DEFAULT ('update flow_dev.silver.empty_event_txs
+                  set is_confirmed = True 
+                  where tx_id in (select tx_id from response_data)');
+  UPDATE_FLAG_ERROR VARCHAR DEFAULT ('update flow_dev.silver.empty_event_txs
+                  set is_api_error = TRUE 
+                  where tx_id in (select tx_id from response_data)');
+  START_TIME TIMESTAMP_NTZ DEFAULT SYSDATE();
+
 BEGIN
-  let counter:= 0;
-  let max_index := 1416360;
 REPEAT
 CREATE
   OR REPLACE temporary TABLE response_data AS WITH 
-sample_txs as (
-    select distinct tx_id, block_height, sample_index from flow_dev.silver.event_diff_2
-    where sample_index > :max_index 
-      and sample_index <= (:max_index + {{ step }})
-      and sample_index not in (1268528, 1416288, 1416317, 1416335, 1416338, 1416361, 1416363)
-),
-call as (
-    SELECT
-        tx_id,
+  sample_txs as (
+      select 
+        tx_id, 
         block_height,
-        sample_index,
-        concat('https://rest-mainnet.onflow.org/v1/transaction_results/', tx_id) as url,
-        udfs.streamline.udf_api(
-            'GET',
-            url,
-            {},
-            {}
-        ) AS res,
-      CURRENT_TIMESTAMP AS _request_timestamp
-    from sample_txs
-)
+        _inserted_timestamp
+      from {{ target.database }}.silver.empty_event_txs
+        where not is_confirmed and not is_api_error
+          and tx_id in 
+          (
+          '19e55a473f982f7f556a97b3165a03d6765b505a24bd424c9dbbf45b90b05cfa',
+          '0b8d551e43050275a5ab593a543c3fc3b61600bde1278546987c8cb635a2fa5c'
+          )
+        limit 1
+  ),
+  call as (
+      SELECT
+          tx_id,
+          block_height,
+          concat('https://rest-mainnet.onflow.org/v1/transaction_results/', tx_id) as url,
+          udfs.streamline.udf_api(
+              'GET',
+              url,
+              {},
+              {}
+          ) AS res,
+        CURRENT_TIMESTAMP AS _request_timestamp
+      from sample_txs
+  )
 select
     tx_id,
     block_height,
-    sample_index,
     res,
-    _request_timestamp
+    _request_timestamp,
+    array_size(res:data:events::array) > 0 as has_events
 from call;
+
 INSERT INTO {{ target.database }}.bronze_api.flow_api_check
 SELECT * FROM response_data;
 
-max_index:= max_index + {{ step }};
+EXECUTE IMMEDIATE :UPDATE_FLAG_SUCCESS;
+
 counter:= counter + 1;
 
 
 UNTIL (
-    max_index >= 1416515
+    counter = 3
   )
 END REPEAT;
-RETURN TRUE;
+RETURN OBJECT_CONSTRUCT('Calls', :counter,
+                        'Duration', datediff(second, :START_TIME, SYSDATE()),
+                        'Txs_retrieved', (select array_agg(tx_id) from {{ target.database}}.bronze_api.flow_api_check where _request_timestamp >= :START_TIME)
+                        );
+
+EXCEPTION
+  WHEN statement_error THEN
+    IF (sqlcode = 100353) THEN
+      EXECUTE IMMEDIATE :UPDATE_FLAG_ERROR;
+    END IF;
+
+    RETURN OBJECT_CONSTRUCT('Error type', 'STATEMENT_ERROR',
+                            'SQLCODE', sqlcode,
+                            'SQLERRM', sqlerrm,
+                            'SQLSTATE', sqlstate);
+  WHEN OTHER THEN
+    RETURN OBJECT_CONSTRUCT('Error type', 'Other error',
+                            'SQLCODE', sqlcode,
+                            'SQLERRM', sqlerrm,
+                            'SQLSTATE', sqlstate);
+
 END;$$ 
 
 {% endset %}
 {% do run_query(livequery) %}
+
+
+
 
 {% endmacro %}
 
