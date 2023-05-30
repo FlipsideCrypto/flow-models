@@ -27,13 +27,15 @@ DECLARE
                   where tx_id in (select tx_id from response_data)');
   UPDATE_FLAG_ERROR VARCHAR DEFAULT ('update flow_dev.silver.empty_event_txs
                   set is_api_error = TRUE 
-                  where tx_id in (select tx_id from response_data)');
+                  where tx_id in (select tx_id from flow_dev.silver.empty_event_txs
+                                  where not not_is_confirmed and not is_api_error
+                                  order by _inserted_timestamp desc)');
   START_TIME TIMESTAMP_NTZ DEFAULT SYSDATE();
 
 BEGIN
 REPEAT
 CREATE
-  OR REPLACE temporary TABLE response_data AS WITH 
+  OR REPLACE TRANSIENT TABLE response_data AS WITH 
   sample_txs as (
       select 
         tx_id, 
@@ -43,9 +45,11 @@ CREATE
         where not is_confirmed and not is_api_error
           and tx_id in 
           (
-          '19e55a473f982f7f556a97b3165a03d6765b505a24bd424c9dbbf45b90b05cfa',
-          '0b8d551e43050275a5ab593a543c3fc3b61600bde1278546987c8cb635a2fa5c'
+          '8714ffcceaed1ac4ecbbaffc235479a763173250371e110487a224a909409d37',
+          'fb1f30c48fc8a0cb5e04dc6a201fdf84187ab8cbfefea9efebbbf120f793302f',
+          '9a0aaa02902cf71da5f62d5a19be2fc65e1987a4c265da8167ef56deac948d18'
           )
+        order by _inserted_timestamp desc
         limit 1
   ),
   call as (
