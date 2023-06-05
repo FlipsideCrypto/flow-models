@@ -5,5 +5,10 @@
         {{ udf_bulk_get_nfl_allday_moments_metadata() }};
         {% endset %}
         {% do run_query(sql) %}
+
+        {% set utils_udfs %}
+        {{- fsc_utils.create_udfs() -}}
+        {% endset %}
+        {% do run_query(utils_udfs) %}
     {% endif %}
 {% endmacro %}
