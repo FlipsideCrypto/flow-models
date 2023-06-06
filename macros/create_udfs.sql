@@ -6,9 +6,10 @@
         {% endset %}
         {% do run_query(sql) %}
 
-        {% set utils_udfs %}
+
+    {% endif %}
+
+    {% if var("UPDATE_UDFS_AND_SPS") %}
         {{- fsc_utils.create_udfs() -}}
-        {% endset %}
-        {% do run_query(utils_udfs) %}
     {% endif %}
 {% endmacro %}
