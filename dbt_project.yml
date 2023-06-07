@@ -48,7 +48,7 @@ models:
 tests:
   flow_models:
     +severity: warn # default all tests to warn
-    core:
+    gold:
       +severity: error # heighten severity for public facing tables
   +store_failures: true # all tests
 
