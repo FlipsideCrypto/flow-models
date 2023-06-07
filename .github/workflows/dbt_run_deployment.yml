@@ -44,4 +44,5 @@ jobs:
       dbt_command: |
          ${{ inputs.dbt_command }}
       warehouse: ${{ inputs.WAREHOUSE }}
+      environment: workflow_prod
     secrets: inherit 
