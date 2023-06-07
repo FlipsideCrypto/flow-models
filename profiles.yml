@@ -6,7 +6,7 @@ flow:
       account: "{{ env_var('SF_ACCOUNT') }}"
       # User/password auth
       user: "{{ env_var('SF_USERNAME') }}"
-      password: "{{ env_var('SF_PASSWORD') }}"
+      authenticator: externalbrowser
       role: "{{ env_var('SF_ROLE') }}"
       schema: "{{ env_var('SF_SCHEMA') }}"
       region: "{{ env_var('SF_REGION') }}"

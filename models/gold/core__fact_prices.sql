@@ -23,6 +23,7 @@ prices AS (
 ),
 prices_swaps AS (
     SELECT
+        tx_id,
         block_timestamp AS TIMESTAMP,
         token_contract,
         swap_price AS price_usd,
@@ -37,7 +38,8 @@ viewnion AS (
         p.symbol,
         l.token_contract,
         price_usd,
-        source
+        source,
+        NULL as tx_id
     FROM
         prices p
         LEFT JOIN token_labels l USING (symbol)
@@ -48,7 +50,8 @@ viewnion AS (
         l.symbol,
         ps.token_contract,
         price_usd,
-        source
+        source,
+        tx_id
     FROM
         prices_swaps ps
         LEFT JOIN token_labels l USING (token_contract)
