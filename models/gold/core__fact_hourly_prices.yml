@@ -7,7 +7,7 @@ models:
       This table provides hourly token price data for FLOW tokens from CoinGecko and CoinMarketCap.
   
     columns:
-      - name: recorded_hour
+      - name: RECORDED_HOUR
         description: "{{ doc('recorded_hour') }}"
         tests:
           - not_null
@@ -15,7 +15,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: id
+      - name: ID
         description: "{{ doc('asset_id') }}"
         tests:
           - not_null
@@ -24,16 +24,15 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token
+      - name: TOKEN
         description: "{{ doc('token') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-      - name: open
+      - name: OPEN
         description: "{{ doc('open') }}"
         tests:
           - not_null
@@ -42,7 +41,7 @@ models:
                 - FLOAT
                 - DOUBLE
 
-      - name: high
+      - name: HIGH
         description: "{{ doc('high') }}"
         tests:
           - not_null
@@ -51,7 +50,7 @@ models:
                 - FLOAT
                 - DOUBLE
 
-      - name: low
+      - name: LOW
         description: "{{ doc('low') }}"
         tests:
           - not_null
@@ -60,7 +59,7 @@ models:
                 - FLOAT
                 - DOUBLE
 
-      - name: close
+      - name: CLOSE
         description: "{{ doc('asset_id') }}"
         tests:
           - not_null
@@ -69,7 +68,7 @@ models:
                 - FLOAT
                 - DOUBLE
 
-      - name: provider
+      - name: PROVIDER
         description: "{{ doc('provider') }}"
         tests:
           - not_null

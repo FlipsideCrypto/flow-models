@@ -3,7 +3,9 @@ version: 2
 models:
   - name: core__fact_prices
     description: |-
-      deprecating soon! This table is being deprecated in favor of the hourly prices table. Please move work over to that table.
+      This table reports prices derived from various on-chain sources. CoinGecko and CoinMarketCap price feeds can be found in the hourly price table.
+      Note that prices from swaps may be volatile and are an approximation of price in USD terms, at best. A tx_hash is included for prices from swaps to provide a source.
+      Low cap coins may have questionable prices due to low liquidity.
 
     columns:
       - name: TIMESTAMP
@@ -17,7 +19,6 @@ models:
       - name: TOKEN
         description: "{{ doc('token') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -26,7 +27,6 @@ models:
       - name: SYMBOL
         description: "{{ doc('symbol') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING

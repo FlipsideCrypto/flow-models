@@ -17,10 +17,9 @@ WITH swaps AS (
         token_out_contract,
         token_in_amount,
         token_in_contract,
-        _ingested_at,
         _inserted_timestamp
     FROM
-        {{ ref('silver__swaps_single_trade') }}
+        {{ ref('silver__swaps') }}
 
 {% if is_incremental() %}
 WHERE
@@ -34,22 +33,19 @@ WHERE
 ),
 flow_price AS (
     SELECT
-        DATE_TRUNC(
-            'm',
-            recorded_at
-        ) AS _timestamp,
-        price_usd
+        recorded_hour as _timestamp,
+        open as price_usd
     FROM
-        {{ ref('silver__prices') }}
+        {{ ref('silver__prices_hourly') }}
     WHERE
-        symbol = 'FLOW'
+        token = 'Flow'
 ),
 stable_out AS (
     SELECT
         tx_id,
         block_timestamp,
         token_in_contract AS token_contract,
-        token_out_amount / token_in_amount AS swap_price,
+        token_out_amount / nullifzero(token_in_amount) AS swap_price,
         _inserted_timestamp,
         'stableswap' AS source
     FROM
@@ -66,7 +62,7 @@ stable_in AS (
         tx_id,
         block_timestamp,
         token_out_contract AS token_contract,
-        token_in_amount / token_out_amount AS swap_price,
+        token_in_amount / nullifzero(token_out_amount) AS swap_price,
         _inserted_timestamp,
         'stableswap' AS source
     FROM
@@ -94,7 +90,7 @@ flow_out AS (
         tx_id,
         block_timestamp,
         token_in_contract AS token_contract,
-        token_out_amount / token_in_amount AS swap_price_in_flow,
+        token_out_amount / nullifzero(token_in_amount) AS swap_price_in_flow,
         _inserted_timestamp
     FROM
         swaps
@@ -106,7 +102,7 @@ flow_in AS (
         tx_id,
         block_timestamp,
         token_in_contract AS token_contract,
-        token_out_amount / token_in_amount AS swap_price_in_flow,
+        token_out_amount / nullifzero(token_in_amount) AS swap_price_in_flow,
         _inserted_timestamp
     FROM
         swaps
@@ -117,7 +113,7 @@ flow_tbl_union AS (
     SELECT
         tx_id,
         DATE_TRUNC(
-            'm',
+            'hour',
             block_timestamp
         ) AS _timestamp,
         token_contract,
@@ -130,7 +126,7 @@ flow_tbl_union AS (
     SELECT
         tx_id,
         DATE_TRUNC(
-            'm',
+            'hour',
             block_timestamp
         ) AS _timestamp,
         token_contract,
@@ -180,3 +176,5 @@ SELECT
     *
 FROM
     FINAL
+WHERE
+    swap_price IS NOT NULL
