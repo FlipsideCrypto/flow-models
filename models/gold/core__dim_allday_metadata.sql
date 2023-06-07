@@ -53,7 +53,7 @@ WITH allday AS (
         video_urls,
         moment_stats_full
     FROM
-        {{ ref('streamline__allday_moments_metadata_error') }}
+        {{ ref('silver__allday_moments_metadata_error') }}
 )
 SELECT
     *
