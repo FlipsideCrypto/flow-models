@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: silver__nft_topshot_pack_sales
-    description: |-
-      TopShot pack sales
+    description: TopShot pack sales
 
     columns:
       - name: tx_id
@@ -69,10 +68,8 @@ models:
       - name: seller
         description: "{{ doc('seller') }}"
 
-
       - name: price
         description: "{{ doc('price') }}"
-        tests:
 
       - name: currency
         description: "{{ doc('currency') }}"
@@ -90,11 +87,9 @@ models:
 
       - name: tokenflow
         description: "{{ doc('tokenflow') }}"
- 
 
       - name: counterparties
         description: "{{ doc('counterparties') }}"
- 
 
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
