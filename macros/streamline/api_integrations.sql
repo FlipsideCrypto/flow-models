@@ -28,6 +28,7 @@
 {% endmacro %}
 
 -- macro used to run a sql query and log the results
+-- TODO: Move this to fsc-utils package
 {% macro run_and_log_sql(sql_query, log_level='info') %}
     {% set result_var = 'result_' ~ sql_query[:8] %}
     
