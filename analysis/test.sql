@@ -1,1 +1,0 @@
-{{ create_udf_bulk_grpc() }}
