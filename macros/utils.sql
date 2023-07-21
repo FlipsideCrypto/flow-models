@@ -94,7 +94,7 @@
     {{ result_var }}
 {% endmacro %}
 
--- macro used to select priveleges on all/future views/tables/functions in a target chema to a role
+-- macro used to grant select priveleges on all/future views/tables/functions in a target schema to a role
 {% macro grant_select(role) %}
     {{ log("Granting privileges to role: " ~ role, info=True) }}
     {% set sql %}
