@@ -94,13 +94,22 @@
     {{ result_var }}
 {% endmacro %}
 
--- macro used to select priveleges on all views/tables in a target chema to a role
+-- macro used to select priveleges on all/future views/tables/functions in a target chema to a role
 {% macro grant_select(role) %}
     {{ log("Granting privileges to role: " ~ role, info=True) }}
     {% set sql %}
-        grant usage on schema {{ target.schema }} to role {{ role }};
-        grant select on all tables in schema {{ target.schema }} to role {{ role }};
+        grant usage on database {{ target.database }} to role {{ role }};
+        grant usage on all functions in schema {{ target.schema }} to role {{ role }};
+        
         grant select on all views in schema {{ target.schema }} to role {{ role }};
+        grant select on all tables in schema {{ target.schema }} to role {{ role }};
+        
+        grant usage on future functions in schema {{ target.schema }} to role {{ role }};
+        
+        grant select on future views in schema {{ target.schema }} to role {{ role }};
+        grant select on future tables in schema {{ target.schema }} to role {{ role }};
+        
+        grant usage on warehouse dbt to role {{ role}};
     {% endset %}
 
     {% do run_query(sql) %}

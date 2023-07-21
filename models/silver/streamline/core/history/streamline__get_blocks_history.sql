@@ -22,7 +22,7 @@ SELECT
     PARSE_JSON(
         CONCAT(
             '{"grpc": "proto3",',
-            '"method": "get_block_by_height',
+            '"method": "get_block_by_height",',
             '"block_height":"',
             block_height :: INTEGER,
             '"}'
