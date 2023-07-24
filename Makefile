@@ -15,7 +15,8 @@ sl-flow-api:
 	--profiles-dir ~/.dbt/
 
 udfs:
-	dbt run-operation create_udf_get_chainhead \
+	dbt run-operation create_udfs \
+	--vars '{"UPDATE_UDFS_AND_SPS":True}' \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
