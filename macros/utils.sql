@@ -94,8 +94,8 @@
     {{ result_var }}
 {% endmacro %}
 
--- macro used to select priveleges on all views/tables in a target chema to a role
-{% macro grant_select(role) %}
+-- macro used to grant streamline priveleges to a role
+{% macro grant_streamline_privileges(role) %}
     {{ log("Granting privileges to role: " ~ role, info=True) }}
     {% set sql %}
         grant usage on schema {{ target.schema }} to role {{ role }};
