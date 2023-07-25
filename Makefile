@@ -20,3 +20,12 @@ udfs:
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
+
+grant-streamline-privileges:
+	dbt run-operation grant_streamline_privileges \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt/ \
+	--args '{role: aws_lambda_flow_api}'
+
+undo_clone_purge: sl-flow-api udfs grant-streamline-privileges
