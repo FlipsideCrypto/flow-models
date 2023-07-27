@@ -98,9 +98,11 @@
 {% macro grant_streamline_privileges(role) %}
     {{ log("Granting privileges to role: " ~ role, info=True) }}
     {% set sql %}
+        grant usage on database {{ target.database }} to role {{ role }};
         grant usage on schema {{ target.schema }} to role {{ role }};
         grant select on all tables in schema {{ target.schema }} to role {{ role }};
         grant select on all views in schema {{ target.schema }} to role {{ role }};
+        -- AWS_LAMBDA_FLOW_API_SBX does not have access to these items: database FLOW_DEV, schema FLOW_DEV.STREAMLINE.
     {% endset %}
 
     {% do run_query(sql) %}

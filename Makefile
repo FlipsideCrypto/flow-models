@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 # set default target
 DBT_TARGET ?= sbx
+AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_sbx
 
 dbt-console: 
 	docker-compose run dbt_console
@@ -26,6 +27,6 @@ grant-streamline-privileges:
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/ \
-	--args '{role: aws_lambda_flow_api}'
+	--args '{role: $(AWS_LAMBDA_ROLE)}'
 
 undo_clone_purge: sl-flow-api udfs grant-streamline-privileges
