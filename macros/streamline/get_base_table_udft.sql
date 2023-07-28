@@ -1,6 +1,6 @@
 {% macro create_udtf_get_base_table(schema) %}
 create or replace function {{ schema }}.udtf_get_base_table(max_height integer)
-returns table (height number)
+returns table (height number, node_url variant)
 as
 $$
     with base as (
@@ -10,10 +10,11 @@ $$
                     seq4()
             ) as id
         from
-            table(generator(rowcount => 1000000000))
+            table(generator(rowcount => 100000000))
     )
 select
-    id as height
+    id as height,
+    get_node_url( object_construct('block_height', id) ) as node_url
 from
     base
 where

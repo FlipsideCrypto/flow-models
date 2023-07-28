@@ -9,14 +9,16 @@
 WITH blocks AS (
 
     SELECT
-        block_height
+        block_height,
+        node_url
     FROM
         {{ ref("streamline__blocks") }}
-    EXCEPT
-    SELECT
-        block_id as block_height
-    FROM
-        {{ ref("streamline__complete_get_blocks") }}
+    -- EXCEPT
+    -- SELECT
+    --     block_id as block_height,
+    --     node_url
+    -- FROM
+    --     {{ ref("streamline__complete_get_blocks") }}
 )
 SELECT
     PARSE_JSON(
@@ -27,7 +29,8 @@ SELECT
             block_height :: INTEGER,
             '"}'
         )
-    ) AS request
+    ) AS request,
+    node_url
 FROM
     blocks
 ORDER BY

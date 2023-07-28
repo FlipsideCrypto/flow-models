@@ -11,6 +11,7 @@
             ) }}
             {{ create_udf_get_chainhead() }}
             {{ create_udf_bulk_grpc() }}
+            {{ create_udf_get_node_url() }}
             
             {% endset %}
             {% do run_query(sql) %}
