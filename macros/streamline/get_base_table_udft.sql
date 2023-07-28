@@ -1,6 +1,6 @@
 {% macro create_udtf_get_base_table(schema) %}
 create or replace function {{ schema }}.udtf_get_base_table(max_height integer)
-returns table (height number, node_url variant)
+returns table (height number, node_url varchar(16777216))
 as
 $$
     with base as (

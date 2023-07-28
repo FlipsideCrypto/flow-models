@@ -32,13 +32,13 @@
     {{ log("Creating udf get_node_url for target:" ~ target.name ~ ", schema: " ~ target.schema, info=True) }}
     {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
     CREATE
-    OR REPLACE EXTERNAL FUNCTION streamline.get_node_url(json variant) returns string api_integration = 
+    OR REPLACE EXTERNAL FUNCTION streamline.get_node_url(json variant) returns variant api_integration = 
     {% if target.name == "prod" %} 
         aws_flow_api AS '<PROD_CHALICE_URL>/prod/get_node_url'
     {% elif target.name == "dev" %}
         aws_flow_api_dev AS '<DEV_CHALICE_URL>/dev/get_node_url'
     {% elif  target.name == "sbx" %}
-        {{ log("Creating sbx udf_get_node_url", info=True) }}
+        {{ log("Creating sbx get_node_url", info=True) }}
         aws_flow_api_sbx AS 'https://bc5ejedoq8.execute-api.us-east-1.amazonaws.com/sbx/get_node_url'
     {%- endif %};
 {% endmacro %}
