@@ -9,7 +9,8 @@
 SELECT
     record_id,
     block_id,
-    _inserted_timestamp
+    _inserted_timestamp,
+    network AS node_url
 FROM
 
 {% if is_incremental() %}

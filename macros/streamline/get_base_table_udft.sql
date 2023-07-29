@@ -11,14 +11,24 @@ $$
             ) as id
         from
             table(generator(rowcount => 100000000))
+    ),
+    node_mapping as (
+        select
+            base.id as height,
+            first_value(nv.node_url) over (partition by base.id order by nv.root_height desc) as node_url
+        from
+            base
+        left join {{ ref("flow_dev.network_version") }} nv
+        on
+            base.id >= nv.root_height
     )
 select
-    id as height,
-    get_node_url( object_construct('block_height', id) ) as node_url
+    height,
+    coalesce(node_url, 'default-node-url') as node_url
 from
-    base
+    node_mapping
 where
-    id <= max_height
+    height <= max_height
 $$
 ;
 {% endmacro %}
