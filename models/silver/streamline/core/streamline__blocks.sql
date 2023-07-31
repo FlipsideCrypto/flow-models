@@ -16,3 +16,5 @@ SELECT
     node_url
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
+WHERE
+    block_height > 7601063 -- Root Height for Mainnet 1

@@ -10,7 +10,7 @@ $$
                     seq4()
             ) as id
         from
-            table(generator(rowcount => 100000000))
+            table(generator(rowcount => 100000000)) -- July 2023 Flow Chain head is at  57M
     ),
     node_mapping as (
         select
@@ -18,13 +18,13 @@ $$
             first_value(nv.node_url) over (partition by base.id order by nv.root_height desc) as node_url
         from
             base
-        left join {{ ref("flow_dev.network_version") }} nv
+        left join flow_dev.seeds.network_version nv
         on
             base.id >= nv.root_height
     )
 select
     height,
-    coalesce(node_url, 'default-node-url') as node_url
+    coalesce(node_url, 'access.mainnet.nodes.onflow.org:9000') as node_url
 from
     node_mapping
 where
