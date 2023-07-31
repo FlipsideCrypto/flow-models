@@ -21,6 +21,8 @@ $$
         left join flow_dev.seeds.network_version nv
         on
             base.id >= nv.root_height
+            and
+            base.id <= max_height
     )
 select
     height,
