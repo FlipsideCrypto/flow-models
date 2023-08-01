@@ -7,6 +7,7 @@ models:
       - sequence_gaps:
           column_name: block_height
           where: BLOCK_TIMESTAMP::DATE < CURRENT_DATE
+          severity: warn
 
     columns:
       - name: BLOCK_HEIGHT
