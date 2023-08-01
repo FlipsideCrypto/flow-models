@@ -32,8 +32,7 @@ SELECT
             node_url,
             '"}'
         )
-    ) AS request,
-    node_url
+    ) AS request
 FROM
     blocks
 ORDER BY

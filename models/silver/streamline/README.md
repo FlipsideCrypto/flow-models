@@ -20,3 +20,4 @@ DBT_TARGET=sbx make sl-flow-api
 # call sbx udf_bulk_grpc() to test the API integration
 dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/streamline__get_blocks_history.sql --profile flow --target sbx --profiles-dir ~/.dbt
 ```
+
