@@ -17,4 +17,4 @@ SELECT
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
 WHERE
-    block_height > 7601063 -- Root Height for Mainnet 1
+    block_height > 1065711 -- Root Height for Candidate node 4
