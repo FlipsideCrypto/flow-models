@@ -18,7 +18,7 @@ $$
             first_value(nv.node_url) over (partition by base.id order by nv.root_height desc) as node_url
         from
             base
-        left join flow_dev.seeds.network_version nv
+        left join {{ target.database }}.seeds.network_version nv
         on
             base.id >= nv.root_height
             and
