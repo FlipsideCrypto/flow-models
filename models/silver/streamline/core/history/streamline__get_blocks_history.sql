@@ -9,12 +9,14 @@
 WITH blocks AS (
 
     SELECT
-        block_height
+        block_height,
+        node_url
     FROM
         {{ ref("streamline__blocks") }}
     EXCEPT
     SELECT
-        block_id as block_height
+        block_id as block_height,
+        node_url
     FROM
         {{ ref("streamline__complete_get_blocks") }}
 )
@@ -25,6 +27,9 @@ SELECT
             '"method": "get_block_by_height",',
             '"block_height":"',
             block_height :: INTEGER,
+            '",',
+            '"node_url":"',
+            node_url,
             '"}'
         )
     ) AS request
