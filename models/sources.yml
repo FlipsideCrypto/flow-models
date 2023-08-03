@@ -33,3 +33,37 @@ sources:
     tables:
       - name: hourly_prices_coin_gecko
       - name: hourly_prices_coin_market_cap
+
+  - name: dapper_share
+    schema: |
+      {%- if target.name == 'prod' %} streamline
+      {% else %} streamline_dev
+      {%- endif -%}
+    loader: S3
+    tables:
+
+      - name: topshot_sales
+        description: "External table of TopShot Marketplace Sales"
+        external:
+          location: "@{{ target.database }}.bronze.topshot_sales"
+          file_format: "( TYPE = CSV, SKIP_HEADER = 1 )"
+          auto_refresh: true
+          pattern: '.*\.csv'
+
+        columns:
+          - name: month
+            data_type: varchar
+            description: "TODO - past share was month, this may be date"
+            expression: value:c1::varchar
+          - name: flow_address
+            data_type: varchar
+            description: "The Flow address of the purchaser"
+            expression: value:c2::varchar
+          - name: gross_sales_volume_usd
+            data_type: float
+            description: "Sales volume, in usd, by the wallet on the date"
+            expression: value:c3::float
+          - name: total_packs
+            data_type: integer
+            description: "Total number of packs purchased, by the wallet on the date"
+            expression: value:c4::int
