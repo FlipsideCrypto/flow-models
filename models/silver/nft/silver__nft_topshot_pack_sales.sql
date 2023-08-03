@@ -30,7 +30,7 @@ nft_txs AS (
         block_height,
         block_timestamp,
         tx_succeeded,
-        event_data :id :: ID AS nft_id,
+        event_data :id :: id AS nft_id,
         _inserted_timestamp
     FROM
         silver_events
@@ -60,7 +60,7 @@ FROM
     nft_txs A
     JOIN silver_events b
     ON A.tx_id = b.tx_id
-    AND A.nft_id = b.event_data :id :: STRING
+    AND A.nft_id :: STRING = b.event_data :id :: STRING
 WHERE
     event_data :to IS NOT NULL
     AND A.event_index <> b.event_index
