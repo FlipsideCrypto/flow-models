@@ -30,7 +30,7 @@ nft_txs AS (
         block_height,
         block_timestamp,
         tx_succeeded,
-        event_data :id :: id AS nft_id,
+        event_data :id :: INT AS nft_id,
         _inserted_timestamp
     FROM
         silver_events
