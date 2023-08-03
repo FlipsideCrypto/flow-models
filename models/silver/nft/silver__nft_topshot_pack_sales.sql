@@ -60,7 +60,7 @@ FROM
     nft_txs A
     JOIN silver_events b
     ON A.tx_id = b.tx_id
-    AND A.nft_id = b.event_data :id :: INT
+    AND A.nft_id :: STRING = b.event_data :id :: STRING
 WHERE
     event_data :to IS NOT NULL
     AND A.event_index <> b.event_index
