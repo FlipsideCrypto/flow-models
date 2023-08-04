@@ -17,4 +17,7 @@ SELECT
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
 WHERE
-    block_height > 7601063 -- Root Height for Mainnet 1
+    block_height > 4132133 -- Root Height for Candidate node 7 
+                           -- the earliest available block we can ingest since earlier candidate nodes
+                           -- do not have the get_block_by_height grpc method
+                           -- https://developers.flow.com/concepts/nodes/node-operation/past-sporks#candidate-4
