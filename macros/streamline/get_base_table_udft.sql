@@ -18,7 +18,7 @@ $$
             nv.node_url as node_url
         from
             base
-        left join flow_dev.seeds.network_version nv
+        left join {{ target.database }}.seeds.network_version nv
         on
             base.id >= nv.root_height
             and base.id <= nv.end_height
