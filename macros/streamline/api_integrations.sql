@@ -1,6 +1,5 @@
 -- macro used to create flow api integrations
 {% macro create_aws_flow_api() %}
-    {{ log("Creating integration for target:" ~ target, info=True) }}
     {% if target.name == "prod" %}
         {% set sql %}
         CREATE api integration IF NOT EXISTS aws_flow_api_prod api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/snowflake-api-flow' api_allowed_prefixes = (
@@ -9,9 +8,10 @@
         {% endset %}
         {% do run_query(sql) %}
     {% elif target.name == "dev" %}
+        {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}
-        CREATE api integration IF NOT EXISTS aws_flow_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/snowflake-api-flow' api_allowed_prefixes = (
-            'https://<DEV_FLOW_API_CHALICE_URL>/dev/'
+        CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-1D0U05G1EDT3' api_allowed_prefixes = (
+            'https://8jjulyhxhj.execute-api.us-east-1.amazonaws.com/dev/'
         ) enabled = TRUE;
         {% endset %}
         {% do run_query(sql) %}

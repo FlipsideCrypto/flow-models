@@ -15,14 +15,13 @@ $$
     node_mapping as (
         select
             base.id as height,
-            first_value(nv.node_url) over (partition by base.id order by nv.root_height desc) as node_url
+            nv.node_url as node_url
         from
             base
-        left join {{ target.database }}.seeds.network_version nv
+        left join flow_dev.seeds.network_version nv
         on
             base.id >= nv.root_height
-            and
-            base.id <= max_height
+            and base.id <= nv.end_height
     )
 select
     height,
