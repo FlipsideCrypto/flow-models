@@ -12,8 +12,7 @@
 {% endif %}
 
 SELECT
-    height as block_height,
-    node_url
+    height as block_height
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
 WHERE

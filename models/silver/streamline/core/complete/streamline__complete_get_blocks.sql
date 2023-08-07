@@ -1,20 +1,22 @@
+-- depends_on: {{ ref('bronze__streamline_blocks') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "record_id",
-    cluster_by = "ROUND(block_id, -3)",
-    merge_update_columns = ["record_id"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(record_id)"
+    unique_key = "id",
+    cluster_by = "ROUND(block_number, -3)",
+    merge_update_columns = ["id"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(id)"
 ) }}
 
 SELECT
-    record_id,
-    block_id,
-    _inserted_timestamp,
-    network AS node_url
+    id,
+    data,
+    block_number,
+    _partition_by_block_id,
+    _inserted_timestamp
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__blocks') }} -- TODO: change to bronze__streamline_blocks
+{{ ref('bronze__streamline_blocks') }} 
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -24,9 +26,9 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__blocks') }} -- TODO: change to bronze__streamline_FR_blocks
+    {{ ref('bronze__streamline_blocks') }} -- TODO: change to bronze__streamline_FR_blocks
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY record_id
+qualify(ROW_NUMBER() over (PARTITION BY _partition_by_block_id
 ORDER BY
     _inserted_timestamp DESC)) = 1
