@@ -4,19 +4,36 @@ from snowflake.snowpark.window import Window
 from datetime import datetime
 
 
+# NOTE - AllDay endpoint not responsive from anywhere
+
+def construct_data(contract, moment_id):
+    graphql_query = ref('silver__lq_moments_graphql').select('query').filter(col('contract') == contract).collect()[0][0]
+
+    data = {
+        'query': graphql_query,
+        'variables': {
+            'momentId': moment_id
+        }
+    }
+    
+    return data
+    
+
 def register_udf_construct_data():
     """
     Helper function to register an anonymous UDF to construct the DATA object for the API call.
+    This anonymous UDF can be used with a column expression, so multiple moment_ids can be called at the same time.
     """
 
     udf_construct_data = (
         F.udf(
-            lambda query, moment_id: {'query': query, 'variables': {'momentId': moment_id}},
-            name='udf_construct_data', 
+            lambda query, moment_id: {'query': query,
+                                      'variables': {'momentId': moment_id}},
+            name='udf_construct_data',
             input_types=[
-                T.StringType(), 
+                T.StringType(),
                 T.StringType()
-            ], 
+            ],
             return_type=T.VariantType(),
             replace=True
         )
@@ -24,10 +41,11 @@ def register_udf_construct_data():
 
     return udf_construct_data
 
+
 def batch_request(session, base_url, response_schema, df=None, api_key=None):
     """
     Function to call the UDF_API.
-    df (optional) - Snowpark DataFrame of input data
+    df (optional) - Snowpark DataFrame of input data.
     """
 
     # define params for UDF_API
@@ -36,6 +54,7 @@ def batch_request(session, base_url, response_schema, df=None, api_key=None):
         'Content-Type': 'application/json'
     }
 
+    # TODO - handle either graphql input
     query = """query getMintedMoment ($momentId: ID!) {
                 getMintedMoment (momentId: $momentId) {
                     data {
@@ -235,12 +254,10 @@ def batch_request(session, base_url, response_schema, df=None, api_key=None):
                 }
             }"""
 
-
+    # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
 
-    # turns out the below is not working as expected as the MOMENT_ID 
-    # from the row being appended is not the same id as the one returned above
-    # but maybe i can build a construct data udf
+    # use with_columns to source moment_id from the input_df and call multiple udf_api calls at once
     response_df = df.with_columns(
         ['DATA', '_INSERTED_DATE', 'INSTERTED_TIMESTAMP', '_RES_ID'],
         [
@@ -258,8 +275,8 @@ def batch_request(session, base_url, response_schema, df=None, api_key=None):
             F.sysdate(),
             F.md5(
                 F.concat(
-                F.col('EVENT_CONTRACT'),
-                F.col('MOMENT_ID')
+                    F.col('EVENT_CONTRACT'),
+                    F.col('MOMENT_ID')
                 )
             )
         ]
@@ -277,8 +294,11 @@ def model(dbt, session):
     )
 
     # configure upstream tables
-    # limit scope of query for testing w limit 10
-    topshot_moments_needed = dbt.ref('streamline__all_topshot_moments_minted_metadata_needed').where(F.col("MOMENT_ID") < 999999).limit(2)
+    # limit scope of query for testing w limit 10 and low moment id
+    # TODO - when turning into prod job, there will be moments that return null metadata
+        # MUST load the null table w these to avoid over-retrying
+    topshot_moments_needed = dbt.ref('streamline__all_topshot_moments_minted_metadata_needed').where(
+        F.col("MOMENT_ID") < 999999).limit(2)
 
     # define incremental logic
     if dbt.is_incremental:
@@ -304,7 +324,6 @@ def model(dbt, session):
     base_url = 'https://public-api.nbatopshot.com/graphql'
     input_df = topshot_moments_needed
 
-
     # batch_size = 25
     # ignoring any batch size for now, just want to get it working
     # ignoring try request block for testing
@@ -319,7 +338,7 @@ def model(dbt, session):
     r.collect()
 
     final_df = final_df.union(r)
-    
+
     # except Exception as e:
     #     # TODO - log error
     #     raise Exception(e)
