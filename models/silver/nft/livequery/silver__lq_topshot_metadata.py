@@ -7,7 +7,7 @@ import snowflake.snowpark.functions as F
 def register_udf_construct_data():
     """
     Helper function to register an anonymous UDF to construct the DATA object for the API call.
-    This anonymous UDF can be used with a column expression, so multiple moment_ids can be called at the same time.
+    This named UDF can be used with a column expression, so multiple moment_ids can be called at the same time.
     """
 
     udf_construct_data = (
@@ -88,8 +88,8 @@ def model(dbt, session):
     # TODO - when turning into prod job, there will be moments that return null metadata
         # MUST load the null table w these to avoid over-retrying
     # TODO - stress test appropriate batch size
-    topshot_moments_needed = dbt.ref('streamline__all_topshot_moments_minted_metadata_needed').where(
-        F.col("MOMENT_ID") < 999999).limit(2)
+    topshot_moments_needed = dbt.ref(
+        'streamline__all_topshot_moments_minted_metadata_needed').limit(200)
 
     # define incremental logic
     if dbt.is_incremental:
@@ -98,14 +98,16 @@ def model(dbt, session):
         pass
 
     # build df to hold response(s)
-    schema = T.StructType([
-        T.StructField('EVENT_CONTRACT', T.StringType()),
-        T.StructField('MOMENT_ID', T.StringType()),
-        T.StructField('DATA', T.VariantType()),
-        T.StructField('_INSERTED_DATE', T.TimestampType()),
-        T.StructField('_INSERTED_TIMESTAMP', T.StringType()),
-        T.StructField('_RES_ID', T.StringType())
-    ])
+    schema = T.StructType(
+        [
+            T.StructField('EVENT_CONTRACT', T.StringType()),
+            T.StructField('MOMENT_ID', T.StringType()),
+            T.StructField('DATA', T.VariantType()),
+            T.StructField('_INSERTED_DATE', T.TimestampType()),
+            T.StructField('_INSERTED_TIMESTAMP', T.StringType()),
+            T.StructField('_RES_ID', T.StringType())
+        ]
+    )
 
     final_df = session.create_dataframe([], schema)
 
@@ -114,8 +116,8 @@ def model(dbt, session):
     topshot_params = dbt.ref(
         'silver__lq_moments_graphql').select(
         'base_url', 'query').where(
-        F.col(
-            'contract') == 'A.0b2a3299cc857e29.TopShot'
+            F.col(
+                'contract') == 'A.0b2a3299cc857e29.TopShot'
         ).collect()
 
 
