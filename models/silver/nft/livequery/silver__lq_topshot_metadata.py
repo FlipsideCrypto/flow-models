@@ -1,7 +1,5 @@
 import snowflake.snowpark.types as T
 import snowflake.snowpark.functions as F
-from snowflake.snowpark.window import Window
-from datetime import datetime
 
 
 # NOTE - AllDay endpoint not responsive from anywhere
@@ -49,7 +47,7 @@ def batch_request(session, base_url, response_schema=None, df=None, api_key=None
 
     # use with_columns to source moment_id from the input_df and call multiple udf_api calls at once
     response_df = df.with_columns(
-        ['DATA', '_INSERTED_DATE', 'INSTERTED_TIMESTAMP', '_RES_ID'],
+        ['DATA', '_INSERTED_DATE', '_INSERTED_TIMESTAMP', '_RES_ID'],
         [
             F.call_udf(
                 'ethereum.streamline.udf_api',
@@ -77,6 +75,7 @@ def batch_request(session, base_url, response_schema=None, df=None, api_key=None
 
 def model(dbt, session):
 
+    # TODO - i cant rememebr rn but there was a config i was thinking about
     dbt.config(
         materialized='incremental',
         unique_key='_RES_ID',
