@@ -6,19 +6,6 @@ from datetime import datetime
 
 # NOTE - AllDay endpoint not responsive from anywhere
 
-def construct_data(contract, moment_id):
-    graphql_query = ref('silver__lq_moments_graphql').select('query').filter(col('contract') == contract).collect()[0][0]
-
-    data = {
-        'query': graphql_query,
-        'variables': {
-            'momentId': moment_id
-        }
-    }
-    
-    return data
-    
-
 def register_udf_construct_data():
     """
     Helper function to register an anonymous UDF to construct the DATA object for the API call.
@@ -42,7 +29,7 @@ def register_udf_construct_data():
     return udf_construct_data
 
 
-def batch_request(session, base_url, response_schema, df=None, api_key=None):
+def batch_request(session, base_url, response_schema=None, df=None, api_key=None, params=None):
     """
     Function to call the UDF_API.
     df (optional) - Snowpark DataFrame of input data.
@@ -54,205 +41,8 @@ def batch_request(session, base_url, response_schema, df=None, api_key=None):
         'Content-Type': 'application/json'
     }
 
-    # TODO - handle either graphql input
-    query = """query getMintedMoment ($momentId: ID!) {
-                getMintedMoment (momentId: $momentId) {
-                    data {
-                        id
-                        version
-                        sortID
-                        set {
-                            id
-                            sortID
-                            version
-                            flowId
-                            flowName
-                            flowSeriesNumber
-                            flowLocked
-                            setVisualId
-                            assetPath
-                            assets {
-                                images {
-                                    type
-                                    url
-                                }
-                            }
-                        }
-                        play {
-                            id
-                            version
-                            description
-                            flowID
-                            sortID
-                            status
-                            assets {
-                                videos {
-                                    type
-                                    url
-                                    videoLength
-                                }
-                                videoLengthInMilliseconds
-                            }
-                            stats {
-                                playerID
-                                playerName
-                                firstName
-                                lastName
-                                jerseyNumber
-                                teamAtMoment
-                                awayTeamName
-                                awayTeamScore
-                                homeTeamName
-                                homeTeamScore
-                                dateOfMoment
-                                totalYearsExperience
-                                teamAtMomentNbaId
-                                height
-                                weight
-                                currentTeam
-                                currentTeamId
-                                primaryPosition
-                                homeTeamNbaId
-                                awayTeamNbaId
-                                nbaSeason
-                                draftYear
-                                draftSelection
-                                draftRound
-                                birthplace
-                                birthdate
-                                draftTeam
-                                draftTeamNbaId
-                                playCategory
-                                playType
-                                quarter
-                            }
-                            statsPlayerGameScores {
-                                blocks
-                                points
-                                steals
-                                assists
-                                minutes
-                                rebounds
-                                turnovers
-                                plusMinus
-                                flagrantFouls
-                                personalFouls
-                                technicalFouls
-                                twoPointsMade
-                                blockedAttempts
-                                fieldGoalsMade
-                                freeThrowsMade
-                                threePointsMade
-                                defensiveRebounds
-                                offensiveRebounds
-                                pointsOffTurnovers
-                                twoPointsAttempted
-                                assistTurnoverRatio
-                                fieldGoalsAttempted
-                                freeThrowsAttempted
-                                twoPointsPercentage
-                                fieldGoalsPercentage
-                                freeThrowsPercentage
-                                threePointsAttempted
-                                threePointsPercentage
-                                playerPosition
-                            }
-                            statsPlayerSeasonAverageScores {
-                                minutes
-                                blocks
-                                points
-                                steals
-                                assists
-                                rebounds
-                                turnovers
-                                plusMinus
-                                flagrantFouls
-                                personalFouls
-                                technicalFouls
-                                twoPointsMade
-                                blockedAttempts
-                                fieldGoalsMade
-                                freeThrowsMade
-                                threePointsMade
-                                defensiveRebounds
-                                offensiveRebounds
-                                pointsOffTurnovers
-                                twoPointsAttempted
-                                assistTurnoverRatio
-                                fieldGoalsAttempted
-                                freeThrowsAttempted
-                                twoPointsPercentage
-                                fieldGoalsPercentage
-                                freeThrowsPercentage
-                                threePointsAttempted
-                                threePointsPercentage
-                                efficiency
-                                true_shooting_attempts
-                                points_in_paint_made
-                                points_in_paint_attempted
-                                points_in_paint
-                                fouls_drawn
-                                offensive_fouls
-                                fast_break_points
-                                fast_break_points_attempted
-                                fast_break_points_made
-                                second_chance_points
-                                second_chance_points_attempted
-                                second_chance_points_made
-                            }
-                            tags {
-                                id
-                                name
-                                title
-                                visible
-                                hardcourt
-                                level
-                            }
-                        }
-                        flowId
-                        flowSerialNumber
-                        price
-                        forSale
-                        listingOrderID
-                        owner {
-                            dapperID
-                            email
-                            flowAddress
-                            username
-                            profileImageUrl
-                            twitterHandle
-                            segmentID
-                        }
-                        assetPathPrefix
-                        setPlay {
-                            ID
-                            setID
-                            playID
-                            flowRetired
-                            circulationCount
-                            tags {
-                                id
-                                name
-                                title
-                                visible
-                                hardcourt
-                                level
-                            }
-                        }
-                        createdAt
-                        acquiredAt
-                        packListingID
-                        tags {
-                            id
-                            name
-                            title
-                            visible
-                            hardcourt
-                            level
-                        }
-                    }
-                }
-            }"""
+    # alias query for readability in construct data param
+    query = params
 
     # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
@@ -297,6 +87,7 @@ def model(dbt, session):
     # limit scope of query for testing w limit 10 and low moment id
     # TODO - when turning into prod job, there will be moments that return null metadata
         # MUST load the null table w these to avoid over-retrying
+    # TODO - stress test appropriate batch size
     topshot_moments_needed = dbt.ref('streamline__all_topshot_moments_minted_metadata_needed').where(
         F.col("MOMENT_ID") < 999999).limit(2)
 
@@ -318,29 +109,31 @@ def model(dbt, session):
 
     final_df = session.create_dataframe([], schema)
 
-    # call api via request function(s)
-    # TODO - only slight differences between topshot and allday, allow for param input ?
-    # base_url = 'https://nbatopshot.com/marketplace/graphql'
-    base_url = 'https://public-api.nbatopshot.com/graphql'
+    # call api via request function
+    # base url and graphql query stored in table via dbt
+    topshot_params = dbt.ref(
+        'silver__lq_moments_graphql').select(
+        'base_url', 'query').where(
+        F.col(
+            'contract') == 'A.0b2a3299cc857e29.TopShot'
+        ).collect()
+
+
     input_df = topshot_moments_needed
 
-    # batch_size = 25
-    # ignoring any batch size for now, just want to get it working
-    # ignoring try request block for testing
-    # try:
+    # TODO - explore possible failure behavior
+        # bad url will cause job failure, but that's something that should raise a big red flag
+        # need is to handle ok call, bad api response
     r = batch_request(
         session,
-        base_url,
-        schema,
-        input_df
+        topshot_params[0][0], # base_url
+        response_schema=schema,
+        df=input_df,
+        params=topshot_params[0][1] # query
     )
 
     r.collect()
 
     final_df = final_df.union(r)
-
-    # except Exception as e:
-    #     # TODO - log error
-    #     raise Exception(e)
 
     return final_df

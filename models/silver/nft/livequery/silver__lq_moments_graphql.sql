@@ -4,6 +4,7 @@
 
 SELECT
     'A.0b2a3299cc857e29.TopShot' AS contract,
+    'https://public-api.nbatopshot.com/graphql' as base_url,
     'query getMintedMoment ($momentId: ID!) {
             getMintedMoment (momentId: $momentId) {
                 data {
@@ -205,6 +206,7 @@ SELECT
 UNION
 SELECT
     'A.e4cf4bdc1751c65d.AllDay' AS contract,
+    'https://nflallday.com/consumer/graphql' as base_url,
     'query SearchMomentNFTsV2($input: SearchMomentNFTsInputV2!) {
                     searchMomentNFTsV2(input: $input) {
                         edges {
