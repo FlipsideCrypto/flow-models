@@ -50,6 +50,7 @@ def batch_request(session, base_url, response_schema=None, df=None, api_key=None
         ['DATA', '_INSERTED_DATE', '_INSERTED_TIMESTAMP', '_RES_ID'],
         [
             F.call_udf(
+                # TODO - deploy udf in FLOW and use local udf_api
                 'ethereum.streamline.udf_api',
                 method,
                 base_url,
