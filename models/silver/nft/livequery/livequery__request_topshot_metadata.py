@@ -76,11 +76,11 @@ def batch_request(session, base_url, response_schema=None, df=None, api_key=None
 
 def model(dbt, session):
 
-    # TODO - i cant rememebr rn but there was a config i was thinking about
     dbt.config(
         materialized='incremental',
         unique_key='_RES_ID',
-        packages=['snowflake-snowpark-python']
+        packages=['snowflake-snowpark-python'],
+        tags=['livequery', 'topshot', 'moment_metadata']
     )
 
     # configure upstream tables
@@ -88,8 +88,16 @@ def model(dbt, session):
     # TODO - when turning into prod job, there will be moments that return null metadata
         # MUST load the null table w these to avoid over-retrying
     # TODO - stress test appropriate batch size
+        # 1000 in 100s
+        # 2000 in 171s
+        # 3000 in 230s
+        # 4000 = rate limited
+        # paused regular jobs to let a few days pass to get an idea for daily mints at this time
+        # NOTE - would lilely need to incr limit or frequency of job run once season starts
     topshot_moments_needed = dbt.ref(
-        'streamline__all_topshot_moments_minted_metadata_needed').limit(200)
+        'livequery__topshot_moments_metadata_needed').select(
+            "EVENT_CONTRACT", "MOMENT_ID"
+        ).limit(1000)
 
     # define incremental logic
     if dbt.is_incremental:
@@ -114,7 +122,7 @@ def model(dbt, session):
     # call api via request function
     # base url and graphql query stored in table via dbt
     topshot_params = dbt.ref(
-        'silver__lq_moments_graphql').select(
+        'livequery__moments_parameters').select(
         'base_url', 'query').where(
             F.col(
                 'contract') == 'A.0b2a3299cc857e29.TopShot'

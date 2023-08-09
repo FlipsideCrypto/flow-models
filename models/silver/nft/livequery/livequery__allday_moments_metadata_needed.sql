@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'view',
+    tags = ['livequery', 'allday', 'moment_metadata']
 ) }}
 
 WITH mints AS (

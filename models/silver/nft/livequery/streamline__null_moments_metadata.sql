@@ -1,8 +1,10 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = ["id","contract","_inserted_date"]
+    unique_key = ["id","contract","_inserted_date"],
+    tags = ['livequery', 'topshot', 'moment_metadata']
 ) }}
 
+{# TODO - move to livequery schema? Must preserve data so may need to manually copy existing table and then rename #}
 SELECT
     id,
     contract,

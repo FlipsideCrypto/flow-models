@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'table',
-    unique_key = 'contract'
+    unique_key = 'contract',
+    tags = ['livequery', 'topshot', 'allday', 'moment_metadata']
 ) }}
 
 SELECT

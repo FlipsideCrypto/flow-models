@@ -1,10 +1,12 @@
 {{ config(
     materialized = 'view',
+    tags = ['livequery', 'topshot', 'moment_metadata']
 ) }}
 
 WITH mints AS (
 
     SELECT
+        block_timestamp,
         event_contract,
         event_data :momentID :: STRING AS moment_id
     FROM
@@ -15,6 +17,7 @@ WITH mints AS (
 ),
 sales AS (
     SELECT
+        block_timestamp,
         nft_collection AS event_contract,
         nft_id AS moment_id
     FROM
@@ -24,12 +27,14 @@ sales AS (
 ),
 all_topshots AS (
     SELECT
+        block_timestamp,
         event_contract,
         moment_id
     FROM
         mints
     UNION
     SELECT
+        block_timestamp,
         event_contract,
         moment_id
     FROM
@@ -41,6 +46,7 @@ always_null AS (
         contract,
         COUNT(*) AS num_times_null_resp
     FROM
+        {# TODO - update once migrated to livequery schema #}
         {{ ref('streamline__null_moments_metadata') }}
     WHERE
         contract = 'A.0b2a3299cc857e29.TopShot'
@@ -54,17 +60,17 @@ SELECT
     DISTINCT *
 FROM
     all_topshots
-EXCEPT
-    (
-        SELECT
-            nft_collection AS event_contract,
-            nft_id AS moment_id
-        FROM
-            {{ ref('silver__nft_topshot_metadata') }}
-        UNION
-        SELECT
-            contract,
-            id
-        FROM
-            always_null
+WHERE
+    moment_id NOT IN (
+        (
+            SELECT
+                nft_id AS moment_id
+            FROM
+                {{ ref('silver__nft_topshot_metadata') }}
+            UNION
+            SELECT
+                id AS moment_id
+            FROM
+                always_null
+        )
     )
