@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: livequery__moments_parameters
+    description: |-
+      A simple helper table to store the base_url and graphQL query for the livequery request moments model(s). Ok to store in plaintext as it is not sensitive information.
+            
+    columns:
+      - name: contract
+
+      - name: base_url
+
+      - name: query
