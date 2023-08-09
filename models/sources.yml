@@ -29,6 +29,7 @@ sources:
       - name: moments_minted_metadata_api
       - name: blocks
       - name: collections
+      - name: transactions
 
   - name: crosschain_v2
     database: crosschain

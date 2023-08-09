@@ -103,7 +103,13 @@
         grant usage on warehouse {{ target.warehouse }} to role {{ role }};
         grant select on all tables in schema {{ target.schema }} to role {{ role }};
         grant select on all views in schema {{ target.schema }} to role {{ role }};
-        grant select on future views in schema {{ target.schema }} to role {{ role }}
+        grant select on future views in schema {{ target.schema }} to role {{ role }};
+
+        grant usage on database streamline to role {{ role }};
+        grant usage on schema streamline.{{ target.schema }} to role {{ role }};
+        grant select on all tables in schema streamline.{{ target.schema }} to role {{ role }};
+
+        grant usage on schema {{target.database}}.bronze to role {{ role }};
     {% endset %}
 
     {% do run_and_log_sql(sql) %}
