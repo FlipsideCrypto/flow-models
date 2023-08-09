@@ -6,7 +6,7 @@ import snowflake.snowpark.functions as F
 
 def register_udf_construct_data():
     """
-    Helper function to register an anonymous UDF to construct the DATA object for the API call.
+    Helper function to register a named UDF to construct the DATA object for the API call.
     This named UDF can be used with a column expression, so multiple moment_ids can be called at the same time.
     """
 
