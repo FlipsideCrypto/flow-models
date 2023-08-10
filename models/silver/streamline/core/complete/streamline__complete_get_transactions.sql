@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_transactions') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
@@ -16,7 +16,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_blocks') }} 
+{{ ref('bronze__streamline_transactions') }} 
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -26,7 +26,7 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__streamline_blocks') }} -- TODO: change to bronze__streamline_FR_blocks
+    {{ ref('bronze__streamline_transactions') }} -- TODO: change to bronze__streamline_FR_transactions
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY _partition_by_block_id

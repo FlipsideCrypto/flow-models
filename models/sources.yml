@@ -23,9 +23,13 @@ sources:
 
   - name: bronze_streamline
     database: streamline
-    schema: flow
+    schema: |
+      {{ "FLOW_DEV" if var("STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES", False) else "FLOW" }}
     tables:
       - name: moments_minted_metadata_api
+      - name: blocks
+      - name: collections
+      - name: transactions
 
   - name: crosschain_v2
     database: crosschain
@@ -33,3 +37,4 @@ sources:
     tables:
       - name: hourly_prices_coin_gecko
       - name: hourly_prices_coin_market_cap
+
