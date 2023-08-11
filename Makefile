@@ -22,6 +22,15 @@ udfs:
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
 
+complete:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/complete \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+
 grant-streamline-privileges:
 	dbt run-operation grant_streamline_privileges \
 	--profile flow \
@@ -30,3 +39,11 @@ grant-streamline-privileges:
 	--args '{role: $(AWS_LAMBDA_ROLE)}'
 
 undo_clone_purge: sl-flow-api udfs grant-streamline-privileges
+
+streamline_bronze:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/bronze \
+	--profiles-dir ~/.dbt \
+	--target $(DBT_TARGET) \
+	--profile flow

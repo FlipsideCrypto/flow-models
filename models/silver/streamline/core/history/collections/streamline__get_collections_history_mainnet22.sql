@@ -1,4 +1,3 @@
--- depends_on: {{ ref('streamline__get_blocks_history_mainnet22') }}
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
@@ -29,7 +28,12 @@ collections AS (
     JOIN blocks ON blocks.block_height = block_number
 )
 SELECT
-    {{ generate_collections_grpc_request(block_height, collection_guarantee) }} AS request
+    OBJECT_CONSTRUCT(
+        'grpc', 'proto3',
+        'method', 'get_collection_by_i_d',
+        'block_height', block_height::INTEGER,
+        'method_params', OBJECT_CONSTRUCT('id', collection_guarantee.value:collection_id)
+    ) AS request
 FROM
     collections,
     LATERAL FLATTEN(input => data:collection_guarantees) AS collection_guarantee

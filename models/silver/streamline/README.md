@@ -35,17 +35,29 @@ dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTER
 dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_collections.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev complete_get_transactions
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_transactionss.sql --profile flow --target dev --profiles-dir ~/.dbt
-
---
-
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_transactions.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_blocks_history
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/blocks/streamline__get_blocks_history.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+
+# dev get_collections_history
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_transactions_history
 dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
-# dev complete_get_collections
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_collections.sql --profile flow --target dev --profiles-dir ~/.dbt
+# dev get_transaction_results_history
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+
+# dev bronze__streamline_blocks.sql
+dbt run --select bronze__streamline_blocks.sql --profiles-dir ~/.dbt --target dev --profile flow --vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}'
+```
+
+
+```zsh
+DBT_TARGET=dev \
+AWS_LAMBDA_ROLE=AWS_LAMBDA_FLOW_API_DEV \
+make  undo_clone_purge
+
+DBT_TARGET=dev make streamline_bronze
 ```

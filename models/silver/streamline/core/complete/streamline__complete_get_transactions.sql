@@ -29,6 +29,6 @@ WHERE
     {{ ref('bronze__streamline_transactions') }} -- TODO: change to bronze__streamline_FR_transactions
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY _partition_by_block_id
+qualify(ROW_NUMBER() over (PARTITION BY id
 ORDER BY
     _inserted_timestamp DESC)) = 1
