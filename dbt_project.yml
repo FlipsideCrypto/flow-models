@@ -56,3 +56,4 @@ vars:
   "dbt_date:time_zone": GMT
   UPDATE_SNOWFLAKE_TAGS: True
   UPDATE_UDFS_AND_SPS: False
+  OBSERV_FULL_TEST: False
