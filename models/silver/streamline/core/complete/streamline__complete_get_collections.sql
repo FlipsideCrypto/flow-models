@@ -1,3 +1,4 @@
+-- depends_on: {{ ref('bronze__streamline_collections') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
@@ -25,7 +26,7 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__streamline_collections') }} -- TODO: change to bronze__streamline_FR_collections
+    {{ ref('bronze__streamline_FR_collections') }} 
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY _partition_by_block_id

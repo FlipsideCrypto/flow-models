@@ -1,13 +1,14 @@
+-- depends_on: {{ ref('bronze__streamline_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_FR_blocks') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "id",
+    unique_key = "block_number",
     cluster_by = "ROUND(block_number, -3)",
-    merge_update_columns = ["id"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(id)"
+    merge_update_columns = ["block_number"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)"
 ) }}
 
 SELECT
-    id,
     data,
     block_number,
     _partition_by_block_id,
@@ -25,9 +26,9 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__streamline_blocks') }} -- TODO: change to bronze__streamline_FR_blocks
+    {{ ref('bronze__streamline_FR_blocks') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY id
+qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1

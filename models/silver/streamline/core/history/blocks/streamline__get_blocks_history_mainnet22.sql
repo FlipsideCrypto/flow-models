@@ -28,6 +28,7 @@ SELECT
 FROM
     blocks
 WHERE
-    block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
+    -- block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
+    block_height BETWEEN 55114462 AND 55114466
 ORDER BY
     block_height ASC

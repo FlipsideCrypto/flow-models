@@ -38,7 +38,7 @@ grant-streamline-privileges:
 	--profiles-dir ~/.dbt/ \
 	--args '{role: $(AWS_LAMBDA_ROLE)}'
 
-undo_clone_purge: sl-flow-api udfs grant-streamline-privileges
+streamline: sl-flow-api udfs grant-streamline-privileges streamline_bronze
 
 streamline_bronze:
 	dbt run \

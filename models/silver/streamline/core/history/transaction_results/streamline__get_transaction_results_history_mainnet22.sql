@@ -32,12 +32,14 @@ SELECT
         'grpc', 'proto3',
         'method', 'get_transaction_result',
         'block_height', block_height::INTEGER,
+        'transaction_id', transaction_id.value::string,
         'method_params', OBJECT_CONSTRUCT('id',  transaction_id.value::string)
     ) AS request
 FROM
     tx,
     LATERAL FLATTEN(input => TRY_PARSE_JSON(data):transaction_ids) AS transaction_id
 WHERE
-    block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
+    -- block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
+    block_height BETWEEN 47169687 AND 47169690
 ORDER BY
     block_height ASC

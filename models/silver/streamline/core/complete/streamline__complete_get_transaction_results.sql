@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_transactions') }}
+-- depends_on: {{ ref('bronze__streamline_transaction_results') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
@@ -26,7 +26,7 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__streamline_transaction_results') }} -- TODO: change to bronze__streamline_FR_transaction_results
+    {{ ref('bronze__streamline_FR_transaction_results') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY id
