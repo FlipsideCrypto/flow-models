@@ -38,7 +38,6 @@ FROM
     collections,
     LATERAL FLATTEN(input => data:collection_guarantees) AS collection_guarantee
 WHERE
-    -- block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
-    block_height BETWEEN 55114465 AND 55114466
+    block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
 ORDER BY
     block_height ASC

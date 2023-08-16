@@ -39,7 +39,6 @@ FROM
     tx,
     LATERAL FLATTEN(input => TRY_PARSE_JSON(data):transaction_ids) AS transaction_id
 WHERE
-    -- block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
-    block_height BETWEEN 47169687 AND 47169690
+    block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
 ORDER BY
     block_height ASC
