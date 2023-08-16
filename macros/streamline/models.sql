@@ -41,8 +41,6 @@
             b.{{ partition_name }} = s.{{ partition_name }}
 {% endmacro %}
 
-
-
 {% macro streamline_external_table_FR_query(
         model,
         partition_function,
@@ -85,4 +83,5 @@
     WHERE
         b.{{ partition_name }} = s.{{ partition_name }}
 {% endmacro %}
+
 

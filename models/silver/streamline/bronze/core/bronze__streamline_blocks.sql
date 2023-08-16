@@ -33,3 +33,4 @@ WITH meta AS (
             AND b._partition_by_block_id = s._partition_by_block_id
         WHERE
             b._partition_by_block_id = s._partition_by_block_id
+

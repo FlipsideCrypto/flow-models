@@ -24,7 +24,6 @@ WHERE
         FROM
             {{ this }}
     )
-
 {% else %}
     {{ ref('bronze__streamline_FR_blocks') }}
 {% endif %}

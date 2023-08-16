@@ -34,6 +34,7 @@ SELECT
         'block_height', block_height::INTEGER,
         'method_params', OBJECT_CONSTRUCT('id', collection_guarantee.value:collection_id)
     ) AS request
+
 FROM
     collections,
     LATERAL FLATTEN(input => data:collection_guarantees) AS collection_guarantee

@@ -26,6 +26,7 @@ WHERE
     )
 
 {% else %}
+
     {{ ref('bronze__streamline_FR_collections') }} 
 {% endif %}
 
