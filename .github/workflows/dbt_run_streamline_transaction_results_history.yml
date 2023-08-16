@@ -1,5 +1,5 @@
-name: dbt_run_streamline_collections_history
-run-name: dbt_run_streamline_collections_history
+name: dbt_run_streamline_transactions_history
+run-name: dbt_run_streamline_transactions_history
 
 on:
   workflow_dispatch:
@@ -42,4 +42,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m 1+models/silver/streamline/core/history/collections --profile flow --target prod
+          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m 1+models/silver/streamline/core/history/transactions --profile flow --target prod
