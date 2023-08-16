@@ -1,14 +1,14 @@
--- depends_on: {{ ref('bronze__streamline_blocks') }}
--- depends_on: {{ ref('bronze__streamline_FR_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_transaction_results') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "block_number",
+    unique_key = "id",
     cluster_by = "ROUND(block_number, -3)",
-    merge_update_columns = ["block_number"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)"
+    merge_update_columns = ["id"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(id)"
 ) }}
 
 SELECT
+    id,
     data,
     block_number,
     _partition_by_block_id,
@@ -16,7 +16,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_blocks') }} 
+{{ ref('bronze__streamline_transaction_results') }} 
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -24,10 +24,11 @@ WHERE
         FROM
             {{ this }}
     )
+
 {% else %}
-    {{ ref('bronze__streamline_FR_blocks') }}
+    {{ ref('bronze__streamline_FR_transaction_results') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
+qualify(ROW_NUMBER() over (PARTITION BY id
 ORDER BY
     _inserted_timestamp DESC)) = 1

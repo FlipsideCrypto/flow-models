@@ -30,6 +30,8 @@ sources:
       - name: blocks
       - name: collections
       - name: transactions
+      - name: transaction_results
+
 
   - name: crosschain_v2
     database: crosschain

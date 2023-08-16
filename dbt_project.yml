@@ -56,3 +56,4 @@ vars:
   "dbt_date:time_zone": GMT
   UPDATE_SNOWFLAKE_TAGS: True
   UPDATE_UDFS_AND_SPS: False
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
