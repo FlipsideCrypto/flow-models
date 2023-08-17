@@ -18,15 +18,17 @@ FROM
 {% if is_incremental() %}
 {{ ref('bronze__streamline_transactions') }} 
 WHERE
-    _inserted_timestamp >= (
-        SELECT
+    _inserted_timestamp >= COALESCE(
+        (
+            SELECT
             MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
+            FROM
+                {{ this }}
+        ),
+        '1900-01-01'::timestamp
     )
-
 {% else %}
-    {{ ref('bronze__streamline_FR_transactions') }} 
+    {{ ref('bronze__streamline_fr_transactions') }} 
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY id
