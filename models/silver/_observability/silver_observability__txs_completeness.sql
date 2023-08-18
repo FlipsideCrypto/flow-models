@@ -98,7 +98,7 @@ txs_per_block_actual AS (
 txs_per_block_expected AS (
     SELECT
         block_height,
-        transaction_ct
+        transaction_ct AS txs
     FROM
         {{ ref('silver_observability__block_tx_count') }}
     WHERE
