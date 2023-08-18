@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = '_test_timestamp',
-    enabled = False
+    unique_key = '_test_timestamp'
 ) }}
 
 WITH summary_stats AS (
@@ -15,7 +14,9 @@ WITH summary_stats AS (
     FROM
         {{ ref('silver__blocks') }}
     WHERE
-        block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        {# TESTING RANGE #}
+        block_height BETWEEN 7604285
+        AND 7651062 {# block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -54,6 +55,8 @@ AND (
     {% endif %}
 )
 {% endif %}
+
+#}
 ),
 block_range AS (
     SELECT
@@ -118,8 +121,35 @@ comparison AS (
         block_range id
         LEFT JOIN txs_per_block_actual A USING (block_height)
         LEFT JOIN txs_per_block_expected e USING (block_height)
+),
+impacted_blocks AS (
+    SELECT
+        COUNT(1) AS blocks_impacted_count,
+        ARRAY_AGG(block_height) within GROUP (
+            ORDER BY
+                block_height
+        ) AS blocks_impacted_array
+    FROM
+        comparison
+    WHERE
+        actual_tx_count != expected_tx_count
+),
+FINAL AS (
+    SELECT
+        'transactions' AS test_name,
+        min_block,
+        max_block,
+        min_block_timestamp,
+        max_block_timestamp,
+        blocks_tested,
+        blocks_impacted_count,
+        blocks_impacted_array,
+        SYSDATE() AS test_timestamp
+    FROM
+        summary_stats
+        JOIN impacted_blocks
 )
 SELECT
     *
 FROM
-    comparison
+    FINAL
