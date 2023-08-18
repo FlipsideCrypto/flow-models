@@ -15,9 +15,7 @@ WITH summary_stats AS (
     FROM
         {{ ref('silver__blocks') }}
     WHERE
-        -- TEMP FILTER FOR TESTING API
-        block_height BETWEEN 55000000 and 55000100
-        {# block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -53,9 +51,9 @@ AND (
             )
     ) {% if var('OBSERV_FULL_TEST') %}
         OR block_height >= 7601063
-    {% endif %} #}
-{# )
-{% endif %} #}
+    {% endif %}
+)
+{% endif %}
 ),
 block_range AS (
     SELECT
@@ -79,58 +77,49 @@ block_range AS (
                 summary_stats
         )
 ),
-txs_per_block_actual as (
-    select
+txs_per_block_actual AS (
+    SELECT
         block_height,
-        count(distinct tx_id) as txs
-    from {{ ref('silver__transactions') }}
-    where block_height in (
-        select block_height from block_range
-    )
-    group by 1
+        COUNT(
+            DISTINCT tx_id
+        ) AS txs
+    FROM
+        {{ ref('silver__transactions') }}
+    WHERE
+        block_height IN (
+            SELECT
+                block_height
+            FROM
+                block_range
+        )
+    GROUP BY
+        1
 ),
-params as (
-    select
+txs_per_block_expected AS (
+    SELECT
         block_height,
-        'query ($network: FlowNetwork!, $height: Int!) {
-            flow(network: $network) {
-                blocks(
-                height: {is: $height}
-                ) {
-                height
-                transactionsCount
-                collectionsCount
-                }
-            }
-            }' as query,
-            {'network':'flow', 'height': block_height} as variables,
-            'BQYgI4k947QztRIx9FrfpjXq7u4cnPRh' as api_key
-    from block_range
+        transaction_ct
+    FROM
+        {{ ref('silver_observability__block_tx_count') }}
+    WHERE
+        block_height IN (
+            SELECT
+                block_height
+            FROM
+                block_range
+        )
 ),
-txs_per_block_expected as (
-    select
-        block_height,
-        livequery_dev.live.udf_api(
-            'POST',
-            'https://graphql.bitquery.io',
-            {
-                'Content-Type': 'application/json',
-                'X-API-KEY': api_key
-            },
-            object_construct('query', query, 'variables', variables)
-        ) as res,
-        res:data:data:flow:blocks:transactionsCount as txs,
-        res:data:data:flow:blocks:height as block_height_res
-
-    from params
-),
-comparison as (
-    select
+comparison AS (
+    SELECT
         id.block_height,
-        a.txs as actual_tx_count,
-        e.txs as expected_tx_count
-    from block_range id
-    left join txs_per_block_actual a using (block_height)
-    left join txs_per_block_expected e using (block_height)
+        A.txs AS actual_tx_count,
+        e.txs AS expected_tx_count
+    FROM
+        block_range id
+        LEFT JOIN txs_per_block_actual A USING (block_height)
+        LEFT JOIN txs_per_block_expected e USING (block_height)
 )
-select * from comparison
+SELECT
+    *
+FROM
+    comparison
