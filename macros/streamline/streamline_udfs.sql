@@ -28,3 +28,25 @@
     {%- endif %};
 {% endmacro %}
 
+{% macro create_udf_api() %}    
+    {{ log("Creating udf udf_bulk_grpc for target:" ~ target.name ~ ", schema: " ~ target.schema, info=True) }}
+    {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
+    CREATE
+    OR REPLACE EXTERNAL FUNCTION streamline.udf_api(
+        method VARCHAR,
+        url VARCHAR,
+        headers OBJECT,
+        DATA OBJECT,
+        user_id VARCHAR,
+        secret_name VARCHAR
+    ) returns variant api_integration = 
+    {% if target.name == "prod" %} 
+        aws_flow_api_prod AS 'https://quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/udf_api'
+    {% elif target.name == "dev" %}
+        aws_flow_api_dev_2 AS 'https://8jjulyhxhj.execute-api.us-east-1.amazonaws.com/dev/udf_api'
+    {% elif  target.name == "sbx" %}
+        {{ log("Creating sbx udf_api", info=True) }}
+        aws_flow_api_sbx AS 'https://bc5ejedoq8.execute-api.us-east-1.amazonaws.com/sbx/udf_api'
+    {%- endif %};
+{% endmacro %}
+

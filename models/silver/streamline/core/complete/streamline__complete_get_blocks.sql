@@ -1,5 +1,5 @@
 -- depends_on: {{ ref('bronze__streamline_blocks') }}
--- depends_on: {{ ref('bronze__streamline_FR_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_fr_blocks') }}
 {{ config (
     materialized = "incremental",
     unique_key = "block_number",
@@ -25,7 +25,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_FR_blocks') }}
+    {{ ref('bronze__streamline_fr_blocks') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
