@@ -11,20 +11,9 @@ $$
             ) as id
         from
             table(generator(rowcount => 100000000)) -- July 2023 Flow Chain head is at  57M
-    ),
-    node_mapping as (
-        select
-            base.id as height,
-            nv.node_url as node_url
-        from
-            base
-        left join flow_dev.seeds.network_version nv
-        on
-            base.id >= nv.root_height
-            and base.id <= nv.end_height
     )
 select
-    height 
+    id as height 
 from
     base
 where
