@@ -14,7 +14,7 @@ FROM
     {{ this }}
 {% else %}
 SELECT
-    7601062 AS block_height_start, 1000000000 AS max_block_height
+    55000000 AS block_height_start, 1000000000 AS max_block_height
 {% endif %}),
 params AS (
     SELECT

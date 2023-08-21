@@ -15,8 +15,8 @@ WITH summary_stats AS (
         {{ ref('silver__blocks') }}
     WHERE
         {# TESTING RANGE #}
-        block_height BETWEEN 7604285
-        AND 7651062 {# block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_height BETWEEN 55000001
+        AND 55100000 {# block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -144,7 +144,7 @@ FINAL AS (
         blocks_tested,
         blocks_impacted_count,
         blocks_impacted_array,
-        SYSDATE() AS test_timestamp
+        SYSDATE() AS _test_timestamp
     FROM
         summary_stats
         JOIN impacted_blocks
