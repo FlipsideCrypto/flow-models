@@ -42,7 +42,7 @@ streamline: sl-flow-api udfs grant-streamline-privileges streamline_bronze
 
 streamline_bronze:
 	dbt run \
-	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": False}' \
 	-m 1+models/silver/streamline/bronze \
 	--profiles-dir ~/.dbt \
 	--target $(DBT_TARGET) \
