@@ -1,53 +1,21 @@
 version: 2
 
 models:
-  - name: core__ez_nft_sales
+  - name: nft__dim_allday_metadata
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **FLOW.NFT.EZ_NFT_SALES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
-
+      Data for NFL AllDay Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
+    
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - tx_id
-            - seller
-            - buyer
-            - nft_collection
             - nft_id
 
     columns:
-      - name: TX_ID
-        description: "{{ doc('tx_id') }}"
+      - name: NFT_ID
+        description: "{{ doc('nft_id') }}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: BLOCK_HEIGHT
-        description: "{{ doc('block_height') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: BLOCK_TIMESTAMP
-        description: "{{ doc('block_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: MARKETPLACE
-        description: "{{ doc('marketplace') }}"
-        tests:
-          - not_null
+          - unique
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -62,18 +30,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: NFT_ID
-        description: "{{ doc('nft_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-                - NUMBER
-
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
+      - name: NFLALLDAY_ID
+        description: "{{ doc('nflallday_id') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -81,27 +39,24 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: SELLER
-        description: "{{ doc('seller') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: PRICE
-        description: "{{ doc('price') }}"
+      - name: SERIAL_NUMBER
+        description: "{{ doc('serial_number') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
-                - FLOAT
-                - DOUBLE
 
-      - name: CURRENCY
-        description: "{{ doc('currency') }}"
+      - name: TOTAL_CIRCULATION
+        description: "{{ doc('total_circulation') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: MOMENT_DESCRIPTION
+        description: "{{ doc('moment_description') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -109,30 +64,99 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TX_SUCCEEDED
-        description: "{{ doc('tx_succeeded') }}"
+      - name: PLAYER
+        description: "{{ doc('player') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - STRING
+                - VARCHAR
 
-      - name: TOKENFLOW
-        description: "{{ doc('tokenflow') }}"
+      - name: TEAM
+        description: "{{ doc('team') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SEASON
+        description: "{{ doc('season') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: WEEK
+        description: "{{ doc('week') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: CLASSIFICATION
+        description: "{{ doc('classification') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PLAY_TYPE
+        description: "{{ doc('play_type') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: MOMENT_DATE
+        description: "{{ doc('moment_date') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: SERIES
+        description: "{{ doc('series') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SET_NAME
+        description: "{{ doc('set_name') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: VIDEO_URLS
+        description: "{{ doc('video_urls') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
-                - OBJECT
-                - VARIANT
 
-      - name: COUNTERPARTIES
-        description: "{{ doc('counterparties') }}"
+      - name: MOMENT_STATS_FULL
+        description: "{{ doc('moment_stats_full') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - ARRAY
                 - OBJECT
                 - VARIANT

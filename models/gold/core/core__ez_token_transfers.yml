@@ -4,6 +4,7 @@ models:
   - name: core__ez_token_transfers
     description: |-
       This table records all token transfers on the FLOW blockchain.
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -18,12 +19,12 @@ models:
 
 
     columns:
-      - name: tx_id
+      - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
               
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -34,7 +35,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -43,7 +44,7 @@ models:
                 - NUMBER    
                 - FLOAT  
 
-      - name: sender
+      - name: SENDER
         description: "{{ doc('sender') }}"
         tests:
           - not_null
@@ -52,7 +53,7 @@ models:
               - STRING
               - VARCHAR
 
-      - name: recipient
+      - name: RECIPIENT
         description: "{{ doc('recipient') }}"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -60,7 +61,7 @@ models:
                 - STRING
                 - VARCHAR    
 
-      - name: token_contract
+      - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract') }}"
         tests:
           - not_null
@@ -69,7 +70,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: amount
+      - name: AMOUNT
         description: "{{ doc('amount') }}"
         tests:
           - not_null
@@ -78,7 +79,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: tx_succeeded
+      - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null

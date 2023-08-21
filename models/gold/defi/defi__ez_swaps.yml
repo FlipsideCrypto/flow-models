@@ -1,44 +1,43 @@
 version: 2
 
 models:
-  - name: core__ez_swaps
+  - name: defi__ez_swaps
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **FLOW.DEFI.EZ_SWAPS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      This table records asset swaps on the Flow blockchain.
 
     columns:
-      - name: tx_id
+      - name: TX_ID
         description: "{{ doc('tx_id') }}"
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
 
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
 
-      - name: swap_contract
+      - name: SWAP_CONTRACT
         description: "{{ doc('swap_contract') }}"
 
-      - name: swap_index
+      - name: SWAP_INDEX
         description: "{{ doc('swap_index') }}"
 
-      - name: trader
+      - name: TRADER
         description: "{{ doc('trader') }}"
 
-      - name: token_out_source
+      - name: TOKEN_OUT_SOURCE
         description: "{{ doc('token_out_source') }}"
 
-      - name: token_out_amount
+      - name: TOKEN_OUT_AMOUNT
         description: "{{ doc('token_out_amount') }}"
 
-      - name: token_out_contract
+      - name: TOKEN_OUT_CONTRACT
         description: "{{ doc('token_out_contract') }}"
 
-      - name: token_in_destination
+      - name: TOKEN_IN_DESTINATION
         description: "{{ doc('token_in_destination') }}"
 
-      - name: token_in_amount
+      - name: TOKEN_IN_AMOUNT
         description: "{{ doc('token_in_amount') }}"
 
-      - name: token_in_contract
+      - name: TOKEN_IN_CONTRACT
         description: "{{ doc('token_in_contract') }}"
-

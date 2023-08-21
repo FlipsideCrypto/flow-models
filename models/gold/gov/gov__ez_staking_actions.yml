@@ -1,37 +1,23 @@
 version: 2
 
 models:
-  - name: beta__ez_nft_topshot_packs
+  - name: gov__ez_staking_actions
     description: |-
-      This ez_ view contains the NBA TopShot nfts transfers related to rips. These are assumed to be packs that were purchased and opened. This is an alpha version and does not have sale price or pack name at this time.
+      This table provides transaction-level info on FLOW staking activities.
       
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
-            - buyer
-            - nft_id
+            - event_index
 
     columns:
-      - name: TX_ID
+      - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
-      - name: BLOCK_HEIGHT
-        description: "{{ doc('block_height') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-
-      - name: BLOCK_TIMESTAMP
+      - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -42,41 +28,16 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: MARKETPLACE
-        description: "{{ doc('marketplace') }}"
+      - name: block_height
+        description: "{{ doc('block_height') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
-
-
-      - name: NFT_ID
-        description: "{{ doc('nft_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
                 - NUMBER
+                - FLOAT
 
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: SELLER
-        description: "{{ doc('seller') }}"
-
-
-
-      - name: TX_SUCCEEDED
+      - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
@@ -84,3 +45,39 @@ models:
               column_type_list:
                 - BOOLEAN
 
+      - name: delegator
+        description: "{{ doc('delegator') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: action
+        description: "{{ doc('action') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING
+
+      - name: amount
+        description: "{{ doc('amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DOUBLE
+
+      - name: node_id
+        description: "{{ doc('node_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARCHAR
+                - STRING

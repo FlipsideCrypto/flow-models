@@ -3,7 +3,8 @@ version: 2
 models:
   - name: core__ez_bridge_transactions
     description: |-
-      This ez_ view is the same data table as the prior `fact_bridge_transactions` view. This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
+      Deprecating soon: This is a notice that we're replacing this table with **FLOW.DEFI.EZ_BRIDGE_TRANSACTIONS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

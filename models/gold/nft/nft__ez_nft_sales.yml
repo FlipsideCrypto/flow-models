@@ -1,15 +1,17 @@
 version: 2
 
 models:
-  - name: beta__ez_nft_topshot_packs
+  - name: nft__ez_nft_sales
     description: |-
-      This ez_ view contains the NBA TopShot nfts transfers related to rips. These are assumed to be packs that were purchased and opened. This is an alpha version and does not have sale price or pack name at this time.
+      This ez_ view is the same data table as the prior `fact_nft_sales` view. NFT market sales on the Flow blockchain. Currently supported in this ez_ view are transactions that interact with the primary NFT Marketplace contract (), the Fabricant NFT Marketplace contract, and NBA TopShot primary market sales. More markets can and will be added.
       
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
+            - seller
             - buyer
+            - nft_collection
             - nft_id
 
     columns:
@@ -51,6 +53,14 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: NFT_COLLECTION
+        description: "{{ doc('nft_collection') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: NFT_ID
         description: "{{ doc('nft_id') }}"
@@ -73,8 +83,31 @@ models:
 
       - name: SELLER
         description: "{{ doc('seller') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
+      - name: PRICE
+        description: "{{ doc('price') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DOUBLE
 
+      - name: CURRENCY
+        description: "{{ doc('currency') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
 
       - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded') }}"
@@ -84,3 +117,22 @@ models:
               column_type_list:
                 - BOOLEAN
 
+      - name: TOKENFLOW
+        description: "{{ doc('tokenflow') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: COUNTERPARTIES
+        description: "{{ doc('counterparties') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT

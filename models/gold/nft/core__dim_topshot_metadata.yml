@@ -3,7 +3,8 @@ version: 2
 models:
   - name: core__dim_topshot_metadata
     description: |-
-      Data for TopShot Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
+      Deprecating soon: This is a notice that we're replacing this table with **FLOW.NFT.DIM_TOPSHOT_METADATA**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

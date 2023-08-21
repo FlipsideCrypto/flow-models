@@ -3,8 +3,8 @@ version: 2
 models:
   - name: core__dim_swap_pool_labels
     description: |-
-      This table takes swap pool/pair creation events and models out the relevant info, such as contracts for the token pairs, when it was deployed, and the address of the vault where tokens seem to be held.
-
+      Deprecating soon: This is a notice that we're replacing this table with **FLOW.DEFI.DIM_SWAP_POOL_LABELS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      
     columns:
       - name: tx_id
         description: "{{ doc('tx_id') }}"

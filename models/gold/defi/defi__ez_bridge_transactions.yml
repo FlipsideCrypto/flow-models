@@ -1,26 +1,31 @@
 version: 2
 
 models:
-  - name: beta__ez_nft_topshot_packs
+  - name: defi__ez_bridge_transactions
     description: |-
-      This ez_ view contains the NBA TopShot nfts transfers related to rips. These are assumed to be packs that were purchased and opened. This is an alpha version and does not have sale price or pack name at this time.
-      
+      This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - tx_id
-            - buyer
-            - nft_id
 
     columns:
       - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 3
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - TIMESTAMP_NTZ
 
       - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
@@ -31,19 +36,8 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: BLOCK_TIMESTAMP
-        description: "{{ doc('block_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
-
-      - name: MARKETPLACE
-        description: "{{ doc('marketplace') }}"
+      - name: BRIDGE_CONTRACT
+        description: "{{ doc('bridge_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -51,19 +45,27 @@ models:
                 - STRING
                 - VARCHAR
 
-
-      - name: NFT_ID
-        description: "{{ doc('nft_id') }}"
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
+
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
                 - NUMBER
+                - DOUBLE
+                - FLOAT
 
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
+      - name: FLOW_WALLET_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -71,16 +73,29 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: SELLER
-        description: "{{ doc('seller') }}"
-
-
-
-      - name: TX_SUCCEEDED
-        description: "{{ doc('tx_succeeded') }}"
+      - name: BLOCKCHAIN
+        description: "{{ doc('blockchain') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - BOOLEAN
+                - STRING
+                - VARCHAR
 
+      - name: DIRECTION
+        description: "{{ doc('direction') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BRIDGE
+        description: "{{ doc('bridge') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR

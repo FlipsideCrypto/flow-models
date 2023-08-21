@@ -1,10 +1,10 @@
 version: 2
 
 models:
-  - name: core__dim_moment_metadata
+  - name: nft__dim_moment_metadata
     description: |-
-      Deprecating soon: This is a notice that we're replacing this table with **FLOW.NFT.DIM_MOMENT_METADATA**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
-
+      NFT Moment Metadata scraped from on-chain activity, where available. This should be joinable on sales or mints using the nft_collection (event_contract) and nft id.
+    
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -12,51 +12,51 @@ models:
             - nft_id
 
     columns:
-      - name: nft_collection
+      - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
         tests:
           - not_null
-      - name: nft_id
+      - name: NFT_ID
         description: "{{ doc('nft_id') }}"
         tests:
           - not_null
-      - name: serial_number
+      - name: SERIAL_NUMBER
         description: "{{ doc('serial_number') }}"
         tests:
           - not_null
-      - name: max_mint_size
+      - name: MAX_MINT_SIZE
         description: "{{ doc('max_mint_size') }}"
         tests:
           - not_null
-      - name: play_id
+      - name: PLAY_ID
         description: "{{ doc('play_id') }}"
         tests:
           - not_null
-      - name: series_id
+      - name: SERIES_ID
         description: "{{ doc('series_id') }}"
         tests:
           - not_null
-      - name: series_name
+      - name: SERIES_NAME
         description: "{{ doc('series_name') }}"
         tests:
           - not_null
-      - name: set_id
+      - name: SET_ID
         description: "{{ doc('set_id') }}"
         tests:
           - not_null
-      - name: set_name
+      - name: SET_NAME
         description: "{{ doc('set_name') }}"
         tests:
           - not_null
-      - name: edition_id
+      - name: EDITION_ID
         description: "{{ doc('edition_id') }}"
         tests:
           - not_null
-      - name: tier
+      - name: TIER
         description: "{{ doc('tier') }}"
         tests:
           - not_null
-      - name: metadata
+      - name: METADATA
         description: "{{ doc('metadata') }}"
         tests:
           - not_null:
