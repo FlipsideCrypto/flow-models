@@ -1,25 +1,11 @@
 version: 2
 
 sources:
-  - name: prod
-    database: chainwalkers
-    schema: prod
-    tables:
-      - name: flow_blocks
-      - name: flow_txs
-
-  - name: crosschain
+  - name: crosschain_core
     database: crosschain
     schema: core
     tables:
       - name: address_labels
-
-  - name: silver
-    database: flipside_prod_db
-    schema: silver
-    tables:
-      - name: market_asset_metadata
-      - name: prices_v2
 
   - name: bronze_streamline
     database: streamline
@@ -33,7 +19,7 @@ sources:
       - name: transaction_results
 
 
-  - name: crosschain_v2
+  - name: crosschain_silver
     database: crosschain
     schema: silver
     tables:
