@@ -26,8 +26,7 @@ WHERE
     )
 
 {% else %}
-
-    {{ ref('bronze__streamline_FR_collections') }} 
+    {{ ref('bronze__streamline_fr_collections') }} 
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY _partition_by_block_id

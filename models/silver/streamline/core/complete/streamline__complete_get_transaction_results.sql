@@ -26,7 +26,7 @@ WHERE
     )
 
 {% else %}
-    {{ ref('bronze__streamline_FR_transaction_results') }}
+    {{ ref('bronze__streamline_fr_transaction_results') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY id
