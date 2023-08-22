@@ -8,7 +8,7 @@ sources:
       - name: flow_blocks
       - name: flow_txs
 
-  - name: crosschain_core
+  - name: crosschain
     database: crosschain
     schema: core
     tables:
@@ -27,7 +27,7 @@ sources:
     tables:
       - name: moments_minted_metadata_api
 
-  - name: crosschain_silver
+  - name: crosschain_v2
     database: crosschain
     schema: silver
     tables:
