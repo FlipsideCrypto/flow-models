@@ -27,7 +27,7 @@ sources:
     tables:
       - name: moments_minted_metadata_api
 
-  - name: crosschain_v2
+  - name: crosschain_silver
     database: crosschain
     schema: silver
     tables:
