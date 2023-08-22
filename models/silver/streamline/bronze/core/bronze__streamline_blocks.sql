@@ -26,8 +26,7 @@ WITH meta AS (
             s._partition_by_block_id,
             s.value AS VALUE
         FROM
-            streamline.FLOW_DEV.blocks
-            s
+            {{ source("bronze_streamline","blocks") }} s
             JOIN meta b
             ON b.file_name = metadata$filename
             AND b._partition_by_block_id = s._partition_by_block_id
