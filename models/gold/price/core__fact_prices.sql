@@ -19,7 +19,7 @@ prices AS (
         price_usd,
         source
     FROM
-        {{ ref('silver__prices') }}
+        {{ this.database }}.silver.prices
 ),
 prices_swaps AS (
     SELECT
