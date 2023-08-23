@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'block_height'
+    unique_key = 'block_height',
+    tags = ['observability', 'get_block_tx_count']
 ) }}
 
 WITH starting_block AS (
@@ -8,13 +9,13 @@ WITH starting_block AS (
 {% if is_incremental() %}
 
 SELECT
-    MAX(block_height) AS block_height_start, 
-    streamline.udf_get_chainhead() AS max_block_height
+    MAX(block_height) AS block_height_start, {{ target.database }}.streamline.udf_get_chainhead() AS max_block_height
 FROM
     {{ this }}
 {% else %}
+    -- Candidate 4 starts at 4132133
 SELECT
-    55000000 AS block_height_start, 1000000000 AS max_block_height
+    4132133 AS block_height_start, 1000000000 AS max_block_height
 {% endif %}),
 params AS (
     SELECT
@@ -31,7 +32,7 @@ params AS (
                 block_height_start + 25000
             )
         ) AS variables,
-        'BQYgI4k947QztRIx9FrfpjXq7u4cnPRh' AS api_key
+        '{{ var('BITQUERY_API_KEY') }}' AS api_key
     FROM
         starting_block
 ),

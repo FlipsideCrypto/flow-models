@@ -1,0 +1,36 @@
+name: dbt_get_block_tx_count
+run-name: ${{ inputs.dbt_command }}
+
+
+on:
+    workflow_dispatch:
+    schedule:
+      # Runs "every minute" (see https://crontab.guru)
+      - cron: '* * * * *'
+  
+env:
+    USE_VARS: "${{ vars.USE_VARS }}"
+    DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+    DBT_VERSION: "${{ vars.DBT_VERSION }}"
+    ACCOUNT: "${{ vars.ACCOUNT }}"
+    ROLE: "${{ vars.ROLE }}"
+    USER: "${{ vars.USER }}"
+    PASSWORD: "${{ secrets.PASSWORD }}"
+    REGION: "${{ vars.REGION }}"
+    DATABASE: "${{ vars.DATABASE }}"
+    WAREHOUSE: "${{ vars.WAREHOUSE }}"
+    SCHEMA: "${{ vars.SCHEMA }}"
+    BITQUERY_API_KEY: "${{ secrets.BITQUERY_API_KEY }}"
+
+concurrency:
+    group: ${{ github.workflow }}
+
+jobs:
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    with:
+        dbt_command: >
+            dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+        environment: workflow_prod
+        warehouse: ${{ vars.WAREHOUSE }}
+    secrets: inherit 
