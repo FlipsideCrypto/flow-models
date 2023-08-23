@@ -3,7 +3,8 @@
     post_hook = if_data_call_function(
         func = "{{this.schema}}.udf_bulk_grpc(object_construct('sql_source', '{{this.identifier}}', 'node_url', '{{ var('node_url') }}', 'external_table', 'transactions', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','30000')}}, 'worker_batch_size', {{var('worker_batch_size','3000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
         target = "{{this.schema}}.{{this.identifier}}"
-    )
+    ),
+    tags = ['streamline_history']
 ) }}
 
 WITH blocks AS (
