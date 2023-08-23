@@ -4,8 +4,8 @@ run-name: dbt_get_block_tx_count
 on:
     workflow_dispatch:
     schedule:
-      # Runs "every minute" (see https://crontab.guru)
-      - cron: '* * * * *'
+      # Runs "every 5 minutes" (see https://crontab.guru)
+      - cron: '*/5 * * * *'
   
 env:
     USE_VARS: "${{ vars.USE_VARS }}"
@@ -39,7 +39,22 @@ jobs:
             run: |
               pip install -r requirements.txt
               dbt deps
-          - name: Run DBT Jobs
+          - name: Run DBT Jobs 1
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Run DBT Jobs 2
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Run DBT Jobs 3
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Run DBT Jobs 4
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Run DBT Jobs 5
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Run DBT Jobs 6
             run: |
               dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
           - name: Store logs
