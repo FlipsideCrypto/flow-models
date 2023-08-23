@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = ['tx_id','nft_id'],
-    tags = ['nft']
+    tags = ['nft', 'scheduled']
 ) }}
 
 WITH silver_events AS (

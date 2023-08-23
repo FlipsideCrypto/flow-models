@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['ez', 'bridge'],
+    tags = ['ez', 'bridge', 'scheduled'],
     meta={
     'database_tags':{
         'table': {
