@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = '_test_timestamp'
+    unique_key = '_test_timestamp',
+    tags = ['observability']
 ) }}
 
 WITH summary_stats AS (
