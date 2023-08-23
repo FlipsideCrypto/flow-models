@@ -6,7 +6,8 @@
             'PURPOSE': 'NFT, ALLDAY'
             }
         }
-    }
+    },
+    tags = ['scheduled']
 ) }}
 
 WITH allday AS (
