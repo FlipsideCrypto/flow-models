@@ -6,38 +6,41 @@
     )
 ) }}
 
-WITH blocks AS (
-
+-- CTE to get all block_heights and their associated collection_ids from the complete_get_blocks table
+WITH block_collections AS (
     SELECT
-        block_height
+        cb.block_number AS block_height,
+        collection_guarantee.value:collection_id AS collection_id
     FROM
-        {{ ref("streamline__blocks") }}
-    EXCEPT
-    SELECT
-        block_number as block_height
-    FROM
-        {{ ref("streamline__complete_get_collections") }}
+        {{ ref("streamline__complete_get_blocks") }} cb,
+        LATERAL FLATTEN(input => cb.data:collection_guarantees) AS collection_guarantee
 ),
-collections AS (
 
+-- CTE to identify collections that haven't been ingested yet
+collections_to_ingest AS (
     SELECT
-        block_number as block_height,
-        data
+        bc.block_height,
+        bc.collection_id
     FROM
-        {{ ref('streamline__complete_get_blocks') }}
-    JOIN blocks ON blocks.block_height = block_number
+        block_collections bc
+    LEFT JOIN
+        {{ ref("streamline__complete_get_collections") }} c 
+        ON bc.block_height = c.block_number 
+        AND bc.collection_id = c.id
+    WHERE
+        c.id IS NULL
 )
+
+-- Generate the requests based on the missing collections
 SELECT
     OBJECT_CONSTRUCT(
         'grpc', 'proto3',
         'method', 'get_collection_by_i_d',
         'block_height', block_height::INTEGER,
-        'method_params', OBJECT_CONSTRUCT('id', collection_guarantee.value:collection_id)
+        'method_params', OBJECT_CONSTRUCT('id', collection_id)
     ) AS request
-
 FROM
-    collections,
-    LATERAL FLATTEN(input => data:collection_guarantees) AS collection_guarantee
+    collections_to_ingest
 WHERE
     block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
 ORDER BY
