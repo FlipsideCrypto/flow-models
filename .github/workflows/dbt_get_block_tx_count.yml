@@ -1,12 +1,12 @@
 name: dbt_get_block_tx_count
-run-name: ${{ inputs.dbt_command }}
-
+run-name: dbt_get_block_tx_count
 
 on:
     workflow_dispatch:
     schedule:
       # Runs "every minute" (see https://crontab.guru)
-      - cron: '* * * * *'
+    #   TODO enable after manual test
+    #   - cron: '* * * * *'
   
 env:
     USE_VARS: "${{ vars.USE_VARS }}"
@@ -26,11 +26,27 @@ concurrency:
     group: ${{ github.workflow }}
 
 jobs:
-  called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
-    with:
-        dbt_command: >
-            dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-        environment: workflow_prod
-        warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+    dbt:
+        runs-on: ubuntu-latest
+        environment:
+            name: workflow_prod
+        steps:
+          - uses: actions/checkout@v3
+          - uses: actions/setup-python@v4
+            with:
+                python-version: "3.10"
+                cache: "pip"
+          - name: install dependencies
+            run: |
+              pip install -r requirements.txt
+              dbt deps
+          - name: Run DBT Jobs
+            run: |
+              dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
+          - name: Store logs
+            uses: actions/upload-artifact@v3
+            with:
+              name: dbt-logs
+              path: |
+                    logs
+                    target
