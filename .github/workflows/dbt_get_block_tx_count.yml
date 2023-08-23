@@ -3,10 +3,9 @@ run-name: dbt_get_block_tx_count
 
 on:
     workflow_dispatch:
-    # schedule:
+    schedule:
       # Runs "every minute" (see https://crontab.guru)
-    #   TODO enable after manual test
-    #   - cron: '* * * * *'
+      - cron: '* * * * *'
   
 env:
     USE_VARS: "${{ vars.USE_VARS }}"
