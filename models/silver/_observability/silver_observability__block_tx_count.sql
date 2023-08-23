@@ -32,7 +32,7 @@ params AS (
                 block_height_start + 25000
             )
         ) AS variables,
-        '{{ var('BITQUERY_API_KEY') }}' AS api_key
+        '{{ var('BITQUERY_API_KEY', Null) }}' AS api_key
     FROM
         starting_block
 ),
