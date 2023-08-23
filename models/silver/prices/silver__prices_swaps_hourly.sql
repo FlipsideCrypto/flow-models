@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'table',
     cluster_by = ['recorded_hour::date'],
-    unique_key = "CONCAT_WS('-', recorded_hour, token)"
+    unique_key = "CONCAT_WS('-', recorded_hour, token)",
+    tags = ['scheduled']
 ) }}
 
 WITH swap_prices AS (

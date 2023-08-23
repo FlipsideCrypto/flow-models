@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['nft', 'ez'],
+    tags = ['nft', 'ez', 'scheduled'],
     meta={
     'database_tags':{
         'table': {

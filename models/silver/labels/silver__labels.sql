@@ -2,6 +2,7 @@
     materialized = 'table',
     cluster_by = ['address'],
     unique_key = 'event_id',
+    tags = ['scheduled']
 ) }}
 
 WITH labels AS (

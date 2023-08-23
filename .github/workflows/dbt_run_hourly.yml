@@ -30,7 +30,7 @@ jobs:
       dbt_command: >
         dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
         dbt seed; 
-        dbt run --exclude streamline__all_topshot_moments_minted_metadata_needed streamline__allday_moments_metadata_needed models/silver/streamline;
+        dbt run -s tag:scheduled
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 

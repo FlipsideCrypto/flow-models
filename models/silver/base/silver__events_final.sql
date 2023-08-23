@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
-    unique_key = "CONCAT_WS('-', tx_id, event_index)"
+    unique_key = "CONCAT_WS('-', tx_id, event_index)",
+    tags = ['scheduled']
 ) }}
 
 WITH silver_events AS (

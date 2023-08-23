@@ -33,10 +33,10 @@ sources:
       - name: transaction_results
 
 
-  - name: crosschain_v2
+  - name: crosschain_silver
     database: crosschain
     schema: silver
     tables:
       - name: hourly_prices_coin_gecko
       - name: hourly_prices_coin_market_cap
-
+      - name: number_sequence

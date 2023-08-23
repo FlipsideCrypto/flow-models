@@ -2,7 +2,8 @@
     materialized = 'incremental',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'attribute_id',
-    incremental_strategy = 'delete+insert'
+    incremental_strategy = 'delete+insert',
+    tags = ['scheduled']
 ) }}
 
 WITH events AS (

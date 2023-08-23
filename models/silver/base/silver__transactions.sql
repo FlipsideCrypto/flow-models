@@ -2,7 +2,8 @@
   materialized = 'incremental',
   cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = 'tx_id',
-  incremental_strategy = 'delete+insert'
+  incremental_strategy = 'delete+insert',
+  tags = ['scheduled']
 ) }}
 
 WITH bronze_txs AS (
