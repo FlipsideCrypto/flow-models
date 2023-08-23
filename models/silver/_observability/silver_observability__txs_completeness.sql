@@ -15,9 +15,7 @@ WITH summary_stats AS (
     FROM
         {{ ref('silver__blocks') }}
     WHERE
-        {# TESTING RANGE #}
-        block_height BETWEEN 55000001
-        AND 55100000 {# block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -56,8 +54,6 @@ AND (
     {% endif %}
 )
 {% endif %}
-
-#}
 ),
 block_range AS (
     SELECT
