@@ -44,7 +44,7 @@ jobs:
 
       - name: Run DBT Realtime
         run: |
-          dbt run -s streamline__get_collections_realtime --vars '{"STREAMLINE_INVOKE_STREAMS: True"}'
+          dbt run -s 1+streamline__get_collections_realtime --vars '{"STREAMLINE_INVOKE_STREAMS: True"}'
 
       - name: Run DBT History Jobs
         run: |
