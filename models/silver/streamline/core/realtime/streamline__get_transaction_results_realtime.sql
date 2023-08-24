@@ -33,7 +33,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
             AND block_height IS NOT NULL
         EXCEPT
         SELECT
-            block_height
+            block_number as block_height
         FROM
             {{ ref('streamline__complete_get_transactions') }}
         WHERE
