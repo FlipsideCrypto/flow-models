@@ -38,22 +38,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           dbt deps
-      - name: Run DBT Jobs 1
-        run: |
-          dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-      - name: Run DBT Jobs 2
-        run: |
-          dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-      - name: Run DBT Jobs 3
-        run: |
-          dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-      - name: Run DBT Jobs 4
-        run: |
-          dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-      - name: Run DBT Jobs 5
-        run: |
-          dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
-      - name: Run DBT Jobs 6
+      - name: Run DBT Jobs
         run: |
           dbt run -s tag:get_block_tx_count --vars 'BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}'
       - name: Store logs
