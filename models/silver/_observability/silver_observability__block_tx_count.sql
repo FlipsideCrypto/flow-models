@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'block_height',
-    tags = ['observability', 'get_block_tx_count']
+    tags = ['get_block_tx_count']
 ) }}
 
 WITH starting_block AS (
