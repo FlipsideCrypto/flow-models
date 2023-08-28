@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = '_test_timestamp',
+    unique_key = 'test_timestamp',
+    full_refresh = False,
     tags = ['observability']
 ) }}
 
@@ -141,7 +142,7 @@ FINAL AS (
         blocks_tested,
         blocks_impacted_count,
         blocks_impacted_array,
-        SYSDATE() AS _test_timestamp
+        SYSDATE() AS test_timestamp
     FROM
         summary_stats
         JOIN impacted_blocks
