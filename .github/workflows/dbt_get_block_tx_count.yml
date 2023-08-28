@@ -1,5 +1,5 @@
-name: dbt_get_block_tx_count
-run-name: dbt_get_block_tx_count
+name: dbt_observability_models
+run-name: dbt_observability_models
 
 on:
   workflow_dispatch:
