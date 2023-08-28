@@ -59,7 +59,7 @@ blocks_history:
 collections_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql \
+	-m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet21.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
