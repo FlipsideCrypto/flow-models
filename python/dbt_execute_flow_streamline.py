@@ -31,7 +31,13 @@ def main(model_name, use_dev=False):
             node_url = row["node_url"]
             end_height = row["end_height"]
 
-            run_dbt_for_model(model_name, node_url, root_height, end_height, use_dev)
+            # segment the backfill into batches of 5 networks at a time, starting with the most recent 5
+            # source CSV contains 29 networks, but the first 3 (candidates 3-6) are inaccessible
+            # so, valid rows are 4-29, or 25 rows
+            if i >= 25:
+                run_dbt_for_model(model_name, node_url, root_height, end_height, use_dev)
+            else:
+                continue
 
 
 if __name__ == "__main__":
