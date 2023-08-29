@@ -3,10 +3,9 @@ run-name: dbt_run_streamline_blocks
 
 on:
   workflow_dispatch:
-  # TODO - enable schedule 
-    # schedule:
+  schedule:
     # Runs on minute 15 (see https://crontab.guru)
-    # - cron: "15 * * * *"
+    - cron: "15 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

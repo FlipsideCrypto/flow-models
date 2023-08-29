@@ -3,10 +3,9 @@ run-name: dbt_run_streamline_transactions
 
 on:
   workflow_dispatch:
-  # TODO - enable schedule 
-    # schedule:
+  schedule:
     # Runs on minute 45 (see https://crontab.guru)
-    # - cron: "45 * * * *"
+    - cron: "45 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
