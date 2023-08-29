@@ -8,19 +8,20 @@
 
 SELECT
     block_number,
-    DATA : height :: STRING AS block_height,
-    DATA : id :: STRING AS block_id,
-    DATA :timestamp :: TIMESTAMP AS block_timestamp,
+    DATA: height :: STRING AS block_height,
+    DATA: id :: STRING AS block_id,
+    DATA :timestamp :: timestamp_ntz AS block_timestamp,
     ARRAY_SIZE(
-        DATA :collection_guarantees
+        DATA :collection_guarantees :: ARRAY
     ) AS collection_count,
-    DATA : parent_id :: STRING AS parent_id,
-    DATA : signatures AS signatures,
-    DATA : collection_guarantees AS collection_guarantees,
-    DATA :  block_seals AS block_seals,
+    DATA: parent_id :: STRING AS parent_id,
+    DATA: signatures :: ARRAY AS signatures,
+    DATA: collection_guarantees :: ARRAY AS collection_guarantees,
+    DATA: block_seals :: ARRAY AS block_seals,
     _partition_by_block_id,
     _inserted_timestamp
 FROM
+
 {% if is_incremental() %}
 {{ ref('bronze__streamline_blocks') }}
 WHERE

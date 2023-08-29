@@ -8,15 +8,15 @@
 
 SELECT
     block_number,
-    DATA : id :: STRING AS collections_id,
-    DATA : id :: STRING AS block_id,
+    DATA: id :: STRING AS collections_id,
     ARRAY_SIZE(
-        DATA :transaction_ids
+        DATA :transaction_ids :: ARRAY
     ) AS transactions_count,
-    DATA : transaction_ids :: STRING AS transaction_ids,
+    DATA: transaction_ids :: ARRAY AS transaction_ids,
     _partition_by_block_id,
     _inserted_timestamp
 FROM
+
 {% if is_incremental() %}
 {{ ref('bronze__streamline_collections') }}
 WHERE

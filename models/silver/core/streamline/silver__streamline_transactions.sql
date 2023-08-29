@@ -8,19 +8,20 @@
 
 SELECT
     block_number,
-    DATA : reference_block_id :: STRING AS block_id,
-    id :: STRING AS tx_id,
-    DATA : gas_limit :: STRING AS gas_limit,
-    DATA : payer :: STRING AS payer,
-    DATA : arguments AS arguments,
-    DATA : authorizers AS authorizers,
-    DATA : envelope_signatures AS envelope_signatures,
-    DATA : payload_signatures AS payload_signatures,
-    DATA : proposal_key AS proposal_key,
-    DATA : script AS script,
+    DATA: reference_block_id :: STRING AS block_id,
+    id AS tx_id,
+    DATA: gas_limit :: STRING AS gas_limit,
+    DATA: payer :: STRING AS payer,
+    DATA: arguments :: ARRAY AS arguments,
+    DATA: authorizers :: ARRAY AS authorizers,
+    DATA: envelope_signatures :: ARRAY AS envelope_signatures,
+    DATA: payload_signatures :: ARRAY AS payload_signatures,
+    DATA: proposal_key :: variant AS proposal_key,
+    DATA: script :: STRING AS script,
     _partition_by_block_id,
     _inserted_timestamp
 FROM
+
 {% if is_incremental() %}
 {{ ref('bronze__streamline_transactions') }}
 WHERE
