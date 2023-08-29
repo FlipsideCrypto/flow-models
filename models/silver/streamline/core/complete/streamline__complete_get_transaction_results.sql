@@ -26,7 +26,7 @@ WHERE
             FROM
                 {{ this }}
         ),
-        '1900-01-01'::timestamp
+        '1900-01-01'::timestamp_ntz
     )
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}

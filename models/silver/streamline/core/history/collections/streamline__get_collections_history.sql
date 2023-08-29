@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_bulk_grpc(object_construct('sql_source', '{{this.identifier}}','node_url','{{ var('node_url') }}','external_table', 'collections', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','10000')}}, 'worker_batch_size', {{var('worker_batch_size','1000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
+        func = "{{this.schema}}.udf_bulk_grpc(object_construct('sql_source', '{{this.identifier}}','node_url','{{ var('node_url', Null) }}','external_table', 'collections', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','10000')}}, 'worker_batch_size', {{var('worker_batch_size','1000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
         target = "{{this.schema}}.{{this.identifier}}"
     ),
     tags = ['streamline_history']
@@ -70,7 +70,7 @@ SELECT
 FROM
     collections_to_ingest
 WHERE
-    block_height BETWEEN {{ var('start_block') }}
-    AND {{ var('end_block') }} -- Mainnet22 block range
+    block_height BETWEEN {{ var('start_block', Null) }}
+    AND {{ var('end_block', Null) }}
 ORDER BY
     block_height ASC

@@ -3,7 +3,7 @@
     materialized = 'incremental',
     unique_key = "tx_id",
     cluster_by = "_inserted_timestamp::date",
-    tags = ['core']
+    tags = ['streamline_load', 'core']
 ) }}
 
 SELECT
@@ -12,7 +12,7 @@ SELECT
     DATA: error_message :: STRING AS error_message,
     DATA: events :: ARRAY AS events,
     DATA :status :: INT AS status,
-    DATA :status_code :: STRING AS status_code,
+    DATA :status_code :: INT AS status_code,
     _partition_by_block_id,
     _inserted_timestamp
 FROM

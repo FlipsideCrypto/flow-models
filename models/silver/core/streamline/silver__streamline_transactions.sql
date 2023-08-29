@@ -3,14 +3,14 @@
     materialized = 'incremental',
     unique_key = "tx_id",
     cluster_by = "_inserted_timestamp::date",
-    tags = ['core']
+    tags = ['streamline_load', 'core']
 ) }}
 
 SELECT
     block_number,
     DATA: reference_block_id :: STRING AS block_id,
     id AS tx_id,
-    DATA: gas_limit :: STRING AS gas_limit,
+    DATA: gas_limit :: NUMBER AS gas_limit,
     DATA: payer :: STRING AS payer,
     DATA: arguments :: ARRAY AS arguments,
     DATA: authorizers :: ARRAY AS authorizers,

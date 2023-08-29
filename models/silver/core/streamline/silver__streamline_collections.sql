@@ -3,15 +3,15 @@
     materialized = 'incremental',
     unique_key = "collections_id",
     cluster_by = "block_number",
-    tags = ['core']
+    tags = ['streamline_load', 'core']
 ) }}
 
 SELECT
     block_number,
-    DATA: id :: STRING AS collections_id,
+    DATA: id :: STRING AS collection_id,
     ARRAY_SIZE(
         DATA :transaction_ids :: ARRAY
-    ) AS transactions_count,
+    ) AS tx_count,
     DATA: transaction_ids :: ARRAY AS transaction_ids,
     _partition_by_block_id,
     _inserted_timestamp
