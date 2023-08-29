@@ -1,7 +1,7 @@
 -- depends_on: {{ ref('bronze__streamline_collections') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "collections_id",
+    unique_key = "collection_id",
     cluster_by = "block_number",
     tags = ['streamline_load', 'core']
 ) }}
