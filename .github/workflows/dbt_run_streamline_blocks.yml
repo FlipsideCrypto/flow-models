@@ -48,3 +48,7 @@ jobs:
       - name: Run DBT History Jobs - Mainnet22
         run: |
           dbt run -s 1+streamline__get_blocks_history --vars '{"STREAMLINE_INVOKE_STREAMS": True, "node_url": "access-001.mainnet22.nodes.onflow.org:9000", "start_block": 47169687, "end_block": 55114466}'
+
+      - name: Run DBT History Jobs - Mainnet21
+        run: |
+          dbt run -s streamline__get_blocks_history --vars '{"STREAMLINE_INVOKE_STREAMS": True, "node_url": "access-001.mainnet21.nodes.onflow.org:9000", "start_block": 44950207, "end_block": 47169686}'
