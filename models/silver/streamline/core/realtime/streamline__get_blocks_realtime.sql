@@ -62,8 +62,10 @@ SELECT
             'height',
             block_height
         )
-    )
+    ) AS request
 FROM
     tbl
 ORDER BY
     block_height ASC
+LIMIT
+    250000
