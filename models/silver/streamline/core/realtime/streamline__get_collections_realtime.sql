@@ -97,5 +97,5 @@ FROM
     collections_to_ingest
 ORDER BY
     block_height ASC
-LIMIT
-    250000
+{# LIMIT
+    250000 #}

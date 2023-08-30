@@ -67,5 +67,5 @@ FROM
     tbl
 ORDER BY
     block_height ASC
-LIMIT
-    250000
+{# LIMIT
+    250000 #}
