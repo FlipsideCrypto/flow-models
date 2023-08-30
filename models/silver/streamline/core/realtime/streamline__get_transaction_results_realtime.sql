@@ -8,8 +8,9 @@
 ) }}
 
 WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
-    {# 55114467 is start of mainnet 23 #}
-    55114467 AS block_height
+    SELECT
+        {# 55114467 is start of mainnet 23 #}
+        55114467 AS block_height
 {% else %}
 
     SELECT

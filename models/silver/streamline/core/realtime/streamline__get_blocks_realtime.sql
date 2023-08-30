@@ -8,10 +8,11 @@
 ) }}
 
 WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
-    {# 55114467 is start of mainnet 23 #}
-    55114467 AS block_height
-{% else %}
 
+    SELECT
+        {# 55114467 is start of mainnet 23 #}
+        55114467 AS block_height
+    {% else %}
     SELECT
         MAX(block_height) - 210000 AS block_height
     FROM
@@ -50,10 +51,14 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     )
 SELECT
     OBJECT_CONSTRUCT(
-        'grpc', 'proto3',
-        'method', 'get_block_by_height',
-        'block_height', block_height :: INTEGER,
-        'method_params', OBJECT_CONSTRUCT(
+        'grpc',
+        'proto3',
+        'method',
+        'get_block_by_height',
+        'block_height',
+        block_height :: INTEGER,
+        'method_params',
+        OBJECT_CONSTRUCT(
             'height',
             block_height
         )
