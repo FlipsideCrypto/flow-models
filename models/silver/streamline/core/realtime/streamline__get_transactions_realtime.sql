@@ -8,8 +8,9 @@
 ) }}
 
 WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
-    {# TODO - this can't be 0, has to be block height of current spork #}
-    0 AS block_height
+    SELECT
+        {# 55114467 is start of mainnet 23 #}
+        55114467 AS block_height
 {% else %}
 
     SELECT
