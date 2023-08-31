@@ -1,0 +1,50 @@
+name: dbt_run_streamline_blocks
+run-name: dbt_run_streamline_blocks
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs on minute 15 (see https://crontab.guru)
+    - cron: "15 * * * *"
+
+env:
+  USE_VARS: "${{ vars.USE_VARS }}"
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  run_dbt_jobs:
+    runs-on: ubuntu-latest
+    environment:
+      name: workflow_prod
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+
+      - name: Run DBT Realtime
+        run: |
+          dbt run -s 1+streamline__get_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+  
+      - name: Run DBT History Jobs - Mainnet22
+        run: |
+          dbt run -s 1+streamline__get_blocks_history --vars '{"STREAMLINE_INVOKE_STREAMS": True, "node_url": "access-001.mainnet22.nodes.onflow.org:9000", "start_block": 47169687, "end_block": 55114466}'

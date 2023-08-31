@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: core__dim_swap_pool_labels
+    description: |-
+      Deprecating soon: This is a notice that we're replacing this table with **FLOW.DEFI.DIM_SWAP_POOL_LABELS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+      
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: deployment_timestamp
+        description: "{{ doc('deployment_timestamp') }}"
+
+      - name: token0_contract
+        description: "{{ doc('token0_contract') }}"
+
+      - name: token1_contract
+        description: "{{ doc('token1_contract') }}"
+
+      - name: pool_id
+        description: "{{ doc('pool_id') }}"
+
+      - name: vault_address
+        description: "{{ doc('vault_address') }}"
+
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"

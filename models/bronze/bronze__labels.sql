@@ -1,5 +1,6 @@
 {{ config (
-    materialized = 'view'
+    materialized = 'view',
+    tags = ['scheduled']
 ) }}
 
 WITH labels AS (
@@ -16,7 +17,7 @@ WITH labels AS (
         project_name
     FROM
         {{ source(
-            'crosschain',
+            'crosschain_core',
             'address_labels'
         ) }}
     WHERE

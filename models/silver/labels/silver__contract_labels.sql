@@ -1,7 +1,8 @@
 {{ config(
     materialized = 'table',
     cluster_by = ['event_contract'],
-    unique_key = 'event_contract'
+    unique_key = 'event_contract',
+    tags = ['scheduled']
 ) }}
 
 WITH splt AS (

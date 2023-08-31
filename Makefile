@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 # set default target
 DBT_TARGET ?= sbx
-AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_sbx
+AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_dev
 
 dbt-console: 
 	docker-compose run dbt_console
@@ -22,6 +22,15 @@ udfs:
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
 
+complete:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/complete \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+
 grant-streamline-privileges:
 	dbt run-operation grant_streamline_privileges \
 	--profile flow \
@@ -29,4 +38,44 @@ grant-streamline-privileges:
 	--profiles-dir ~/.dbt/ \
 	--args '{role: $(AWS_LAMBDA_ROLE)}'
 
-undo_clone_purge: sl-flow-api udfs grant-streamline-privileges
+streamline: sl-flow-api udfs grant-streamline-privileges streamline_bronze
+
+streamline_bronze:
+	dbt run \
+	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/bronze \
+	--profiles-dir ~/.dbt \
+	--target $(DBT_TARGET) \
+	--profile flow
+
+blocks_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+collections_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+tx_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+tx_results_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt

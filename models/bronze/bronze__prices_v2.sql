@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    tags = ['scheduled']
 ) }}
 
 WITH coingecko AS (
@@ -15,7 +16,7 @@ WITH coingecko AS (
         _inserted_timestamp
     FROM
         {{ source(
-            'crosschain_v2',
+            'crosschain_silver',
             'hourly_prices_coin_gecko'
         ) }}
 ),
@@ -31,7 +32,7 @@ coinmarketcap AS (
         _inserted_timestamp
     FROM
         {{ source(
-            'crosschain_v2',
+            'crosschain_silver',
             'hourly_prices_coin_market_cap'
         ) }}
 ),

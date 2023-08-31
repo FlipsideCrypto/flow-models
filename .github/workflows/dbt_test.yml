@@ -18,7 +18,7 @@ env:
   PASSWORD: "${{ secrets.PASSWORD }}"
   REGION: "${{ vars.REGION }}"
   DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  WAREHOUSE: "${{ vars.TEST_WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency:
@@ -49,4 +49,4 @@ jobs:
 
       - name: Log test results
         run: |
-          python python_scripts/test_alert/dbt_test_alert.py
+          python python/dbt_test_alert.py

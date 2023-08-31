@@ -1,32 +1,37 @@
+-- depends_on: {{ ref('bronze__streamline_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_fr_blocks') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "record_id",
-    cluster_by = "ROUND(block_id, -3)",
-    merge_update_columns = ["record_id"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(record_id)"
+    unique_key = "block_number",
+    cluster_by = "ROUND(block_number, -3)",
+    merge_update_columns = ["block_number"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
+    tags = ['streamline_complete']
 ) }}
 
 SELECT
-    record_id,
-    block_id,
-    _inserted_timestamp,
-    network AS node_url
+    data,
+    block_number,
+    _partition_by_block_id,
+    _inserted_timestamp
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__blocks') }} -- TODO: change to bronze__streamline_blocks
+{{ ref('bronze__streamline_blocks') }} 
 WHERE
-    _inserted_timestamp >= (
-        SELECT
+    _inserted_timestamp >= COALESCE(
+        (
+            SELECT
             MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
+            FROM
+                {{ this }}
+        ),
+        '1900-01-01'::timestamp_ntz
     )
-
 {% else %}
-    {{ ref('bronze__blocks') }} -- TODO: change to bronze__streamline_FR_blocks
+    {{ ref('bronze__streamline_fr_blocks') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY record_id
+qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1

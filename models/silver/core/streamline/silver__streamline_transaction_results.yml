@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: silver__streamline_transaction_results
+    description: -|
+      Initial table for the gRPC transaction results response, loading data into Snowflake from the external AWS table.
+
+    columns:
+      - name: BLOCK_NUMBER
+        description: "{{ doc('block_number') }}"
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+
+      - name: ERROR_MESSAGE
+        description: "{{ doc('error_message') }}"
+
+      - name: EVENTS
+        description: "{{ doc('events') }}"
+
+      - name: STATUS
+        description: "{{ doc('status') }}"
+
+      - name: STATUS_CODE
+        description: "{{ doc('status_code') }}"
+
+      - name: _PARTITION_BY_BLOCK_ID
+        description: "{{ doc('_partition_by_block_id') }}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp') }}"

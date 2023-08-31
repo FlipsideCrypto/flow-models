@@ -16,39 +16,34 @@ There is more information on how to use dbt docs in the last section of this doc
 ## **Quick Links to Table Documentation**
 
 **Click on the links below to jump to the documentation for each schema.**
-
-### Core Tables (`flow`.`CORE`.`<table_name>`)
-
-**Dimension Tables:**
-- [dim_allday_metadata](#!/model/model.flow_models.core__dim_allday_metadata)
-- [dim_contract_labels](#!/model/model.flow_models.core__dim_contract_labels)
-- [dim_moment_metadata](#!/model/model.flow_models.core__dim_moment_metadata)
-- [dim_swap_pool_labels](#!/model/model.flow_models.core__dim_swap_pool_labels)
-- [dim_topshot_metadata](#!/model/model.flow_models.core__dim_topshot_metadata)
-- [dim_validator_labels](#!/model/model.flow_models.core__dim_validator_labels)
-
-
-**Fact Tables:**
-- [fact_blocks](#!/model/model.flow_models.core__fact_blocks)
-- [fact_events](#!/model/model.flow_models.core__fact_events)
-- [fact_hourly_prices](#!/model/model.flow_models.core__fact_hourly_prices)
-- [fact_prices](#!/model/model.flow_models.core__fact_prices)
-- [fact_transactions](#!/model/model.flow_models.core__fact_transactions)
-
-
-
-**Convenience Tables:**
-- [ez_bridge_transactions](#!/model/model.flow_models.core__ez_bridge_transactions)
-- [ez_dex_swaps](#!/model/model.flow_models.core__ez_dex_swaps)
-- [ez_nft_sales](#!/model/model.flow_models.core__ez_nft_sales)
-- [ez_staking_actions](#!/model/model.flow_models.core__ez_staking_actions)
-- [ez_swaps](#!/model/model.flow_models.core__ez_swaps)
-- [ez_token_transfers](#!/model/model.flow_models.core__ez_token_transfers)
-
-
-
 ### Beta Tables (`FLOW`.`BETA`.`<table_name>`)
 - [ez_nft_topshot_packs](#!/model/model.flow_models.beta__ez_nft_topshot_packs)
+
+### Core Tables (`flow`.`CORE`.`<table_name>`)
+- [dim_contract_labels](#!/model/model.flow_models.core__dim_contract_labels)
+- [ez_token_transfers](#!/model/model.flow_models.core__ez_token_transfers)
+- [fact_blocks](#!/model/model.flow_models.core__fact_blocks)
+- [fact_events](#!/model/model.flow_models.core__fact_events)
+- [fact_transactions](#!/model/model.flow_models.core__fact_transactions)
+
+### DeFi Tables (`flow`.`DEFI`.`<table_name>`)
+- [dim_swap_pool_labels](#!/model/model.flow_models.defi__dim_swap_pool_labels)
+- [ez_bridge_transactions](#!/model/model.flow_models.defi__ez_bridge_transactions)
+- [ez_swaps](#!/model/model.flow_models.defi__ez_swaps)
+
+### Governance Tables (`flow`.`GOV`.`<table_name>`)
+- [dim_validator_labels](#!/model/model.flow_models.gov__dim_validator_labels)
+- [ez_staking_actions](#!/model/model.flow_models.gov__ez_staking_actions)
+
+### NFT Tables (`flow`.`NFT`.`<table_name>`)
+- [dim_allday_metadata](#!/model/model.flow_models.nft__dim_allday_metadata)
+- [dim_moment_metadata](#!/model/model.flow_models.nft__dim_moment_metadata)
+- [dim_topshot_metadata](#!/model/model.flow_models.nft__dim_topshot_metadata)
+- [ez_nft_sales](#!/model/model.flow_models.nft__ez_nft_sales)
+
+### Price Tables (`flow`.`PRICE`.`<table_name>`)
+- [fact_hourly_prices](#!/model/model.flow_models.price__fact_hourly_prices)
+- [fact_prices](#!/model/model.flow_models.price__fact_prices)
 
 
 ## **Data Model Overview**
