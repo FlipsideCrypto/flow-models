@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
-    unique_key = 'nft_id'
+    unique_key = 'nft_id',
+    tags = ['scheduled']
 ) }}
 
 WITH metadata AS (

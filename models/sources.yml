@@ -32,4 +32,4 @@ sources:
     tables:
       - name: hourly_prices_coin_gecko
       - name: hourly_prices_coin_market_cap
-
+      - name: number_sequence

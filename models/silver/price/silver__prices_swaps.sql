@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::date'],
-    unique_key = "CONCAT_WS('-', block_timestamp, token_contract)"
+    unique_key = "CONCAT_WS('-', block_timestamp, token_contract)",
+    tags = ['scheduled']
 ) }}
 
 WITH swaps AS (

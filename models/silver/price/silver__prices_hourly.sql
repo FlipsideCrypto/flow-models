@@ -2,7 +2,8 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
-    unique_key = "concat_ws( '-', recorded_hour, id )"
+    unique_key = "concat_ws( '-', recorded_hour, id )",
+    tags = ['scheduled']
 ) }}
 -- model named prices hourly but core view is hourly prices
 -- this is to organize the silver model with other prices models
