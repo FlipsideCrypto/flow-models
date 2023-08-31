@@ -10,8 +10,9 @@
 WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
 
     SELECT
-        {# 55114467 is start of mainnet 23 #}
-        55114467 AS block_height
+        MAX(root_height) AS block_height
+    FROM
+        {{ ref('seeds__network_version') }}
     {% else %}
     SELECT
         MAX(block_height) - 210000 AS block_height

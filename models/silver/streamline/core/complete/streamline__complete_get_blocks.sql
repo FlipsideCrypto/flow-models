@@ -10,28 +10,38 @@
 ) }}
 
 SELECT
-    data,
+    DATA,
     block_number,
     _partition_by_block_id,
     _inserted_timestamp
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_blocks') }} 
+{{ ref('bronze__streamline_blocks') }}
 WHERE
     _inserted_timestamp >= COALESCE(
         (
             SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+                MAX(_inserted_timestamp) _inserted_timestamp
             FROM
                 {{ this }}
         ),
-        '1900-01-01'::timestamp_ntz
+        '1900-01-01' :: timestamp_ntz
     )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
+WHERE
+    TRUE
 {% endif %}
-
+AND NOT (
+    DATA :status :: INT != 2
+    AND block_number >= (
+        SELECT
+            MAX(root_height)
+        FROM
+            {{ ref('seeds__network_version') }}
+    )
+) 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1
