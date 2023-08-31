@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_collections
 on:
   workflow_dispatch:
   schedule:
-    # Runs on minute 30 (see https://crontab.guru)
-    - cron: "30 * * * *"
+    # Runs every 30 minutes (see https://crontab.guru)
+    - cron: "*/30 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
