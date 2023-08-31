@@ -33,7 +33,7 @@ WHERE
 WHERE
     TRUE
 {% endif %}
-{# AND NOT (
+AND NOT (
     DATA :status :: INT != 2
     AND block_number >= (
         SELECT
@@ -41,7 +41,7 @@ WHERE
         FROM
             {{ ref('seeds__network_version') }}
     )
-)  #}
+) 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1
