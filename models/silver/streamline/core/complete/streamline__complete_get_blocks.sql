@@ -35,7 +35,12 @@ WHERE
 {% endif %}
 AND NOT (
     DATA :status :: INT != 2
-    AND block_number >= 55114467
+    AND block_number >= (
+        SELECT
+            MAX(root_height)
+        FROM
+            {{ ref('seeds__network_version') }}
+    )
 ) 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY

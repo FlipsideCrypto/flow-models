@@ -8,11 +8,12 @@
 ) }}
 
 WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
-    SELECT
-        {# 55114467 is start of mainnet 23 #}
-        55114467 AS block_height
-{% else %}
 
+    SELECT
+        MAX(root_height)
+    FROM
+        {{ ref('seeds__network_version') }} AS block_height
+    {% else %}
     SELECT
         MAX(block_height) - 210000 AS block_height
     FROM
@@ -35,7 +36,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
             AND block_height IS NOT NULL
         EXCEPT
         SELECT
-            block_number as block_height
+            block_number AS block_height
         FROM
             {{ ref('streamline__complete_get_transactions') }}
         WHERE
@@ -82,11 +83,16 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     ) -- Generate the requests based on the missing transactions
 SELECT
     OBJECT_CONSTRUCT(
-        'grpc', 'proto3',
-        'method', 'get_transaction_result',
-        'block_height', block_height :: INTEGER,
-        'transaction_id', transaction_id :: STRING,
-        'method_params', OBJECT_CONSTRUCT(
+        'grpc',
+        'proto3',
+        'method',
+        'get_transaction_result',
+        'block_height',
+        block_height :: INTEGER,
+        'transaction_id',
+        transaction_id :: STRING,
+        'method_params',
+        OBJECT_CONSTRUCT(
             'id',
             transaction_id :: STRING
         )
