@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: defi__ez_swaps
+    description: |-
+      This table records asset swaps on the Flow blockchain.
+
+    columns:
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
+
+      - name: SWAP_CONTRACT
+        description: "{{ doc('swap_contract') }}"
+
+      - name: SWAP_INDEX
+        description: "{{ doc('swap_index') }}"
+
+      - name: TRADER
+        description: "{{ doc('trader') }}"
+
+      - name: TOKEN_OUT_SOURCE
+        description: "{{ doc('token_out_source') }}"
+
+      - name: TOKEN_OUT_AMOUNT
+        description: "{{ doc('token_out_amount') }}"
+
+      - name: TOKEN_OUT_CONTRACT
+        description: "{{ doc('token_out_contract') }}"
+
+      - name: TOKEN_IN_DESTINATION
+        description: "{{ doc('token_in_destination') }}"
+
+      - name: TOKEN_IN_AMOUNT
+        description: "{{ doc('token_in_amount') }}"
+
+      - name: TOKEN_IN_CONTRACT
+        description: "{{ doc('token_in_contract') }}"

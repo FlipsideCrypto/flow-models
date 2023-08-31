@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['recorded_at::DATE'],
     unique_key = "concat_ws( '-', recorded_at, asset_id )",
-    tags = ['scheduled']
+    enabled = False
 ) }}
 
 WITH token_prices AS (
@@ -11,6 +11,8 @@ WITH token_prices AS (
     SELECT
         *
     FROM
+    {# LEGACY FLIPSIDE_PROD_DB DEPRECATED. 
+    No data since Feb 2023, disabling table and updating from ref to direct select on table of historical data living in SF #}
         {{ ref('bronze__prices') }}
 
 {% if is_incremental() %}

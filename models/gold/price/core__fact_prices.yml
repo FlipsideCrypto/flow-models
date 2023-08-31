@@ -3,9 +3,8 @@ version: 2
 models:
   - name: core__fact_prices
     description: |-
-      This table reports prices derived from various on-chain sources. CoinGecko and CoinMarketCap price feeds can be found in the hourly price table.
-      Note that prices from swaps may be volatile and are an approximation of price in USD terms, at best. A tx_hash is included for prices from swaps to provide a source.
-      Low cap coins may have questionable prices due to low liquidity.
+      Deprecating soon: This is a notice that we're replacing this table with **FLOW.PRICE.FACT_PRICES**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
+
 
     columns:
       - name: TIMESTAMP

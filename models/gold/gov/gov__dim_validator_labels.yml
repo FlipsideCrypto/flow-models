@@ -1,9 +1,10 @@
 version: 2
 
 models:
-  - name: core__dim_validator_labels
+  - name: gov__dim_validator_labels
     description: |-
       This table stores all of the Validator Node IDs and the type of validator, per id.
+      
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

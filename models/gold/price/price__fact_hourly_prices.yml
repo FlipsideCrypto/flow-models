@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: core__fact_hourly_prices
+  - name: price__fact_hourly_prices
     description: |-
       This table provides hourly token price data for FLOW tokens from CoinGecko and CoinMarketCap.
   

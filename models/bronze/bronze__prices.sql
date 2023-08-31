@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    enabled = False
 ) }}
 
 WITH token_prices AS (

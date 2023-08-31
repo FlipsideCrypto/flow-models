@@ -8,18 +8,11 @@ sources:
       - name: flow_blocks
       - name: flow_txs
 
-  - name: crosschain
+  - name: crosschain_core
     database: crosschain
     schema: core
     tables:
       - name: address_labels
-
-  - name: silver
-    database: flipside_prod_db
-    schema: silver
-    tables:
-      - name: market_asset_metadata
-      - name: prices_v2
 
   - name: bronze_streamline
     database: streamline

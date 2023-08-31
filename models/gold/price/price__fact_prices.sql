@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['scheduled']
+    tag = ['scheduled']
 ) }}
 
 WITH token_labels AS (
@@ -20,7 +20,7 @@ prices AS (
         price_usd,
         source
     FROM
-        {{ ref('silver__prices') }}
+        {{ this.database }}.silver.prices
 ),
 prices_swaps AS (
     SELECT
@@ -40,7 +40,7 @@ viewnion AS (
         l.token_contract,
         price_usd,
         source,
-        NULL as tx_id
+        NULL AS tx_id
     FROM
         prices p
         LEFT JOIN token_labels l USING (symbol)

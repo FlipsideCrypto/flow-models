@@ -17,7 +17,7 @@ WITH labels AS (
         project_name
     FROM
         {{ source(
-            'crosschain',
+            'crosschain_core',
             'address_labels'
         ) }}
     WHERE
