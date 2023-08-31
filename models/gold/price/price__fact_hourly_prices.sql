@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    tag = ['scheduled']
 ) }}
 
 WITH api AS (

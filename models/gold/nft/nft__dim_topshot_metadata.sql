@@ -6,7 +6,8 @@
             'PURPOSE': 'NFT, TOPSHOT'
             }
         }
-    }
+    },
+    tag = ['scheduled']
 ) }}
 
 WITH topshot AS (
