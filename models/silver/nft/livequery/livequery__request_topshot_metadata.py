@@ -2,8 +2,6 @@ import snowflake.snowpark.types as T
 import snowflake.snowpark.functions as F
 
 
-# NOTE - AllDay endpoint not responsive from anywhere
-
 def register_udf_construct_data():
     """
     Helper function to register a named UDF to construct the DATA object for the API call.
