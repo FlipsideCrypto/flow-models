@@ -19,37 +19,6 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     FROM
         {{ ref('streamline__blocks') }}
     {% endif %}),
-    tbl AS (
-        SELECT
-            block_height
-        FROM
-            {{ ref('streamline__blocks') }}
-        WHERE
-            (
-                block_height >= (
-                    SELECT
-                        block_height
-                    FROM
-                        last_3_days
-                )
-            )
-            AND block_height IS NOT NULL
-        EXCEPT
-        SELECT
-            block_number AS block_height
-        FROM
-            {{ ref('streamline__complete_get_transactions') }}
-        WHERE
-            (
-                block_height >= (
-                    SELECT
-                        block_height
-                    FROM
-                        last_3_days
-                )
-            )
-            AND block_height IS NOT NULL
-    ),
     collection_transactions AS (
         SELECT
             block_number AS block_height,
@@ -61,11 +30,11 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
                 input => cc.data :transaction_ids
             ) AS TRANSACTION
         WHERE
-            block_height IN (
+            block_height >= (
                 SELECT
                     block_height
                 FROM
-                    tbl
+                    last_3_days
             )
     ),
     -- CTE to identify transactions that haven't been ingested yet
