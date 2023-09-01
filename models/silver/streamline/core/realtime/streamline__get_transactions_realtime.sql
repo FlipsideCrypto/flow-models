@@ -32,7 +32,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
         WHERE
             block_height >= (
                 SELECT
-                    block_height
+                    MAX(block_height)
                 FROM
                     last_3_days
             )
