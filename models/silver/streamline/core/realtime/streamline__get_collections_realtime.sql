@@ -19,47 +19,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     FROM
         {{ ref('streamline__blocks') }}
     {% endif %}),
-    tbl AS (
-        SELECT
-            block_height
-        FROM
-            {{ ref('streamline__blocks') }}
-        WHERE
-            (
-                block_height >= (
-                    SELECT
-                        block_height
-                    FROM
-                        last_3_days
-                )
-            )
-            AND block_height IS NOT NULL
-        EXCEPT
-        SELECT
-            block_number AS block_height
-        FROM
-            {{ ref('streamline__complete_get_collections') }}
-        WHERE
-            (
-                block_height >= (
-                    SELECT
-                        block_height
-                    FROM
-                        last_3_days
-                )
-            )
-            AND block_height IS NOT NULL
-    ),
-    collections AS (
-        SELECT
-            block_number AS block_height,
-            DATA
-        FROM
-            {{ ref('streamline__complete_get_blocks') }}
-            JOIN tbl
-            ON tbl.block_height = block_number
-    ),
-    -- CTE to get all block_heights and their associated collection_ids from the complete_get_blocks table
+    -- CTE to get targeted block_heights and their associated collection_ids from the complete_get_blocks table
     block_collections AS (
         SELECT
             cb.block_number AS block_height,
@@ -70,6 +30,13 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
             LATERAL FLATTEN(
                 input => cb.data :collection_guarantees
             ) AS collection_guarantee
+        WHERE
+            block_height >= (
+                SELECT
+                    block_height
+                FROM
+                    last_3_days
+            )
     ),
     -- CTE to identify collections that haven't been ingested yet
     collections_to_ingest AS (
