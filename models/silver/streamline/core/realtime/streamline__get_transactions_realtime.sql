@@ -71,4 +71,4 @@ FROM
 ORDER BY
     block_height ASC
 LIMIT
-    250000
+    1000000
