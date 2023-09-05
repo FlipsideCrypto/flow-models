@@ -52,7 +52,7 @@ SELECT
     e.txs_count AS expected,
     A.txs_count AS actual,
     e.txs_count - A.txs_count AS difference,
-    SILVER.ARRAY_DISJUNCTIVE_UNION(
+    SILVER.UDF_ARRAY_DISJUNCTIVE_UNION(
         e.txs_expected,
         A.txs_actual
     ) AS txs_missing

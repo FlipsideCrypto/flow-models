@@ -13,7 +13,7 @@
             {{ create_udf_bulk_grpc() }}
             {{ create_udf_api() }}
             
-            {{ run_create_func_array_disjunctive_union() }}
+            {{ run_create_udf_array_disjunctive_union() }}
             
             {% endset %}
             {% do run_query(sql) %}
