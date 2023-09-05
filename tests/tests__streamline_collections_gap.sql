@@ -53,7 +53,7 @@ SELECT
     e.collection_count - A.collection_count AS difference,
     e.collections_expected,
     A.collections_actual,
-    silver.array_disjunctive_union(
+    SILVER.ARRAY_DISJUNCTIVE_UNION(
         e.collections_expected,
         A.collections_actual
     ) AS missing_collections
