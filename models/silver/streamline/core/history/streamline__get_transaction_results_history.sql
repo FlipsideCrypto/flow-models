@@ -41,3 +41,5 @@ WHERE
     block_height BETWEEN {{ var('start_block', Null) }} AND {{ var('end_block', Null) }}
 ORDER BY
     block_height ASC
+LIMIT
+    1000000
