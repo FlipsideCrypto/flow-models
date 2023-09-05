@@ -64,7 +64,7 @@ SELECT
     ) AS txs_missing
 FROM
     transactions_expected e
-    JOIN transactions_actual A USING(block_height)
+    LEFT JOIN transactions_actual A USING(block_height)
 WHERE
     expected != actual
 ORDER BY

@@ -63,7 +63,7 @@ SELECT
     ) AS missing_collections
 FROM
     collections_expected e
-    JOIN collections_actual A USING(block_height)
+    LEFT JOIN collections_actual A USING(block_height)
 WHERE
     expected != actual
 ORDER BY
