@@ -1,8 +1,9 @@
 {{ config(
-    severity = 'error'
+    severity = 'error',
+    tags = ['streamline_test']
 ) }}
 
-WITH streamline__blocks AS (
+WITH streamline_blocks AS (
 
     SELECT
         *
@@ -32,7 +33,7 @@ determine_prior_block AS (
                 block_height
         ) AS prev_block_height
     FROM
-        streamline__blocks
+        streamline_blocks
 )
 SELECT
     *
