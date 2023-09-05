@@ -35,6 +35,6 @@ WHERE
     {{ ref('bronze__streamline_fr_transactions') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
+qualify(ROW_NUMBER() over (PARTITION BY tx_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

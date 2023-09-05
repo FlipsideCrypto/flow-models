@@ -30,6 +30,6 @@ WHERE
     {{ ref('bronze__streamline_fr_collections') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
+qualify(ROW_NUMBER() over (PARTITION BY collection_id
 ORDER BY
     _inserted_timestamp DESC)) = 1
