@@ -41,3 +41,5 @@ FROM
     determine_prior_block
 WHERE
     prev_block_id != parent_id
+ORDER BY
+    1

@@ -50,14 +50,22 @@ transactions_actual AS (
 SELECT
     e.block_height,
     e.txs_count AS expected,
-    A.txs_count AS actual,
-    e.txs_count - A.txs_count AS difference,
+    COALESCE(
+        A.txs_count,
+        0
+    ) AS actual,
+    expected - actual AS difference,
     SILVER.UDF_ARRAY_DISJUNCTIVE_UNION(
         e.txs_expected,
-        A.txs_actual
+        COALESCE(
+            A.txs_actual,
+            array_construct()
+            )
     ) AS txs_missing
 FROM
     transactions_expected e
     JOIN transactions_actual A USING(block_height)
 WHERE
-    e.txs_count != A.txs_count
+    expected != actual
+ORDER BY
+    1

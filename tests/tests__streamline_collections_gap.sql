@@ -49,16 +49,22 @@ collections_actual AS (
 SELECT
     e.block_height,
     e.collection_count AS expected,
-    A.collection_count AS actual,
-    e.collection_count - A.collection_count AS difference,
-    e.collections_expected,
-    A.collections_actual,
+    COALESCE(
+        A.collection_count,
+        0
+    ) AS actual,
+    expected - actual AS difference,
     SILVER.UDF_ARRAY_DISJUNCTIVE_UNION(
         e.collections_expected,
-        A.collections_actual
+        COALESCE(
+            A.collections_actual,
+            ARRAY_CONSTRUCT()
+        )
     ) AS missing_collections
 FROM
     collections_expected e
     JOIN collections_actual A USING(block_height)
 WHERE
-    e.collection_count != A.collection_count
+    expected != actual
+ORDER BY
+    1
