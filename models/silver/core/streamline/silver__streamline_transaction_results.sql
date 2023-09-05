@@ -18,7 +18,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_transaction_results') }} AS t
+{{ ref('bronze__streamline_transaction_results') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -27,9 +27,9 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_transaction_results') }} AS t
+    {{ ref('bronze__streamline_fr_transaction_results') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY t.block_number
+qualify(ROW_NUMBER() over (PARTITION BY tx_id
 ORDER BY
-    t._inserted_timestamp DESC)) = 1
+    _inserted_timestamp DESC)) = 1
