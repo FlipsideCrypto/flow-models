@@ -9,25 +9,28 @@
 WITH metadata AS (
 
     SELECT
-        *
+        _res_id AS id,
+        'A.0b2a3299cc857e29.TopShot' AS contract,
+        -- Note MUST lowercase the object keys. Autoformat will capitalize
+        DATA :data :data :: variant AS DATA,
+        _inserted_timestamp
     FROM
-        {{ ref('bronze__moments_metadata') }}
-    WHERE
-        contract = 'A.0b2a3299cc857e29.TopShot'
+        {{ ref('livequery__request_topshot_metadata') }}
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 
 qualify ROW_NUMBER() over (
     PARTITION BY id
     ORDER BY
-        DATA :getMintedMoment :data :acquiredAt :: TIMESTAMP
+        DATA :data :data :getMintedMoment :data :acquiredAt :: TIMESTAMP
 ) = 1
 ),
 FINAL AS (
