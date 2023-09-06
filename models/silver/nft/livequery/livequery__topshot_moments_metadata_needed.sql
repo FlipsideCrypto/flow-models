@@ -6,7 +6,6 @@
 WITH mints AS (
 
     SELECT
-        block_timestamp,
         event_contract,
         event_data :momentID :: STRING AS moment_id
     FROM
@@ -17,7 +16,6 @@ WITH mints AS (
 ),
 sales AS (
     SELECT
-        block_timestamp,
         nft_collection AS event_contract,
         nft_id AS moment_id
     FROM
@@ -27,14 +25,12 @@ sales AS (
 ),
 all_topshots AS (
     SELECT
-        block_timestamp,
         event_contract,
         moment_id
     FROM
         mints
     UNION
     SELECT
-        block_timestamp,
         event_contract,
         moment_id
     FROM
@@ -57,29 +53,18 @@ lq_always_null AS (
 ),
 legacy_always_null AS (
     SELECT
-        moment_id,
-        event_contract,
+        id,
+        contract,
         COUNT(1) AS num_times_null_resp
     FROM
         {{ ref('streamline__null_moments_metadata') }}
     WHERE
-        event_contract = 'A.0b2a3299cc857e29.TopShot'
+        contract = 'A.0b2a3299cc857e29.TopShot'
     GROUP BY
         1,
         2
     HAVING
         num_times_null_resp > 2
-),
-always_null AS (
-    SELECT
-        moment_id
-    FROM
-        lq_always_null
-    UNION
-    SELECT
-        moment_id
-    FROM
-        legacy_always_null
 )
 SELECT
     DISTINCT *
@@ -94,8 +79,13 @@ WHERE
                 {{ target.database }}.silver.nft_topshot_metadata
             UNION
             SELECT
+                id AS moment_id
+            FROM
+                legacy_always_null
+            UNION
+            SELECT
                 moment_id
             FROM
-                always_null
+                lq_always_null
         )
     )
