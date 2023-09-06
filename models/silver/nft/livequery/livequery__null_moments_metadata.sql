@@ -13,7 +13,7 @@ SELECT
         'moment_id' || 'event_contract' || '_inserted_date'
     ) AS _id
 FROM
-    {{ target.database }}.livequery.request_topshot_metadata
+    {{ ref('livequery__request_topshot_metadata') }}
 WHERE
     DATA :data :data :getMintedMoment :: STRING IS NULL
 

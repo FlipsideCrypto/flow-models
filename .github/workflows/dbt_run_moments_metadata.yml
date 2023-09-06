@@ -5,7 +5,9 @@ on:
   workflow_dispatch:
   schedule:
     # Runs 0000 UTC daily (see https://crontab.guru)
-    - cron: '0 0 * * *'
+    # - cron: '0 0 * * *'
+    # Runs hourly for next 30 hours, then reset to just daily
+    - cron: '0 * * * *'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -28,7 +30,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:livequery;
+        dbt run -s tag:livequery
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
