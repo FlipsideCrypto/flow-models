@@ -9,9 +9,9 @@
 WITH metadata AS (
 
     SELECT
-        _res_id AS id,
+        _res_id,
         'A.0b2a3299cc857e29.TopShot' AS contract,
-        -- Note MUST lowercase the object keys. Autoformat will capitalize
+        moment_id,
         DATA :data :data :: variant AS DATA,
         _inserted_timestamp
     FROM
@@ -28,14 +28,15 @@ WHERE
 {% endif %}
 
 qualify ROW_NUMBER() over (
-    PARTITION BY id
+    PARTITION BY moment_id
     ORDER BY
         DATA :data :data :getMintedMoment :data :acquiredAt :: TIMESTAMP
 ) = 1
 ),
 FINAL AS (
     SELECT
-        id AS nft_id,
+        _res_id,
+        moment_id AS nft_id,
         contract AS nft_collection,
         DATA :getMintedMoment :data :id :: STRING AS nbatopshot_id,
         DATA :getMintedMoment :data :flowSerialNumber :: NUMBER AS serial_number,
