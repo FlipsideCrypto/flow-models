@@ -77,7 +77,7 @@ def model(dbt, session):
     inputs = dbt.ref(
         'livequery__topshot_moments_metadata_needed').select(
             "EVENT_CONTRACT", "MOMENT_ID"
-        ).limit(5)
+        ).limit(5) # TODO - incr to 2500 for prod
 
     # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
