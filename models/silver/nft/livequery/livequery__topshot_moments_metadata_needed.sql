@@ -40,21 +40,46 @@ all_topshots AS (
     FROM
         sales
 ),
-always_null AS (
+lq_always_null AS (
     SELECT
-        id,
-        contract,
-        COUNT(*) AS num_times_null_resp
+        moment_id,
+        event_contract,
+        COUNT(1) AS num_times_null_resp
     FROM
-        {# TODO - update once migrated to livequery schema #}
-        {{ ref('streamline__null_moments_metadata') }}
+        {{ target.database }}.livequery.null_moments_metadata
     WHERE
-        contract = 'A.0b2a3299cc857e29.TopShot'
+        event_contract = 'A.0b2a3299cc857e29.TopShot'
     GROUP BY
         1,
         2
     HAVING
         num_times_null_resp > 2
+),
+legacy_always_null AS (
+    SELECT
+        moment_id,
+        event_contract,
+        COUNT(1) AS num_times_null_resp
+    FROM
+        {{ ref('streamline__null_moments_metadata') }}
+    WHERE
+        event_contract = 'A.0b2a3299cc857e29.TopShot'
+    GROUP BY
+        1,
+        2
+    HAVING
+        num_times_null_resp > 2
+),
+always_null AS (
+    SELECT
+        moment_id
+    FROM
+        lq_always_null
+    UNION
+    SELECT
+        moment_id
+    FROM
+        legacy_always_null
 )
 SELECT
     DISTINCT *
@@ -66,10 +91,10 @@ WHERE
             SELECT
                 nft_id AS moment_id
             FROM
-                {{ ref('silver__nft_topshot_metadata') }}
+                {{ target.database }}.silver.nft_topshot_metadata
             UNION
             SELECT
-                id AS moment_id
+                moment_id
             FROM
                 always_null
         )

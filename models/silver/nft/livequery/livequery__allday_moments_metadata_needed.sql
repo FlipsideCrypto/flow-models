@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'view',
-    tags = ['livequery', 'allday', 'moment_metadata']
+    tags = ['livequery', 'allday', 'moment_metadata'],
+    enabled = False
 ) }}
-
+{# AllDay workflow inactive #}
 WITH mints AS (
 
     SELECT

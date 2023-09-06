@@ -1,20 +1,21 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = ["id","contract","_inserted_date"],
-    tags = ['topshot', 'moment_metadata'],
-    enabled = True
+    unique_key = '_id',
+    tags = ['livequery', 'topshot', 'moment_metadata']
 ) }}
-{# Legacy workflow - TODO deprecate soon #}
 
 SELECT
-    id,
-    contract,
+    moment_id,
+    event_contract,
     _inserted_date,
-    _inserted_timestamp
+    _inserted_timestamp,
+    MD5(
+        'moment_id' || 'event_contract' || '_inserted_date'
+    ) AS _id
 FROM
-    {{ ref('bronze__moments_metadata') }}
+    {{ target.database }}.livequery.request_topshot_metadata
 WHERE
-    DATA :getMintedMoment :: STRING IS NULL
+    DATA :data :data :getMintedMoment :: STRING IS NULL
 
 {% if is_incremental() %}
 AND _inserted_date >= (

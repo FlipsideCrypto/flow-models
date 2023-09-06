@@ -26,32 +26,19 @@ def register_udf_construct_data():
 
 
 def model(dbt, session):
+    """
+    This model will call the TopShot GraphQL API to request metadata for a list of moment_ids, determined by an exeternally defined view.
+    The request arguments are a GraphQL query and moment ID. The gql and API URL are stored in a table and retrieved in this workflow.
+    """
 
     dbt.config(
         materialized='incremental',
         unique_key='_RES_ID',
         packages=['snowflake-snowpark-python'],
         tags=['livequery', 'topshot', 'moment_metadata'],
-        incremental_strategy='delete+insert'
+        incremental_strategy='delete+insert',
+        cluster_by=['_INSERTED_TIMESTAMP']
     )
-
-    # define incremental logic
-    if dbt.is_incremental:
-        # TODO - incomplete / placeholder
-        # max_from_this = f"select max(_inserted_timestamp) from {dbt.this}"
-        pass
-
-    # define response / table schema - NOTE not needed bc appending cols via with_columns
-    # schema = T.StructType(
-    #     [
-    #         T.StructField('EVENT_CONTRACT', T.StringType()),
-    #         T.StructField('MOMENT_ID', T.StringType()),
-    #         T.StructField('DATA', T.VariantType()),
-    #         T.StructField('_INSERTED_DATE', T.TimestampType()),
-    #         T.StructField('_INSERTED_TIMESTAMP', T.StringType()),
-    #         T.StructField('_RES_ID', T.StringType())
-    #     ]
-    # )
 
     # base url and graphql query stored in table via dbt
     topshot_gql_params = dbt.ref(
@@ -59,7 +46,7 @@ def model(dbt, session):
         'base_url', 'query').where(
             F.col(
                 'contract') == 'A.0b2a3299cc857e29.TopShot'
-        ).collect()
+    ).collect()
 
     # define params for UDF_API
     method = 'POST'
@@ -67,17 +54,16 @@ def model(dbt, session):
         'Content-Type': 'application/json'
     }
     url = topshot_gql_params[0][0]
-    
+
     # gql query passed with the post request
-    data = topshot_gql_params[0][1] 
-    
-    # metadata request requires moment_id, defined in a separate view 
-    # TODO - when turning into prod job, there will be moments that return null metadata
-        # MUST load the null table w these to avoid over-retrying
+    data = topshot_gql_params[0][1]
+
+    # metadata request requires moment_id, defined in a separate view
+    # number of moment_ids to request set by .limit(), timeout experienced at 4000
     inputs = dbt.ref(
         'livequery__topshot_moments_metadata_needed').select(
             "EVENT_CONTRACT", "MOMENT_ID"
-        ).limit(5) # TODO - incr to 2500 for prod
+    ).limit(35)
 
     # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
@@ -96,8 +82,8 @@ def model(dbt, session):
                     F.lit(data),
                     F.col('MOMENT_ID')
                 ),
-                F.lit(None), # USER_ID req on Flow deployment of UDF_API
-                F.lit(None) # SECRET_NAME req on Flow deployment of UDF_API
+                F.lit(None),  # USER_ID req on Flow deployment of UDF_API
+                F.lit(None)  # SECRET_NAME req on Flow deployment of UDF_API
             ),
             F.sysdate().cast(T.DateType()),
             F.sysdate(),
@@ -110,4 +96,5 @@ def model(dbt, session):
         ]
     )
 
+    # dbt will append response to table per incremental config
     return response
