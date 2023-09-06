@@ -25,38 +25,79 @@ def register_udf_construct_data():
     return udf_construct_data
 
 
-def batch_request(session, base_url, response_schema=None, df=None, api_key=None, params=None):
-    """
-    Function to call the UDF_API.
-    df (optional) - Snowpark DataFrame of input data.
-    """
+def model(dbt, session):
+
+    dbt.config(
+        materialized='incremental',
+        unique_key='_RES_ID',
+        packages=['snowflake-snowpark-python'],
+        tags=['livequery', 'topshot', 'moment_metadata'],
+        incremental_strategy='delete+insert'
+    )
+
+    # define incremental logic
+    if dbt.is_incremental:
+        # TODO - incomplete / placeholder
+        # max_from_this = f"select max(_inserted_timestamp) from {dbt.this}"
+        pass
+
+    # define response / table schema - NOTE not needed bc appending cols via with_columns
+    # schema = T.StructType(
+    #     [
+    #         T.StructField('EVENT_CONTRACT', T.StringType()),
+    #         T.StructField('MOMENT_ID', T.StringType()),
+    #         T.StructField('DATA', T.VariantType()),
+    #         T.StructField('_INSERTED_DATE', T.TimestampType()),
+    #         T.StructField('_INSERTED_TIMESTAMP', T.StringType()),
+    #         T.StructField('_RES_ID', T.StringType())
+    #     ]
+    # )
+
+    # base url and graphql query stored in table via dbt
+    topshot_gql_params = dbt.ref(
+        'livequery__moments_parameters').select(
+        'base_url', 'query').where(
+            F.col(
+                'contract') == 'A.0b2a3299cc857e29.TopShot'
+        ).collect()
 
     # define params for UDF_API
     method = 'POST'
     headers = {
         'Content-Type': 'application/json'
     }
-
-    # alias query for readability in construct data param
-    query = params
+    url = topshot_gql_params[0][0]
+    
+    # gql query passed with the post request
+    data = topshot_gql_params[0][1] 
+    
+    # metadata request requires moment_id, defined in a separate view 
+    # TODO - when turning into prod job, there will be moments that return null metadata
+        # MUST load the null table w these to avoid over-retrying
+    inputs = dbt.ref(
+        'livequery__topshot_moments_metadata_needed').select(
+            "EVENT_CONTRACT", "MOMENT_ID"
+        ).limit(5)
 
     # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
 
     # use with_columns to source moment_id from the input_df and call multiple udf_api calls at once
-    response_df = df.with_columns(
+    # columns defined in the array will be appended to the input dataframe
+    response = inputs.with_columns(
         ['DATA', '_INSERTED_DATE', '_INSERTED_TIMESTAMP', '_RES_ID'],
         [
             F.call_udf(
-                # TODO - deploy udf in FLOW and use local udf_api
-                'ethereum.streamline.udf_api',
+                'flow.streamline.udf_api',
                 method,
-                base_url,
+                url,
                 headers,
                 udf_construct_data(
-                    F.lit(query),
+                    F.lit(data),
                     F.col('MOMENT_ID')
-                )
+                ),
+                F.lit(None), # USER_ID req on Flow deployment of UDF_API
+                F.lit(None) # SECRET_NAME req on Flow deployment of UDF_API
             ),
             F.sysdate().cast(T.DateType()),
             F.sysdate(),
@@ -69,79 +110,4 @@ def batch_request(session, base_url, response_schema=None, df=None, api_key=None
         ]
     )
 
-    return response_df
-
-
-def model(dbt, session):
-
-    dbt.config(
-        materialized='incremental',
-        unique_key='_RES_ID',
-        packages=['snowflake-snowpark-python'],
-        tags=['livequery', 'topshot', 'moment_metadata']
-    )
-
-    # configure upstream tables
-    # limit scope of query for testing w limit 10 and low moment id
-    # TODO - when turning into prod job, there will be moments that return null metadata
-        # MUST load the null table w these to avoid over-retrying
-    # TODO - stress test appropriate batch size
-        # 1000 in 100s
-        # 2000 in 171s
-        # 3000 in 230s
-        # 4000 = rate limited
-        # paused regular jobs to let a few days pass to get an idea for daily mints at this time
-        # NOTE - would lilely need to incr limit or frequency of job run once season starts
-    topshot_moments_needed = dbt.ref(
-        'livequery__topshot_moments_metadata_needed').select(
-            "EVENT_CONTRACT", "MOMENT_ID"
-        ).limit(1000)
-
-    # define incremental logic
-    if dbt.is_incremental:
-        # TODO - incomplete / placeholder
-        # max_from_this = f"select max(_inserted_timestamp) from {dbt.this}"
-        pass
-
-    # build df to hold response(s)
-    schema = T.StructType(
-        [
-            T.StructField('EVENT_CONTRACT', T.StringType()),
-            T.StructField('MOMENT_ID', T.StringType()),
-            T.StructField('DATA', T.VariantType()),
-            T.StructField('_INSERTED_DATE', T.TimestampType()),
-            T.StructField('_INSERTED_TIMESTAMP', T.StringType()),
-            T.StructField('_RES_ID', T.StringType())
-        ]
-    )
-
-    final_df = session.create_dataframe([], schema)
-
-    # call api via request function
-    # base url and graphql query stored in table via dbt
-    topshot_params = dbt.ref(
-        'livequery__moments_parameters').select(
-        'base_url', 'query').where(
-            F.col(
-                'contract') == 'A.0b2a3299cc857e29.TopShot'
-        ).collect()
-
-
-    input_df = topshot_moments_needed
-
-    # TODO - explore possible failure behavior
-        # bad url will cause job failure, but that's something that should raise a big red flag
-        # need is to handle ok call, bad api response
-    r = batch_request(
-        session,
-        topshot_params[0][0], # base_url
-        response_schema=schema,
-        df=input_df,
-        params=topshot_params[0][1] # query
-    )
-
-    r.collect()
-
-    final_df = final_df.union(r)
-
-    return final_df
+    return response
