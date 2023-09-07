@@ -2,10 +2,10 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
-    unique_key = 'nft_id',
-    tags = ['scheduled']
+    unique_key = 'nft_id'
 ) }}
-
+{# Note - removed schedule tag as the legacy lambda workflow is inactive.
+No need to query external table #}
 WITH metadata AS (
 
     SELECT

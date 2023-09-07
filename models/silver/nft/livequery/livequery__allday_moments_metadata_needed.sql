@@ -1,7 +1,9 @@
 {{ config(
     materialized = 'view',
+    tags = ['livequery', 'allday', 'moment_metadata'],
+    enabled = False
 ) }}
-
+{# AllDay workflow inactive, view migrated to lq naming convention only #}
 WITH mints AS (
 
     SELECT

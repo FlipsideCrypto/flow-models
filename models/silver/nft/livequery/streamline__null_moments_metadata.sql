@@ -1,7 +1,10 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = ["id","contract","_inserted_date"]
+    unique_key = ["id","contract","_inserted_date"],
+    tags = ['topshot', 'moment_metadata'],
+    enabled = True
 ) }}
+{# Legacy workflow - TODO deprecate soon #}
 
 SELECT
     id,
@@ -27,5 +30,5 @@ AND _inserted_timestamp > (
         {{ this }}
 )
 {% else %}
-AND _inserted_date >= '2022-12-09'
+    AND _inserted_date >= '2022-12-09'
 {% endif %}

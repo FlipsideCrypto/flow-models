@@ -3,36 +3,36 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id',
-    tags = ['scheduled']
+    tags = ['livequery'],
+    full_refresh = False
 ) }}
+{# NFT Metadata from legacy process lives in external table, deleted CTE and set FR=False 
+to limit / avoid unnecessary table scans #}
 
-WITH metadata AS (
+WITH metadata_lq AS (
 
     SELECT
-        *
+        _res_id,
+        'A.0b2a3299cc857e29.TopShot' AS contract,
+        moment_id,
+        DATA :data :data :: variant AS DATA,
+        _inserted_timestamp
     FROM
-        {{ ref('bronze__moments_metadata') }}
-    WHERE
-        contract = 'A.0b2a3299cc857e29.TopShot'
+        {{ ref('livequery__request_topshot_metadata') }}
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
-)
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
-
-qualify ROW_NUMBER() over (
-    PARTITION BY id
-    ORDER BY
-        DATA :getMintedMoment :data :acquiredAt :: TIMESTAMP
-) = 1
 ),
-FINAL AS (
+lq_final AS (
     SELECT
-        id AS nft_id,
+        moment_id AS nft_id,
         contract AS nft_collection,
         DATA :getMintedMoment :data :id :: STRING AS nbatopshot_id,
         DATA :getMintedMoment :data :flowSerialNumber :: NUMBER AS serial_number,
@@ -52,11 +52,15 @@ FINAL AS (
         DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_stats_season_to_date,
         _inserted_timestamp
     FROM
-        metadata
+        metadata_lq
     WHERE
         DATA :getMintedMoment :: STRING IS NOT NULL
 )
 SELECT
     *
 FROM
-    FINAL
+    lq_final qualify ROW_NUMBER() over (
+        PARTITION BY nft_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
