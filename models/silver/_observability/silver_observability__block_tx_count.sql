@@ -39,7 +39,7 @@ params AS (
 ),
 get_bitquery AS (
     SELECT
-        flow.live.udf_api(
+        {{ target.database }}.live.udf_api(
             'POST',
             'https://graphql.bitquery.io',
             OBJECT_CONSTRUCT(
