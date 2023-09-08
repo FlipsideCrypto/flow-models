@@ -18,6 +18,7 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  NODE_URL: "${{ secrets.NODE_URL }}"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -43,4 +44,4 @@ jobs:
 
       - name: Run DBT Realtime
         run: |
-          dbt run -s 1+streamline__get_transaction_results_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True, "producer_batch_size": 60000, "worker_batch_size": 2000}'
+          dbt run -s 1+streamline__get_transaction_results_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True, "producer_batch_size": 60000, "worker_batch_size": 2000, "node_url": ${{ secrets.NODE_URL }}}'
