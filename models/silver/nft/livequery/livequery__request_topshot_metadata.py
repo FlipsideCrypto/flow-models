@@ -74,16 +74,14 @@ def model(dbt, session):
         ['DATA', '_INSERTED_DATE', '_INSERTED_TIMESTAMP', '_RES_ID'],
         [
             F.call_udf(
-                'flow.streamline.udf_api',
+                'flow.live.udf_api',
                 method,
                 url,
                 headers,
                 udf_construct_data(
                     F.lit(data),
                     F.col('MOMENT_ID')
-                ),
-                F.lit(None),  # USER_ID req on Flow deployment of UDF_API
-                F.lit(None)  # SECRET_NAME req on Flow deployment of UDF_API
+                )
             ),
             F.sysdate().cast(T.DateType()),
             F.sysdate(),
