@@ -85,5 +85,5 @@ lq_overloads:
 	-s models/deploy/core/ \
 	--profile flow \
 	--target $(DBT_TARGET) \
-	--profiles-dir ~/.dbt
+	--profiles-dir ~/.dbt \
 	--vars '{"UPDATE_LQ_UDFS":True}'
