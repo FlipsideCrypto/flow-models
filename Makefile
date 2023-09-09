@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 # set default target
-DBT_TARGET ?= sbx
+DBT_TARGET ?= dev
 AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_dev
 
 dbt-console: 
@@ -18,6 +18,14 @@ sl-flow-api:
 udfs:
 	dbt run-operation create_udfs \
 	--vars '{"UPDATE_UDFS_AND_SPS":True}' \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt/
+
+
+udf_2:
+	dbt run-operation create_udf_bulk_grpc_us_east_2 \
+	--vars '{"UPDATE_UDFS_AND_SPS":False}' \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
