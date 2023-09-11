@@ -70,5 +70,3 @@ FROM
     transactions_to_ingest
 ORDER BY
     block_height DESC
-LIMIT
-    100000

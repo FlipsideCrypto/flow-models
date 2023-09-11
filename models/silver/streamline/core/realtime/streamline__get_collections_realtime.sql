@@ -68,6 +68,4 @@ SELECT
 FROM
     collections_to_ingest
 ORDER BY
-    block_height ASC
-LIMIT
-    1000000
+    block_height DESC

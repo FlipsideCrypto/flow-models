@@ -67,6 +67,4 @@ SELECT
 FROM
     tbl
 ORDER BY
-    block_height ASC
-LIMIT
-    1000000
+    block_height DESC
