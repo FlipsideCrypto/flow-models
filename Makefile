@@ -87,3 +87,11 @@ tx_results_history:
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
+
+lq_overloads:
+	dbt run \
+	-s models/deploy/core/ \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt \
+	--vars '{"UPDATE_LQ_UDFS":True}'

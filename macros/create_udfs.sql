@@ -11,7 +11,6 @@
             ) }}
             {{ create_udf_get_chainhead() }}
             {{ create_udf_bulk_grpc() }}
-            {{ create_udf_api() }}
             
             {{ run_create_udf_array_disjunctive_union() }}
             

@@ -39,6 +39,9 @@ on-run-end:
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
+  flow_models:
+    deploy:
+      +materialized: ephemeral
   +copy_grants: true
   +persist_docs:
     relation: true
@@ -60,6 +63,10 @@ vars:
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_RUN_HISTORY: False
+  API_INTEGRATION: AWS_FLOW_API{{ '_DEV_2' if target.name != 'prod' else '_PROD'  }}
+  DROP_UDFS_AND_SPS: False
+  REST_API_PREFIX_PROD: quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/
+  REST_API_PREFIX_DEV: ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/
 
 dispatch:
   - macro_namespace: dbt
