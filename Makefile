@@ -94,4 +94,4 @@ lq_overloads:
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt \
-	--vars '{"UPDATE_LQ_UDFS":True}'
+	--vars '{"UPDATE_EPHEMERAL_UDFS":True}'
