@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'block_height',
-    tags = ['get_block_tx_count'],
+    tags = ['get_block_tx_count', 'observability'],
     full_refresh = False
 ) }}
 
