@@ -5,10 +5,54 @@
     full_refresh = False
 ) }}
 
-WITH starting_block AS (
+{% if var('FIX_GAPS', False) %}
+    WITH blocks AS (
+        SELECT
+            *
+        FROM
+            {{ this }}
+    ),
+    determine_prior_block AS (
+        SELECT
+            block_height,
+            LAG(block_height) over (
+                ORDER BY
+                    block_height
+            ) AS prev_block_height
+        FROM
+            blocks
+    ),
+    gaps AS (
+        SELECT
+            block_height,
+            prev_block_height,
+            block_height - prev_block_height AS gap
+        FROM
+            determine_prior_block
+        WHERE
+            gap > 1
+        ORDER BY
+            1
+    ),
+    params AS (
+        SELECT
+            'query ($network: FlowNetwork!, $block_height_start: Int!, $block_height_end: Int!) { flow(network: $network) { blocks(height: {gt: $block_height_start, lteq: $block_height_end}) { height transactionsCount } } }' AS query,
+            OBJECT_CONSTRUCT(
+                'network',
+                'flow',
+                'block_height_start',
+                prev_block_height,
+                'block_height_end',
+                prev_block_height + gap - 1
+            ) AS variables,
+            '{{ var('BITQUERY_API_KEY', Null) }}' AS api_key
+        FROM
+            gaps
+    ),
+{% else %}
+    WITH starting_block AS (
 
 {% if is_incremental() %}
-
 SELECT
     MAX(block_height) AS block_height_start, {{ target.database }}.streamline.udf_get_chainhead() AS max_block_height
 FROM
@@ -29,7 +73,7 @@ params AS (
             'block_height_end',
             IFF(
                 block_height_start + 25000 > max_block_height,
-                max_block_height,
+                max_block_height - 500,
                 block_height_start + 25000
             )
         ) AS variables,
@@ -37,6 +81,8 @@ params AS (
     FROM
         starting_block
 ),
+{% endif %}
+
 get_bitquery AS (
     SELECT
         {{ target.database }}.live.udf_api(
@@ -61,7 +107,13 @@ get_bitquery AS (
 )
 SELECT
     VALUE :height :: INTEGER AS block_height,
-    VALUE :transactionsCount :: INTEGER AS transaction_ct
+    VALUE :transactionsCount :: INTEGER AS transaction_ct,
+    SYSDATE() AS _inserted_timestamp
 FROM
     get_bitquery,
-    LATERAL FLATTEN(blocks_res)
+    LATERAL FLATTEN(blocks_res) 
+    qualify ROW_NUMBER() over (
+        PARTITION BY block_height
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
