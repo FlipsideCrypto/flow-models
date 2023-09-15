@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: silver_observability__block_tx_count
+    description: |-
+      Query the Bitquery graphQL API to get transaction count by block number.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: _inserted_timestamp
+          interval: 1
+      - sequence_gaps:
+          column_name: block_height
+          severity: error
+
+    columns:
+      - name: block_height
+        tests:
+          - unique
+          - not_null
+
+      - name: transaction_ct
+        tests:
+          - not_null
+
+      - name: _inserted_timestamp
