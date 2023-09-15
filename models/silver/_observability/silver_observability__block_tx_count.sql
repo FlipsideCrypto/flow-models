@@ -43,7 +43,7 @@
                 'block_height_start',
                 prev_block_height,
                 'block_height_end',
-                prev_block_height + gap - 1
+                (prev_block_height + gap - 1) :: INTEGER
             ) AS variables,
             '{{ var('BITQUERY_API_KEY', Null) }}' AS api_key
         FROM
@@ -75,7 +75,7 @@ params AS (
                 block_height_start + 25000 > max_block_height,
                 max_block_height - 500,
                 block_height_start + 25000
-            )
+            ) :: INTEGER
         ) AS variables,
         '{{ var('BITQUERY_API_KEY', Null) }}' AS api_key
     FROM
