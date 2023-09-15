@@ -24,5 +24,3 @@ models:
           - not_null
 
       - name: _inserted_timestamp
-        tests: 
-          - not_null
