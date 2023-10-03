@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    tags = ['scheduled']
+    tags = ['scheduled', 'streamline_scheduled']
 ) }}
 
 WITH labels AS (

@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id',
-    tags = ['scheduled']
+    tags = ['scheduled', 'chainwalkers_scheduled']
 ) }}
 
 WITH silver_events AS (

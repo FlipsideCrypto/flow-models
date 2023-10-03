@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: silver__token_transfers_s
+    description: |-
+      This table records all token transfers on the FLOW blockchain.
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+
+      - name: sender
+        description: "{{ doc('sender') }}"
+
+      - name: recipient
+        description: "{{ doc('recipient') }}"
+
+      - name: token_contract
+        description: "{{ doc('token_contract') }}"
+
+      - name: amount
+        description: "{{ doc('amount') }}"
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"

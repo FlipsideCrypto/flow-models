@@ -3,7 +3,7 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id',
     incremental_strategy = 'delete+insert',
-    tags = ['scheduled']
+    tags = ['scheduled', 'chainwalkers_scheduled']
 ) }}
 
 WITH events AS (

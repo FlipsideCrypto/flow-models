@@ -19,8 +19,8 @@ WITH transactions_expected AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('start_height', Null) }}
+            AND {{ var('end_height', Null) }}
         {% endif %}
     GROUP BY
         1
@@ -43,8 +43,8 @@ transactions_actual AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('start_height', Null) }}
+            AND {{ var('end_height', Null) }}
         {% endif %}
     GROUP BY
         1

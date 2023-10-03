@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
     unique_key = "CONCAT_WS('-', tx_id, event_index)",
-    tags = ['scheduled']
+    tags = ['scheduled', 'chainwalkers_scheduled']
 ) }}
 
 WITH silver_events AS (

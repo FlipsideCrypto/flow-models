@@ -3,7 +3,7 @@
   cluster_by = ['_inserted_timestamp::DATE'],
   unique_key = "CONCAT_WS('-', tx_id, event_index)",
   incremental_strategy = 'delete+insert',
-  tags = ['scheduled']
+  tags = ['scheduled', 'chainwalkers_scheduled']
 ) }}
 
 WITH swap_contracts AS (

@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: silver__nft_moment_minted_2_s
+    description: |-
+      Cleaned MomentNFTMinted events.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - event_contract
+            - moment_id
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+      - name: event_contract
+        description: "{{ doc('event_contract') }}"
+        tests:
+          - accepted_values:
+              values:
+                - "A.c38aea683c0c4d38.Eternal"
+                - "A.d4ad4740ee426334.Moments"
+                - "A.67af7ecf76556cd3.ABD"
+                - "A.0b2a3299cc857e29.TopShot"
+      - name: moment_id
+        description: "{{ doc('moment_id') }}"
+      - name: serial_number
+        description: "{{ doc('serial_number') }}"
+      - name: set_id
+        description: "{{ doc('set_id') }}"
+      - name: series_id
+        description: "{{ doc('series_id') }}"
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"

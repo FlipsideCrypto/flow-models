@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['scheduled']
+    tags = ['scheduled', 'chainwalkers_scheduled']
 ) }}
 
 SELECT
