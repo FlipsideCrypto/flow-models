@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: silver__swaps_events
+    description: |-
+      This table records events from each Swap related transaction on the FLOW blockchain, as determined by an interaction with a SwapPair contract. This is intended to be internal only for downstream usage.
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+
+      - name: event_contract
+        description: "{{ doc('event_contract') }}"
+
+      - name: event_type
+        description: "{{ doc('event_type') }}"
+
+      - name: event_data
+        description: "{{ doc('event_attributes') }}"
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"

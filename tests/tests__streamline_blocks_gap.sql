@@ -49,6 +49,6 @@ WHERE
             AND block_height != {{ var('start_height') }}
         )
     )
-    AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+    AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
 ORDER BY
     1

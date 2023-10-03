@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: silver__nft_sales
+    description: |-
+      NFT market sales on the Flow blockchain. This table will only contain successful transactions, as failed transactions will not have the requisite events to determine it was an attempted NFT purchase.
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: marketplace
+        description: "{{ doc('marketplace') }}"
+
+      - name: nft_collection
+        description: "{{ doc('nft_collection') }}"
+
+      - name: nft_id
+        description: "{{ doc('nft_id') }}"
+
+      - name: buyer
+        description: "{{ doc('buyer') }}"
+
+      - name: seller
+        description: "{{ doc('seller') }}"
+
+      - name: price
+        description: "{{ doc('price') }}"
+
+      - name: currency
+        description: "{{ doc('currency') }}"
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+
+      - name: tokenflow
+        description: "{{ doc('tokenflow') }}"
+
+      - name: counterparties
+        description: "{{ doc('counterparties') }}"
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"

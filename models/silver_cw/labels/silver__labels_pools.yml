@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: silver__labels_pools
+    description: |-
+      Looks for new PairCreated events from the Swap pair factory and records info.
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: deployment_timestamp
+        description: "{{ doc('deployment_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: token0_contract
+        description: "{{ doc('token0_contract') }}"
+        tests:
+          - not_null
+
+      - name: token1_contract
+        description: "{{ doc('token1_contract') }}"
+        tests:
+          - not_null
+
+      - name: pool_id
+        description: "{{ doc('pool_id') }}"
+        tests:
+          - not_null
+
+      - name: vault_address
+        description: "{{ doc('vault_address') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"
+        tests:
+          - not_null
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null

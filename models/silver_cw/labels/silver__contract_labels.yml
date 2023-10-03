@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: silver__contract_labels
+    description: |-
+      This table extracts all contract labels referenced in the events item of a Flow transaction.
+
+    columns:
+      - name: event_contract
+        description: "{{ doc('event_contract') }}"
+
+      - name: contract_name
+        description: "{{ doc('contract_name') }}"
+
+      - name: account_address
+        description: "{{ doc('account_address') }}"

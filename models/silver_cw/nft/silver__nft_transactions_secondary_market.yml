@@ -1,0 +1,175 @@
+version: 2
+
+models:
+  - name: silver__nft_transactions_secondary_market
+    description: |-
+      This table filters all NFT sales that interact with the general purpose contract `A.4eb8a10cb9f87357.NFTStorefront`. Transactions that purchase multiple NFTs in a single transaction are presently excluded from this table!
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - seller
+            - buyer
+            - nft_collection
+            - nft_id
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: marketplace
+        description: "{{ doc('marketplace') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: nft_collection
+        description: "{{ doc('nft_collection') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: nft_id
+        description: "{{ doc('nft_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+                - NUMBER
+
+      - name: currency
+        description: "{{ doc('currency') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: price
+        description: "{{ doc('price') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: seller
+        description: "{{ doc('seller') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: buyer
+        description: "{{ doc('buyer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: tokenflow
+        description: "{{ doc('tokenflow') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: num_steps
+        description: "{{ doc('num_steps') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: step_action
+        description: "{{ doc('step_action') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: step_data
+        description: "{{ doc('step_data') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: counterparties
+        description: "{{ doc('counterparties') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+                - OBJECT
+                - VARIANT
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: _ingested_at
+        description: "{{ doc('_ingested_at') }}"
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ

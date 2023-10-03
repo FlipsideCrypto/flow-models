@@ -70,6 +70,6 @@ FROM
     LEFT JOIN transactions_actual A USING(block_height)
 WHERE
     expected != actual
-    AND A._inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
+    AND A._inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
 ORDER BY
     1
