@@ -47,6 +47,7 @@ blocks AS (
 FINAL AS (
     SELECT
         t.tx_id,
+        tr.status IS NULL AS pending_result_response,
         t.block_number,
         b.block_timestamp,
         t.block_id,
@@ -62,9 +63,10 @@ FINAL AS (
         tr.events,
         tr.status,
         tr.status_code,
-        LEAST(
-            t._inserted_timestamp,
-            tr._inserted_timestamp
+        COALESCE(
+            -- TODO requesting a review on logic here. TR will likely be later. I need to make sure the tx is parsed by events once pending_result_response is False, hence prioritizing TR ingested timestamp
+            tr._inserted_timestamp,
+            t._inserted_timestamp
         ) AS _inserted_timestamp,
         t._partition_by_block_id
     FROM
@@ -75,6 +77,7 @@ FINAL AS (
 )
 SELECT
     tx_id,
+    pending_result_response,
     block_timestamp,
     block_number AS block_height,
     gas_limit,
