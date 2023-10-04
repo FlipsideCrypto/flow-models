@@ -46,7 +46,10 @@ blocks AS (
 ),
 FINAL AS (
     SELECT
-        t.tx_id,
+        COALESCE(
+            t.tx_id,
+            tr.tx_id
+        ) AS tx_id,
         tr.status IS NULL AS pending_result_response,
         t.block_number,
         b.block_timestamp,
