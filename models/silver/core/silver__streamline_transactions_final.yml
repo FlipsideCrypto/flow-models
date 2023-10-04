@@ -72,14 +72,16 @@ models:
       - name: status
         description: "{{ doc('status') }}"
         tests:
-          - not_null
+          - not_null:
+              where: not pending_result_response
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: NUMBER
 
       - name: status_code
         description: "{{ doc('status_code') }}"
         tests:
-          - not_null
+          - not_null:
+              where: not pending_result_response
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: NUMBER
 
@@ -89,7 +91,8 @@ models:
       - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
         tests:
-          - not_null
+          - not_null:
+              where: not pending_result_response
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: BOOLEAN
 
