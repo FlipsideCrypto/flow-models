@@ -70,7 +70,7 @@ FINAL AS (
             -- TODO requesting a review on logic here. TR will likely be later. I need to make sure the tx is parsed by events once pending_result_response is False, hence prioritizing TR ingested timestamp
             tr._inserted_timestamp,
             t._inserted_timestamp
-        ) AS _inserted_timestamp,
+        ) :: TIMESTAMP_NTZ AS _inserted_timestamp,
         t._partition_by_block_id
     FROM
         txs t
