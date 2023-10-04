@@ -12,7 +12,6 @@ WITH transactions AS (
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
         NOT pending_result_response -- inserted timestamp will update w TR ingestion, so should flow thru to events and curated
-        AND block_height >= 55114467 -- mainnet23 root height. TODO remove
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
