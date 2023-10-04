@@ -19,8 +19,8 @@ WITH collections_expected AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height', Null) }}
-            AND {{ var('end_height', Null) }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1,
@@ -42,8 +42,8 @@ collections_actual AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height', Null) }}
-            AND {{ var('end_height', Null) }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1

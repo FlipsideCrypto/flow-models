@@ -15,8 +15,8 @@ WITH streamline_blocks AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height', Null) }}
-            AND {{ var('end_height', Null) }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
 ),
 determine_prior_block AS (
@@ -46,7 +46,7 @@ WHERE
         prev_block_id != parent_id
         OR (
             prev_block_id IS NULL
-            AND block_height != {{ var('start_height', 0) }}
+            AND block_height != {{ var('START_HEIGHT', 0) }}
         )
     )
     AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
