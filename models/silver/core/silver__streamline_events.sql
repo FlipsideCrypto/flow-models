@@ -78,6 +78,7 @@ attributes AS (
         OBJECT_AGG(
             VALUE :name :: variant,
             COALESCE(
+                VALUE :value :value :value :value :: STRING,
                 VALUE :value :value :value :: STRING,
                 VALUE :value :value :: STRING,
                 VALUE :value :: STRING

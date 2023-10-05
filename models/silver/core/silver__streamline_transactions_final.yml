@@ -51,6 +51,9 @@ models:
       - name: authorizers
         description: "{{ doc('authorizers') }}"
 
+      - name: count_authorizers
+        description: "{{ doc('count_authorizers') }}"
+
       - name: envelope_signatures
         description: "{{ doc('envelope_signatures') }}"
 
@@ -59,6 +62,9 @@ models:
 
       - name: proposal_key
         description: "{{ doc('proposal_key') }}"
+      
+      - name: proposer
+        description: "{{ doc('proposer') }}"
 
       - name: script
         description: "{{ doc('script') }}"

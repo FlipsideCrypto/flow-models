@@ -12,8 +12,8 @@ models:
       - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
 
-      - name: BLOCK_ID
-        description: "{{ doc('block_id') }}"
+      - name: ID
+        description: "{{ doc('id') }}"
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"

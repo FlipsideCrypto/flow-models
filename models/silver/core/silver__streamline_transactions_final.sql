@@ -71,14 +71,25 @@ FINAL AS (
         tr.status IS NULL AS pending_result_response,
         t.block_number,
         b.block_timestamp,
-        t.block_id,
         t.gas_limit,
-        t.payer,
+        CONCAT(
+            '0x',
+            payer
+        ) AS payer,
         t.arguments,
-        t.authorizers,
+        {{ target.database }}.silver.udf_address_array_adj(
+            t.authorizers
+        ) AS authorizers,
+        ARRAY_SIZE(
+            t.authorizers
+        ) AS count_authorizers,
         t.envelope_signatures,
         t.payload_signatures,
         t.proposal_key,
+        CONCAT(
+            '0x',
+            t.proposal_key: address :: STRING
+        ) AS proposer,
         t.script,
         tr.error_message,
         tr.events,
@@ -105,9 +116,11 @@ SELECT
     payer,
     arguments,
     authorizers,
+    count_authorizers,
     envelope_signatures,
     payload_signatures,
     proposal_key,
+    proposer,
     script,
     events,
     status,
