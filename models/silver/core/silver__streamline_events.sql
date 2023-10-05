@@ -78,10 +78,12 @@ attributes AS (
         OBJECT_AGG(
             VALUE :name :: variant,
             COALESCE(
+                VALUE :value :value :fields,
+                VALUE :value :value :staticType,
                 VALUE :value :value :value :value :: STRING,
                 VALUE :value :value :value :: STRING,
                 VALUE :value :value :: STRING,
-                VALUE :value :: STRING
+                'null'
             ) :: variant
         ) AS event_data
     FROM
