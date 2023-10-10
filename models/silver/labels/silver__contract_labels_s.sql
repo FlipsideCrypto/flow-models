@@ -12,7 +12,8 @@ WITH splt AS (
         SPLIT(
             event_contract,
             '.'
-        ) AS ec_s
+        ) AS ec_s,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
@@ -32,7 +33,8 @@ SELECT
     CONCAT(
         '0x',
         ec_s [array_size(ec_s)-2] :: STRING
-    ) AS account_address
+    ) AS account_address,
+    _inserted_timestamp
 FROM
     splt
 WHERE
