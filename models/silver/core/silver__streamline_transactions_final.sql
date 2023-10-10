@@ -108,8 +108,8 @@ FINAL AS (
         tr.events,
         tr.status,
         tr.status_code,
-        COALESCE(
-            -- TODO requesting a review on logic here. TR will likely be later. I need to make sure the tx is parsed by events once pending_result_response is False, hence prioritizing TR ingested timestamp
+        GREATEST(
+            b._inserted_timestamp,
             tr._inserted_timestamp,
             t._inserted_timestamp
         ) :: timestamp_ntz AS _inserted_timestamp,
