@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = "tx_id",
     cluster_by = "_inserted_timestamp::date",
-    tags = ['core', 'streamline_scheduled']
+    tags = ['core', 'streamline_scheduled', 'scheduled']
 ) }}
 
 WITH txs AS (

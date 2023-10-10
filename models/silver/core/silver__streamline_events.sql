@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'event_id',
-    tags = ['core', 'streamline_scheduled']
+    tags = ['core', 'streamline_scheduled', 'scheduled']
 ) }}
 
 WITH transactions AS (

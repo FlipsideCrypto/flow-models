@@ -3,9 +3,10 @@ run-name: dbt_run_streamline_hourly
 
 on:
   workflow_dispatch:
-  schedule:
+  # disabling 10/10/23 moving workflow to dbt_run_scheduled
+  # schedule:
     # Runs "every hour" (see https://crontab.guru)
-    - cron: '0 */1 * * *'
+    # - cron: '0 */1 * * *'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
