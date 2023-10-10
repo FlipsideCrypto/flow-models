@@ -9,7 +9,8 @@ WITH transactions_expected AS (
         block_number AS block_height,
         SUM(tx_count) AS txs_count,
         ARRAY_AGG(collection_id) AS collections_expected,
-        ARRAY_UNION_AGG(transaction_ids) AS txs_expected
+        array_union_agg(transaction_ids) AS txs_expected,
+        MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
         {{ ref('silver__streamline_collections') }}
 
@@ -18,8 +19,8 @@ WITH transactions_expected AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1
@@ -32,7 +33,8 @@ transactions_actual AS (
         ) AS txs_count,
         ARRAY_AGG(
             DISTINCT tx_id
-        ) AS txs_actual
+        ) AS txs_actual,
+        MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
         {{ ref('silver__streamline_transactions') }}
 
@@ -41,8 +43,8 @@ transactions_actual AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1
@@ -55,17 +57,19 @@ SELECT
         0
     ) AS actual,
     expected - actual AS difference,
-    SILVER.UDF_ARRAY_DISJUNCTIVE_UNION(
+    silver.udf_array_disjunctive_union(
         e.txs_expected,
         COALESCE(
             A.txs_actual,
-            array_construct()
-            )
-    ) AS txs_missing
+            ARRAY_CONSTRUCT()
+        )
+    ) AS txs_missing,
+    A._inserted_timestamp AS _inserted_timestamp
 FROM
     transactions_expected e
     LEFT JOIN transactions_actual A USING(block_height)
 WHERE
     expected != actual
+    AND A._inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
 ORDER BY
     1

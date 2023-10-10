@@ -13,6 +13,7 @@
             {{ create_udf_bulk_grpc() }}
             
             {{ run_create_udf_array_disjunctive_union() }}
+            {{ run_create_address_array_adj() }}
             
             {% endset %}
             {% do run_query(sql) %}

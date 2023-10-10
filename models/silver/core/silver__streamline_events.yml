@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: silver__streamline_events
+    description: |-
+      This table records events from each transaction on the FLOW blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: minutes
+          field: block_timestamp
+          interval: 360
+      - dbt_utils.recency:
+          datepart: hours
+          field: _inserted_timestamp
+          interval: 6
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null 
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: event_id
+        description: "{{ doc('event_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: payload
+        description: "{{ doc('payload') }}"
+        tests:
+          - not_null
+
+      - name: event_contract
+        description: "{{ doc('event_contract') }}"
+        tests:
+          - not_null
+
+      - name: event_type
+        description: "{{ doc('event_type') }}"
+        tests:
+          - not_null
+
+      - name: event_data
+        description: "{{ doc('event_attributes') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: OBJECT
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: BOOLEAN
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: _partition_by_block_id
+        description: "{{ doc('_partition_by_block_id') }}"

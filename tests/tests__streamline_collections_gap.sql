@@ -10,7 +10,8 @@ WITH collections_expected AS (
         collection_count,
         ARRAY_AGG(
             VALUE :collection_id :: STRING
-        ) AS collections_expected
+        ) AS collections_expected,
+        MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }},
         LATERAL FLATTEN(collection_guarantees) {% if var(
@@ -18,8 +19,8 @@ WITH collections_expected AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1,
@@ -31,7 +32,8 @@ collections_actual AS (
         COUNT(
             DISTINCT collection_id
         ) AS collection_count,
-        ARRAY_AGG(collection_id) AS collections_actual
+        ARRAY_AGG(collection_id) AS collections_actual,
+        MAX(_inserted_timestamp) AS _inserted_timestamp
     FROM
         {{ ref('silver__streamline_collections') }}
 
@@ -40,8 +42,8 @@ collections_actual AS (
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('start_height') }}
-            AND {{ var('end_height') }}
+            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
+            AND {{ var('END_HEIGHT', Null) }}
         {% endif %}
     GROUP BY
         1
@@ -54,17 +56,19 @@ SELECT
         0
     ) AS actual,
     expected - actual AS difference,
-    SILVER.UDF_ARRAY_DISJUNCTIVE_UNION(
+    silver.udf_array_disjunctive_union(
         e.collections_expected,
         COALESCE(
             A.collections_actual,
             ARRAY_CONSTRUCT()
         )
-    ) AS missing_collections
+    ) AS missing_collections,
+    A._inserted_timestamp
 FROM
     collections_expected e
     LEFT JOIN collections_actual A USING(block_height)
 WHERE
     expected != actual
+    AND A._inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
 ORDER BY
     1
