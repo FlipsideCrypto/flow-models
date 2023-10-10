@@ -1,5 +1,5 @@
 {{ config(
-    materialized = 'table',
+    materialized = 'incremental',
     cluster_by = ['event_contract'],
     unique_key = 'event_contract',
     tags = ['scheduled', 'streamline_scheduled']
@@ -15,6 +15,16 @@ WITH splt AS (
         ) AS ec_s
     FROM
         {{ ref('silver__streamline_events') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp) _inserted_timestamp
+        FROM
+            {{ this }}
+    )
+{% endif %}
 )
 SELECT
     DISTINCT event_contract,

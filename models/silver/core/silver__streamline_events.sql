@@ -63,7 +63,7 @@ flatten_events AS (
                 VALUE :type :: STRING,
                 '.'
             ) [1]
-        ) AS event_type,
+        ) :: STRING AS event_type,
         _inserted_timestamp,
         _partition_by_block_id
     FROM

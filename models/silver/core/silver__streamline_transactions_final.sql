@@ -61,6 +61,19 @@ blocks AS (
         *
     FROM
         {{ ref('silver__streamline_blocks') }}
+
+{% if is_incremental() %}
+WHERE
+    DATE_TRUNC(
+        'day',
+        _inserted_timestamp
+    ) >= (
+        SELECT
+            MAX(DATE_TRUNC('day', _inserted_timestamp))
+        FROM
+            {{ this }}
+    ) - INTERVAL '24 hours'
+{% endif %}
 ),
 FINAL AS (
     SELECT
