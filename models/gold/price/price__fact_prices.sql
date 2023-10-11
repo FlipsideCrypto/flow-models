@@ -22,7 +22,7 @@ prices AS (
     FROM
         {{ this.database }}.silver.prices
 ),
-prices_swaps AS (
+prices_swaps_cw AS (
     SELECT
         tx_id,
         block_timestamp AS TIMESTAMP,
@@ -31,6 +31,16 @@ prices_swaps AS (
         source
     FROM
         {{ ref('silver__prices_swaps') }}
+),
+prices_swaps_s AS (
+    SELECT
+        tx_id,
+        block_timestamp AS TIMESTAMP,
+        token_contract,
+        swap_price AS price_usd,
+        source
+    FROM
+        {{ ref('silver__prices_swaps_s') }}
 ),
 viewnion AS (
     SELECT
@@ -54,10 +64,24 @@ viewnion AS (
         source,
         tx_id
     FROM
-        prices_swaps ps
+        prices_swaps_cw ps
+        LEFT JOIN token_labels l USING (token_contract)
+    UNION
+    SELECT
+        TIMESTAMP,
+        l.token,
+        l.symbol,
+        pss.token_contract,
+        price_usd,
+        source,
+        tx_id
+    FROM
+        prices_swaps_s pss
         LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
     *
 FROM
     viewnion
+WHERE
+    TIMESTAMP IS NOT NULL
