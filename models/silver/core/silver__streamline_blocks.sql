@@ -33,6 +33,14 @@ WHERE
         FROM
             {{ this }}
     )
+    OR block_height IN (
+        SELECT
+            block_height
+        FROM
+            {{ this }}
+        WHERE
+            tx_count IS NULL
+    )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
 {% endif %}
@@ -51,6 +59,32 @@ network_version AS (
     FROM
         {{ ref('seeds__network_version') }}
 ),
+collections AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__streamline_collections') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+tx_count AS (
+    SELECT
+        block_number AS block_height,
+        SUM(tx_count) AS tx_count,
+        MIN(_inserted_timestamp) AS _inserted_timestamp
+    FROM
+        collections
+    GROUP BY
+        1
+),
 FINAL AS (
     SELECT
         b.block_number,
@@ -59,7 +93,11 @@ FINAL AS (
         b.block_id AS id,
         b.block_timestamp,
         b.collection_count,
-        C.tx_count,
+        IFF(
+            b.collection_count = 0,
+            b.collection_count,
+            C.tx_count
+        ) AS tx_count,
         b.parent_id,
         b.signatures,
         b.collection_guarantees,
@@ -71,7 +109,7 @@ FINAL AS (
         LEFT JOIN network_version v
         ON b.block_height BETWEEN v.root_height
         AND v.end_height
-        LEFT JOIN {{ ref('silver__block_tx_count') }} C USING (block_height)
+        LEFT JOIN tx_count C USING (block_height)
 )
 SELECT
     *
