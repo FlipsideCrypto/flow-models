@@ -1,7 +1,13 @@
 {{ config (
     materialized = 'view',
     tags = ['ez', 'scheduled'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'SWAPS' }} }
+    meta={
+    'database_tags':{
+        'table': {
+            'PURPOSE': 'SWAPS'
+            }
+        }
+    }
 ) }}
 
 WITH chainwalkers AS (
