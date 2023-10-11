@@ -3,14 +3,8 @@
     tags = ['scheduled']
 ) }}
 
-WITH silver_blocks AS (
+WITH chainwalkers AS (
 
-    SELECT
-        *
-    FROM
-        {{ ref('silver__blocks') }}
-),
-gold_blocks AS (
     SELECT
         block_height,
         block_timestamp,
@@ -21,9 +15,35 @@ gold_blocks AS (
         id,
         parent_id
     FROM
-        silver_blocks
+        {{ ref('silver__blocks') }}
+    WHERE
+        block_height < {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+),
+streamline AS (
+    SELECT
+        block_height,
+        block_timestamp,
+        'mainnet' AS network,
+        network_version,
+        'flow' AS chain_id,
+        tx_count,
+        id,
+        parent_id
+    FROM
+        {{ ref('silver__streamline_blocks') }}
+    WHERE
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
 )
 SELECT
     *
 FROM
-    gold_blocks
+    chainwalkers
+UNION
+SELECT
+    *
+FROM
+    streamline

@@ -12,7 +12,6 @@ WITH streamline_blocks AS (
         block_number,
         DATA: height :: STRING AS block_height,
         DATA: id :: STRING AS block_id,
-        -- TODO in core view alias this as just id
         DATA :timestamp :: timestamp_ntz AS block_timestamp,
         ARRAY_SIZE(
             DATA :collection_guarantees :: ARRAY
@@ -60,6 +59,7 @@ FINAL AS (
         b.block_id AS id,
         b.block_timestamp,
         b.collection_count,
+        C.tx_count,
         b.parent_id,
         b.signatures,
         b.collection_guarantees,
@@ -71,6 +71,7 @@ FINAL AS (
         LEFT JOIN network_version v
         ON b.block_height BETWEEN v.root_height
         AND v.end_height
+        LEFT JOIN {{ ref('silver__block_tx_count') }} C USING (block_height)
 )
 SELECT
     *

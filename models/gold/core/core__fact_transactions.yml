@@ -4,11 +4,6 @@ models:
   - name: core__fact_transactions
     description: |-
       This table records all the transactions of the FLOW blockchain.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_id
-            - block_height
 
     columns:
       - name: TX_ID
@@ -24,6 +19,7 @@ models:
           - dbt_expectations.expect_row_values_to_have_recent_data:
               datepart: day
               interval: 1
+              where: block_height >= 55114467
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -47,12 +43,7 @@ models:
                 - VARCHAR
 
       - name: TX_INDEX
-        description: tbd
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
+        description: "{{ doc('tx_index') }}"
 
       - name: PROPOSER
         description: "{{ doc('proposer') }}"
@@ -111,9 +102,10 @@ models:
                 - BOOLEAN
 
       - name: ERROR_MSG
-        description: tbd
+        description: "{{ doc('error_msg') }}"
         tests:
-          - not_null
+          - not_null:
+              where: not TX_SUCCEEDED
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING

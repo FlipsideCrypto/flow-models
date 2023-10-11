@@ -3,14 +3,29 @@
     tags = ['scheduled']
 ) }}
 
-WITH contract_labels AS (
+WITH chainwalkers AS (
 
     SELECT
-        *
+        event_contract,
+        contract_name,
+        account_address
     FROM
         {{ ref('silver__contract_labels') }}
+),
+streamline AS (
+    SELECT
+        event_contract,
+        contract_name,
+        account_address
+    FROM
+        {{ ref('silver__contract_labels_s') }}
 )
 SELECT
     *
 FROM
-    contract_labels
+    chainwalkers
+UNION
+SELECT
+    *
+FROM
+    streamline

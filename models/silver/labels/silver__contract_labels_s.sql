@@ -27,16 +27,26 @@ WHERE
             {{ this }}
     )
 {% endif %}
+),
+FINAL AS (
+    SELECT
+        DISTINCT event_contract,
+        ec_s [array_size(ec_s)-1] :: STRING AS contract_name,
+        CONCAT(
+            '0x',
+            ec_s [array_size(ec_s)-2] :: STRING
+        ) AS account_address,
+        _inserted_timestamp
+    FROM
+        splt
+    WHERE
+        ec_s [0] != 'flow'
 )
 SELECT
-    DISTINCT event_contract,
-    ec_s [array_size(ec_s)-1] :: STRING AS contract_name,
-    CONCAT(
-        '0x',
-        ec_s [array_size(ec_s)-2] :: STRING
-    ) AS account_address,
-    _inserted_timestamp
+    *
 FROM
-    splt
-WHERE
-    ec_s [0] != 'flow'
+    FINAL qualify ROW_NUMBER() over (
+        PARTITION BY event_contract
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

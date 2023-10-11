@@ -3,14 +3,8 @@
     tags = ['scheduled']
 ) }}
 
-WITH events_final AS (
+WITH chainwalkers AS (
 
-    SELECT
-        *
-    FROM
-        {{ ref('silver__events_final') }}
-),
-events AS (
     SELECT
         tx_id,
         block_timestamp,
@@ -21,9 +15,35 @@ events AS (
         event_type,
         event_data
     FROM
-        events_final
+        {{ ref('silver__events_final') }}
+    WHERE
+        block_height < {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+),
+streamline AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        tx_succeeded,
+        event_index,
+        event_contract,
+        event_type,
+        event_data
+    FROM
+        {{ ref('silver__streamline_events') }}
+    WHERE
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
 )
 SELECT
     *
 FROM
-    events
+    chainwalkers
+UNION
+SELECT
+    *
+FROM
+    streamline
