@@ -34,12 +34,18 @@ WHERE
             {{ this }}
     )
     OR block_height IN (
+        -- lookback to ensure tx count is correct
         SELECT
             block_height
         FROM
             {{ this }}
         WHERE
-            tx_count IS NULL
+            -- limit to half a day for performance
+            _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
+            AND (
+                tx_count IS NULL
+                OR collection_count != collection_count_agg
+            )
     )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
@@ -79,6 +85,7 @@ tx_count AS (
     SELECT
         block_number AS block_height,
         SUM(tx_count) AS tx_count,
+        COUNT(1) AS collection_count,
         MIN(_inserted_timestamp) AS _inserted_timestamp
     FROM
         collections
@@ -102,6 +109,7 @@ FINAL AS (
         b.signatures,
         b.collection_guarantees,
         b.block_seals,
+        C.collection_count AS collection_count_agg,
         b._partition_by_block_id,
         b._inserted_timestamp
     FROM
