@@ -40,8 +40,11 @@ WHERE
         FROM
             {{ this }}
         WHERE
+            block_height >= {{ var(
+                'STREAMLINE_START_BLOCK'
+            ) }}
             -- limit to half a day for performance
-            _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
             AND (
                 tx_count IS NULL
                 OR collection_count != collection_count_agg
