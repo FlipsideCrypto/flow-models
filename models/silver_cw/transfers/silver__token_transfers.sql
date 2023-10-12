@@ -29,6 +29,7 @@ transfers AS (
     SELECT
         _inserted_timestamp,
         tx_id,
+        event_contract,
         COUNT(event_type) AS event_count,
         MAX(
             event_index + 1
@@ -43,9 +44,11 @@ transfers AS (
         )
     GROUP BY
         _inserted_timestamp,
-        tx_id
+        tx_id,
+        event_contract
     HAVING
         event_count = max_index
+        OR event_contract = 'A.b19436aae4d94622.FiatToken'
 ),
 withdraws AS (
     SELECT
