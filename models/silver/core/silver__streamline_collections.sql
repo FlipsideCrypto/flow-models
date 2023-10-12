@@ -2,7 +2,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "collection_id",
-    cluster_by = "block_number",
+    cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
     tags = ['streamline_load', 'core']
 ) }}
 
