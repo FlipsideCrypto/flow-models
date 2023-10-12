@@ -65,7 +65,7 @@ combo AS (
         bridge
     FROM
         blocto_cw
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_timestamp,
@@ -79,7 +79,7 @@ combo AS (
         bridge
     FROM
         celer_cw
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_timestamp,
@@ -93,7 +93,7 @@ combo AS (
         bridge
     FROM
         blocto_s
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_timestamp,

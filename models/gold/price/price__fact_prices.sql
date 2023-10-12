@@ -54,7 +54,7 @@ viewnion AS (
     FROM
         prices p
         LEFT JOIN token_labels l USING (symbol)
-    UNION
+    UNION ALL
     SELECT
         TIMESTAMP,
         l.token,
@@ -66,7 +66,7 @@ viewnion AS (
     FROM
         prices_swaps_cw ps
         LEFT JOIN token_labels l USING (token_contract)
-    UNION
+    UNION ALL
     SELECT
         TIMESTAMP,
         l.token,

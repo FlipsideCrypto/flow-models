@@ -44,7 +44,7 @@ FINAL AS (
         node_id
     FROM
         chainwalkers
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         event_index,

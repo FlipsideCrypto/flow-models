@@ -68,12 +68,12 @@ FINAL AS (
         *
     FROM
         api
-    UNION
+    UNION ALL
     SELECT
         *
     FROM
         swaps_cw
-    UNION
+    UNION ALL
     SELECT
         *
     FROM

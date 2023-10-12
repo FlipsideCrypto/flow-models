@@ -42,7 +42,7 @@ SELECT
     *
 FROM
     chainwalkers
-UNION
+UNION ALL
 SELECT
     *
 FROM

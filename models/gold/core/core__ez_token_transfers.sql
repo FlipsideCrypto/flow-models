@@ -50,7 +50,7 @@ SELECT
     *
 FROM
     streamline
-UNION
+UNION ALL
 SELECT
     *
 FROM

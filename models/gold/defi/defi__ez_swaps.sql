@@ -58,7 +58,7 @@ FINAL AS (
         *
     FROM
         chainwalkers
-    UNION
+    UNION ALL
     SELECT
         *
     FROM

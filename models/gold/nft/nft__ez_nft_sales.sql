@@ -48,7 +48,7 @@ FINAL AS (
         counterparties
     FROM
         chainwalkers
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_height,
