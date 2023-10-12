@@ -12,7 +12,6 @@ WITH streamline_blocks AS (
         block_number,
         DATA: height :: STRING AS block_height,
         DATA: id :: STRING AS block_id,
-        -- TODO in core view alias this as just id
         DATA :timestamp :: timestamp_ntz AS block_timestamp,
         ARRAY_SIZE(
             DATA :collection_guarantees :: ARRAY
@@ -34,6 +33,23 @@ WHERE
         FROM
             {{ this }}
     )
+    OR block_height IN (
+        -- lookback to ensure tx count is correct
+        SELECT
+            block_height
+        FROM
+            {{ this }}
+        WHERE
+            block_height >= {{ var(
+                'STREAMLINE_START_BLOCK'
+            ) }}
+            -- limit to half a day for performance
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
+            AND (
+                tx_count IS NULL
+                OR collection_count != collection_count_agg
+            )
+    )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
 {% endif %}
@@ -52,6 +68,33 @@ network_version AS (
     FROM
         {{ ref('seeds__network_version') }}
 ),
+collections AS (
+    SELECT
+        *
+    FROM
+        {{ ref('silver__streamline_collections') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+tx_count AS (
+    SELECT
+        block_number AS block_height,
+        SUM(tx_count) AS tx_count,
+        COUNT(1) AS collection_count,
+        MIN(_inserted_timestamp) AS _inserted_timestamp
+    FROM
+        collections
+    GROUP BY
+        1
+),
 FINAL AS (
     SELECT
         b.block_number,
@@ -60,10 +103,16 @@ FINAL AS (
         b.block_id AS id,
         b.block_timestamp,
         b.collection_count,
+        IFF(
+            b.collection_count = 0,
+            b.collection_count,
+            C.tx_count
+        ) AS tx_count,
         b.parent_id,
         b.signatures,
         b.collection_guarantees,
         b.block_seals,
+        C.collection_count AS collection_count_agg,
         b._partition_by_block_id,
         b._inserted_timestamp
     FROM
@@ -71,6 +120,7 @@ FINAL AS (
         LEFT JOIN network_version v
         ON b.block_height BETWEEN v.root_height
         AND v.end_height
+        LEFT JOIN tx_count C USING (block_height)
 )
 SELECT
     *

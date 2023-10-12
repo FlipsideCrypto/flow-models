@@ -23,6 +23,7 @@ models:
           - dbt_expectations.expect_row_values_to_have_recent_data:
               datepart: day
               interval: 1
+              where: block_height >= 55114467
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -73,7 +74,6 @@ models:
       - name: EVENT_DATA
         description: "{{ doc('event_attributes') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - OBJECT

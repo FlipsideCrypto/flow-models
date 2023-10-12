@@ -7,7 +7,7 @@ WITH dev_sample AS (
     SELECT
         *
     FROM
-        flow_dev.silver.streamline_events
+        {{ ref('silver__streamline_events') }}
     WHERE
         block_height >= 55114467
 ),
@@ -15,7 +15,7 @@ prod_sample AS (
     SELECT
         *
     FROM
-        flow.silver.events_final
+        {{ ref('silver__events_final') }}
     WHERE
         block_height >= 55114467
 ),

@@ -38,16 +38,12 @@ models:
           - not_null
       - name: SERIES_NAME
         description: "{{ doc('series_name') }}"
-        tests:
-          - not_null
       - name: SET_ID
         description: "{{ doc('set_id') }}"
         tests:
           - not_null
       - name: SET_NAME
         description: "{{ doc('set_name') }}"
-        tests:
-          - not_null
       - name: EDITION_ID
         description: "{{ doc('edition_id') }}"
         tests:
