@@ -10,7 +10,6 @@ models:
           combination_of_columns:
             - nft_collection
             - nft_id
-          where: series_name is not null
 
     columns:
       - name: NFT_COLLECTION
