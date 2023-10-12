@@ -11,9 +11,11 @@ WITH txs AS (
         *
     FROM
         {{ ref('silver__streamline_transactions') }}
+    WHERE
+        block_number >= {{ var('STREAMLINE_START_BLOCK') }}
 
 {% if is_incremental() %}
-WHERE
+AND
     _inserted_timestamp >= (
         SELECT
             MAX(_inserted_timestamp) _inserted_timestamp
