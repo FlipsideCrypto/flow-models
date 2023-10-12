@@ -44,7 +44,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt test -s models/gold tag:observability
+          dbt test -s models/gold tag:observability --vars '{"TEST_RANGE": True, "start_height": 55114467, "end_height": 100000000}'
         continue-on-error: true
 
       - name: Log test results
