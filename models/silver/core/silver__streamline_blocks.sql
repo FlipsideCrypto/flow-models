@@ -6,8 +6,30 @@
     tags = ['streamline_load', 'core']
 ) }}
 
-WITH streamline_blocks AS (
+WITH
 
+{% if is_incremental() %}
+tx_count_lookback AS (
+    -- lookback to ensure tx count is correct
+
+    SELECT
+        block_height
+    FROM
+        {{ this }}
+    WHERE
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+        -- limit to 3 day lookback for performance
+        AND _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+        AND (
+            tx_count IS NULL
+            OR collection_count != collection_count_agg
+        )
+),
+{% endif %}
+
+streamline_blocks AS (
     SELECT
         block_number,
         DATA: height :: STRING AS block_height,
@@ -34,21 +56,10 @@ WHERE
             {{ this }}
     )
     OR block_height IN (
-        -- lookback to ensure tx count is correct
         SELECT
             block_height
         FROM
-            {{ this }}
-        WHERE
-            block_height >= {{ var(
-                'STREAMLINE_START_BLOCK'
-            ) }}
-            -- limit to half a day for performance
-            AND _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
-            AND (
-                tx_count IS NULL
-                OR collection_count != collection_count_agg
-            )
+            tx_count_lookback
     )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
@@ -81,6 +92,12 @@ WHERE
             MAX(_inserted_timestamp)
         FROM
             {{ this }}
+    )
+    OR block_number IN (
+        SELECT
+            block_height
+        FROM
+            tx_count_lookback
     )
 {% endif %}
 ),
