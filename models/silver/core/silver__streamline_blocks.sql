@@ -43,8 +43,8 @@ WHERE
             block_height >= {{ var(
                 'STREAMLINE_START_BLOCK'
             ) }}
-            -- limit to half a day for performance
-            AND _inserted_timestamp >= SYSDATE() - INTERVAL '12 hours'
+            -- limit to 3 day lookback for performance
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
             AND (
                 tx_count IS NULL
                 OR collection_count != collection_count_agg
@@ -81,6 +81,23 @@ WHERE
             MAX(_inserted_timestamp)
         FROM
             {{ this }}
+    )
+    OR block_number IN (
+        -- lookback to ensure tx count is correct
+        SELECT
+            block_height
+        FROM
+            {{ this }}
+        WHERE
+            block_height >= {{ var(
+                'STREAMLINE_START_BLOCK'
+            ) }}
+            -- limit to 3 day lookback for performance
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+            AND (
+                tx_count IS NULL
+                OR collection_count != collection_count_agg
+            )
     )
 {% endif %}
 ),
