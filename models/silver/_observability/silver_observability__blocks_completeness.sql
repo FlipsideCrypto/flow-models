@@ -16,7 +16,10 @@ WITH summary_stats AS (
     FROM
         {{ ref('silver__streamline_blocks') }}
     WHERE
-        block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+        AND block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -51,7 +54,9 @@ AND (
                     )
             )
     ) {% if var('OBSERV_FULL_TEST') %}
-        OR block_height >= 7601063
+        OR block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
     {% endif %}
 )
 {% endif %}
