@@ -14,9 +14,12 @@ WITH summary_stats AS (
         MAX(block_timestamp) AS max_block_timestamp,
         COUNT(1) AS blocks_tested
     FROM
-        {{ ref('silver__blocks') }}
+        {{ ref('silver__streamline_blocks') }}
     WHERE
-        block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+        AND block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -28,7 +31,7 @@ AND (
                 SELECT
                     MIN(block_height) AS block_height
                 FROM
-                    {{ ref('silver__blocks') }}
+                    {{ ref('silver__streamline_blocks') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -51,7 +54,9 @@ AND (
                     )
             )
     ) {% if var('OBSERV_FULL_TEST') %}
-        OR block_height >= 7601063
+        OR block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
     {% endif %}
 )
 {% endif %}
@@ -85,7 +90,7 @@ txs_per_block_actual AS (
             DISTINCT tx_id
         ) AS txs
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__streamline_transactions_final') }}
     WHERE
         block_height IN (
             SELECT
@@ -99,9 +104,9 @@ txs_per_block_actual AS (
 txs_per_block_expected AS (
     SELECT
         block_height,
-        transaction_ct AS txs
+        tx_count AS txs
     FROM
-        {{ ref('silver_observability__block_tx_count') }}
+        {{ ref('silver__streamline_blocks') }}
     WHERE
         block_height IN (
             SELECT

@@ -14,9 +14,12 @@ WITH summary_stats AS (
         MAX(block_timestamp) AS max_block_timestamp,
         COUNT(1) AS blocks_tested
     FROM
-        {{ ref('silver__blocks') }}
+        {{ ref('silver__streamline_blocks') }}
     WHERE
-        block_timestamp <= DATEADD('hour', -12, SYSDATE())
+        block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
+        AND block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
 {% if is_incremental() %}
 AND (
@@ -28,7 +31,7 @@ AND (
                 SELECT
                     MIN(block_height) AS block_height
                 FROM
-                    {{ ref('silver__blocks') }}
+                    {{ ref('silver__streamline_blocks') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -51,7 +54,9 @@ AND (
                     )
             )
     ) {% if var('OBSERV_FULL_TEST') %}
-        OR block_height >= 7601063
+        OR block_height >= {{ var(
+            'STREAMLINE_START_BLOCK'
+        ) }}
     {% endif %}
 )
 {% endif %}
@@ -90,7 +95,7 @@ blocks AS (
                 l.block_height ASC
         ) AS prev_BLOCK_HEIGHT
     FROM
-        {{ ref("silver__blocks") }}
+        {{ ref("silver__streamline_blocks") }}
         l
         INNER JOIN block_range b
         ON l.block_height = b.block_height
