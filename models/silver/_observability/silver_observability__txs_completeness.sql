@@ -14,7 +14,7 @@ WITH summary_stats AS (
         MAX(block_timestamp) AS max_block_timestamp,
         COUNT(1) AS blocks_tested
     FROM
-        {{ ref('silver__blocks') }}
+        {{ ref('silver__streamline_blocks') }}
     WHERE
         block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
@@ -28,7 +28,7 @@ AND (
                 SELECT
                     MIN(block_height) AS block_height
                 FROM
-                    {{ ref('silver__blocks') }}
+                    {{ ref('silver__streamline_blocks') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -85,7 +85,7 @@ txs_per_block_actual AS (
             DISTINCT tx_id
         ) AS txs
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('silver__streamline_transactions_final') }}
     WHERE
         block_height IN (
             SELECT

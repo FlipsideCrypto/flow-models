@@ -14,7 +14,7 @@ WITH summary_stats AS (
         MAX(block_timestamp) AS max_block_timestamp,
         COUNT(1) AS blocks_tested
     FROM
-        {{ ref('silver__blocks') }}
+        {{ ref('silver__streamline_blocks') }}
     WHERE
         block_timestamp <= DATEADD('hour', -12, SYSDATE())
 
@@ -28,7 +28,7 @@ AND (
                 SELECT
                     MIN(block_height) AS block_height
                 FROM
-                    {{ ref('silver__blocks') }}
+                    {{ ref('silver__streamline_blocks') }}
                 WHERE
                     block_timestamp BETWEEN DATEADD('hour', -96, SYSDATE())
                     AND DATEADD('hour', -95, SYSDATE())
@@ -90,7 +90,7 @@ blocks AS (
                 l.block_height ASC
         ) AS prev_BLOCK_HEIGHT
     FROM
-        {{ ref("silver__blocks") }}
+        {{ ref("silver__streamline_blocks") }}
         l
         INNER JOIN block_range b
         ON l.block_height = b.block_height
