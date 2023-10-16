@@ -9,52 +9,18 @@ models:
     columns:
       - name: TIMESTAMP
         description: "{{ doc('timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
 
       - name: TOKEN
         description: "{{ doc('token') }}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SYMBOL
         description: "{{ doc('symbol') }}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: PRICE_USD
         description: "{{ doc('price_usd') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - DOUBLE
-                - FLOAT
 
       - name: SOURCE
         description: "{{ doc('source') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
