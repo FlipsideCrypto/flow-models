@@ -12,8 +12,6 @@ WITH silver_events AS (
         *
     FROM
         {{ ref('silver__streamline_events') }}
-        -- WHERE
-        --     event_data :: STRING != '{}'
 
 {% if is_incremental() %}
 WHERE
@@ -22,6 +20,15 @@ WHERE
             MAX(_inserted_timestamp)
         FROM
             {{ this }}
+    )
+    OR tx_id IN (
+        SELECT
+            tx_id
+        FROM
+            {{ this }}
+        WHERE
+            _inserted_timestamp >= SYSDATE() - INTERVAL '14 days'
+            AND delegator IS NULL
     )
 {% endif %}
 ),
@@ -69,11 +76,22 @@ add_auth AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp)
-    FROM
-        {{ this }}
+AND (
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+    OR tx_id IN (
+        SELECT
+            tx_id
+        FROM
+            {{ this }}
+        WHERE
+            _inserted_timestamp >= SYSDATE() - INTERVAL '14 days'
+            AND delegator IS NULL
+    )
 )
 {% endif %}
 ),
