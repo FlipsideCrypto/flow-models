@@ -5,59 +5,39 @@ models:
     description: |-
       Deprecating soon: This is a notice that we're replacing this table with **FLOW.NFT.DIM_MOMENT_METADATA**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - nft_collection
-            - nft_id
-
     columns:
       - name: nft_collection
         description: "{{ doc('nft_collection') }}"
-        tests:
-          - not_null
+
       - name: nft_id
         description: "{{ doc('nft_id') }}"
-        tests:
-          - not_null
+
       - name: serial_number
         description: "{{ doc('serial_number') }}"
-        tests:
-          - not_null
+
       - name: max_mint_size
         description: "{{ doc('max_mint_size') }}"
-        tests:
-          - not_null
+
       - name: play_id
         description: "{{ doc('play_id') }}"
-        tests:
-          - not_null
+
       - name: series_id
         description: "{{ doc('series_id') }}"
-        tests:
-          - not_null
+
       - name: series_name
         description: "{{ doc('series_name') }}"
-        tests:
-          - not_null
+
       - name: set_id
         description: "{{ doc('set_id') }}"
-        tests:
-          - not_null
+
       - name: set_name
         description: "{{ doc('set_name') }}"
-        tests:
-          - not_null
+
       - name: edition_id
         description: "{{ doc('edition_id') }}"
-        tests:
-          - not_null
+
       - name: tier
         description: "{{ doc('tier') }}"
-        tests:
-          - not_null
+
       - name: metadata
         description: "{{ doc('metadata') }}"
-        tests:
-          - not_null:
-              where: not (nft_collection = 'A.e4cf4bdc1751c65d.AllDay' and series_name = 'Historical 2') and nft_collection != 'A.87ca73a41bb50ad5.Golazos'

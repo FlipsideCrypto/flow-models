@@ -5,79 +5,27 @@ models:
     description: |-
       Deprecating soon: This is a notice that we're replacing this table with **FLOW.GOV.EZ_STAKING_ACTIONS**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_id
-            - event_index
-
     columns:
       - name: tx_id
         description: "{{ doc('tx_id') }}"
-        tests:
-          - not_null
 
       - name: block_timestamp
         description: "{{ doc('block_timestamp') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 1
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
 
       - name: block_height
         description: "{{ doc('block_height') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
 
       - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - BOOLEAN
 
       - name: delegator
         description: "{{ doc('delegator') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING
 
       - name: action
         description: "{{ doc('action') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING
 
       - name: amount
         description: "{{ doc('amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - FLOAT
-                - DOUBLE
 
       - name: node_id
         description: "{{ doc('node_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - VARCHAR
-                - STRING

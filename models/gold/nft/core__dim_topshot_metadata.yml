@@ -5,164 +5,57 @@ models:
     description: |-
       Deprecating soon: This is a notice that we're replacing this table with **FLOW.NFT.DIM_TOPSHOT_METADATA**. Please migrate queries to the new table by **9/14/23**. There will be no column changes or any other changes of any kind.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - nft_id
-
     columns:
       - name: NFT_ID
         description: "{{ doc('nft_id') }}"
-        tests:
-          - not_null
-          - unique
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: NBATOPSHOT_ID
         description: "{{ doc('nbatopshot_id') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SERIAL_NUMBER
         description: "{{ doc('serial_number') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
 
       - name: TOTAL_CIRCULATION
         description: "{{ doc('total_circulation') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
 
       - name: MOMENT_DESCRIPTION
         description: "{{ doc('moment_description') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: PLAYER
         description: "{{ doc('player') }}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: TEAM
         description: "{{ doc('team') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SEASON
         description: "{{ doc('season') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: PLAY_CATEGORY
         description: "{{ doc('play_category') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: PLAY_TYPE
         description: "{{ doc('play_type') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: MOMENT_DATE
         description: "{{ doc('moment_date') }}"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - TIMESTAMP_NTZ
 
       - name: SET_NAME
         description: "{{ doc('set_name') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: SET_SERIES_NUMBER
         description: "{{ doc('set_series_number') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
 
       - name: VIDEO_URLS
         description: "{{ doc('video_urls') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - ARRAY
 
       - name: MOMENT_STATS_FULL
         description: "{{ doc('moment_stats_full') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - OBJECT
-                - VARIANT
 
       - name: PLAYER_STATS_GAME
         description: "{{ doc('player_stats_game') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - OBJECT
-                - VARIANT
 
       - name: PLAYER_STATS_SEASON_TO_DATE
         description: "{{ doc('player_stats_season_to_date') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - OBJECT
-                - VARIANT
