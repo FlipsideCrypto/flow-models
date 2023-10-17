@@ -27,7 +27,7 @@ WHERE
         FROM
             {{ this }}
         WHERE
-            _inserted_timestamp >= SYSDATE() - INTERVAL '14 days'
+            _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
             AND delegator IS NULL
     )
 {% endif %}
@@ -89,7 +89,7 @@ AND (
         FROM
             {{ this }}
         WHERE
-            _inserted_timestamp >= SYSDATE() - INTERVAL '14 days'
+            _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
             AND delegator IS NULL
     )
 )

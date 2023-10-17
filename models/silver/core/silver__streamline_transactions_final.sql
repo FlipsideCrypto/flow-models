@@ -5,8 +5,20 @@
     tags = ['core', 'streamline_scheduled', 'scheduled']
 ) }}
 
-WITH txs AS (
+WITH retry_tx_ids AS (
 
+    SELECT
+        tx_id
+    FROM
+        {{ this }}
+    WHERE
+        _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+        AND (
+            block_timestamp IS NULL
+            OR pending_result_response
+        )
+),
+txs AS (
     SELECT
         *
     FROM
@@ -25,9 +37,7 @@ WHERE
         SELECT
             tx_id
         FROM
-            {{ this }}
-        WHERE
-            block_timestamp IS NULL
+            retry_tx_ids
     )
 {% endif %}
 ),
@@ -50,9 +60,7 @@ WHERE
         SELECT
             tx_id
         FROM
-            {{ this }}
-        WHERE
-            block_timestamp IS NULL
+            retry_tx_ids
     )
 {% endif %}
 ),
