@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_bulk_grpc_us_east_2(object_construct('sql_source', '{{this.identifier}}','node_url','access-001.mainnet22.nodes.onflow.org:9000','external_table', 'blocks_mainnet_22', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','10000')}}, 'worker_batch_size', {{var('worker_batch_size','1000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
+        func = "{{this.schema}}.udf_bulk_grpc_us_east_2(object_construct('sql_source', '{{this.identifier}}','node_url','NETWORK_NODE_URL','external_table', 'blocks_NETWORK_VERSION', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','10000')}}, 'worker_batch_size', {{var('worker_batch_size','1000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
@@ -14,7 +14,7 @@ WITH blocks AS (
         {{ ref("streamline__blocks") }}
     EXCEPT
     SELECT
-        block_number as block_height
+        block_number AS block_height
     FROM
         {{ ref("streamline__complete_get_blocks") }}
 )
@@ -28,6 +28,7 @@ SELECT
 FROM
     blocks
 WHERE
-    block_height BETWEEN 47169687 AND 55114466 -- Mainnet22 block range
+    block_height BETWEEN root_height
+    AND end_height
 ORDER BY
     block_height ASC
