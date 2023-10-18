@@ -8,7 +8,8 @@
 WITH retry_tx_ids AS (
 
     SELECT
-        tx_id
+        tx_id,
+        block_height
     FROM
         {{ this }}
     WHERE
@@ -80,7 +81,7 @@ WHERE
             MAX(DATE_TRUNC('day', _inserted_timestamp))
         FROM
             {{ this }}
-    ) - INTERVAL '24 hours'
+    ) - INTERVAL '3 days'
 {% endif %}
 ),
 FINAL AS (
