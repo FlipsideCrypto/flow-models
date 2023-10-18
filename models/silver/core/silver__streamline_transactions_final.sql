@@ -12,8 +12,7 @@ WITH retry_tx_ids AS (
     FROM
         {{ this }}
     WHERE
-        (_inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
-        OR _inserted_timestamp IS NULL)
+        _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
         AND (
             block_timestamp IS NULL
             OR pending_result_response
