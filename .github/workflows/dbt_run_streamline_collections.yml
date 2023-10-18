@@ -47,4 +47,4 @@ jobs:
 
       - name: Run Backfill Models
         run: |
-          dbt run -s models/silver/streamline/history/core/collections --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+          dbt run -s models/silver/streamline/core/history/collections --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'

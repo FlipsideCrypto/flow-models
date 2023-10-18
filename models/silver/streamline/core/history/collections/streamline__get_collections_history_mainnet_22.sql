@@ -39,7 +39,6 @@ FROM
     tx,
     LATERAL FLATTEN(input => TRY_PARSE_JSON(DATA) :transaction_ids) AS transaction_id
 WHERE
-WHERE
     block_height BETWEEN 47169687
     AND 55114466
 ORDER BY
