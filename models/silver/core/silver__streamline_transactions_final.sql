@@ -12,7 +12,8 @@ WITH retry_tx_ids AS (
     FROM
         {{ this }}
     WHERE
-        _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+        (_inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+        OR _inserted_timestamp IS NULL)
         AND (
             block_timestamp IS NULL
             OR pending_result_response
@@ -117,10 +118,10 @@ FINAL AS (
         tr.status,
         tr.status_code,
         GREATEST(
-            b._inserted_timestamp,
-            tr._inserted_timestamp,
-            t._inserted_timestamp
-        ) :: timestamp_ntz AS _inserted_timestamp,
+            [b._inserted_timestamp],
+            [tr._inserted_timestamp],
+            [t._inserted_timestamp]
+        ) [0] :: timestamp_ntz AS _inserted_timestamp,
         t._partition_by_block_id
     FROM
         txs t
