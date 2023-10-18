@@ -8,7 +8,8 @@
 WITH retry_tx_ids AS (
 
     SELECT
-        tx_id
+        tx_id,
+        block_height
     FROM
         {{ this }}
     WHERE
@@ -80,7 +81,7 @@ WHERE
             MAX(DATE_TRUNC('day', _inserted_timestamp))
         FROM
             {{ this }}
-    ) - INTERVAL '24 hours'
+    ) - INTERVAL '3 days'
 {% endif %}
 ),
 FINAL AS (
@@ -117,10 +118,10 @@ FINAL AS (
         tr.status,
         tr.status_code,
         GREATEST(
-            b._inserted_timestamp,
-            tr._inserted_timestamp,
-            t._inserted_timestamp
-        ) :: timestamp_ntz AS _inserted_timestamp,
+            [b._inserted_timestamp],
+            [tr._inserted_timestamp],
+            [t._inserted_timestamp]
+        ) [0] :: timestamp_ntz AS _inserted_timestamp,
         t._partition_by_block_id
     FROM
         txs t
