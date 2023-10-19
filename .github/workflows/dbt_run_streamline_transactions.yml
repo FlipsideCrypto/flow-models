@@ -45,6 +45,6 @@ jobs:
         run: |
           dbt run -s 1+streamline__get_transactions_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
 
-      - name: Run Backfill Models
-        run: |
-          dbt run -s models/silver/streamline/core/history/transactions --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+      # - name: Run Backfill Models
+      #   run: |
+      #     dbt run -s models/silver/streamline/core/history/transactions --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
