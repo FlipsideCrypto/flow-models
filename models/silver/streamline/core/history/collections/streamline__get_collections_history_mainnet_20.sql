@@ -16,28 +16,55 @@ WITH blocks AS (
     SELECT
         block_number AS block_height
     FROM
-        {{ ref("streamline__complete_get_transactions") }}
+        {{ ref("streamline__complete_get_collections") }}
 ),
-tx AS (
+collections AS (
     SELECT
         block_number AS block_height,
         DATA
     FROM
-        {{ ref('streamline__complete_get_collections') }}
+        {{ ref('streamline__complete_get_blocks') }}
         JOIN blocks
         ON blocks.block_height = block_number
-)
+),
+-- CTE to get all block_heights and their associated collection_ids from the complete_get_blocks table
+block_collections AS (
+    SELECT
+        cb.block_number AS block_height,
+        collection_guarantee.value :collection_id AS collection_id
+    FROM
+        {{ ref("streamline__complete_get_blocks") }}
+        cb,
+        LATERAL FLATTEN(
+            input => cb.data :collection_guarantees
+        ) AS collection_guarantee
+),
+-- CTE to identify collections that haven't been ingested yet
+collections_to_ingest AS (
+    SELECT
+        bc.block_height,
+        bc.collection_id
+    FROM
+        block_collections bc
+        LEFT JOIN {{ ref("streamline__complete_get_collections") }} C
+        ON bc.block_height = C.block_number
+        AND bc.collection_id = C.id
+    WHERE
+        C.id IS NULL
+) -- Generate the requests based on the missing collections
 SELECT
     OBJECT_CONSTRUCT(
         'grpc', 'proto3',
-        'method', 'get_transaction',
-        'block_height', block_height::INTEGER,
-        'transaction_id', transaction_id.value::string,
-        'method_params', OBJECT_CONSTRUCT('id', transaction_id.value :: STRING)
+        'method', 'get_collection_by_i_d',
+        'block_height', block_height :: INTEGER,
+        'method_params',
+            OBJECT_CONSTRUCT(
+                'id',
+                collection_id
+            )
     ) AS request
 FROM
-    tx,
-    LATERAL FLATTEN(input => TRY_PARSE_JSON(DATA) :transaction_ids) AS transaction_id
+    collections_to_ingest
 WHERE
     block_height BETWEEN 40171634
     AND 44950206
