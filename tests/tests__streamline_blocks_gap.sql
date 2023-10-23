@@ -22,9 +22,9 @@ WITH streamline_blocks AS (
 determine_prior_block AS (
     SELECT
         block_height,
-        block_id,
+        id,
         parent_id,
-        LAG(block_id) over (
+        LAG(id) over (
             ORDER BY
                 block_height
         ) AS prev_block_id,
