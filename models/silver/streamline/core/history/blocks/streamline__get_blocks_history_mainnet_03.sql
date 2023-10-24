@@ -16,7 +16,7 @@ WITH blocks AS (
     SELECT
         block_number AS block_height
     FROM
-        {{ ref("streamline__complete_get_blocks") }}
+        {{ ref("streamline__complete_get_blocks_history") }}
 )
 SELECT
     OBJECT_CONSTRUCT(
