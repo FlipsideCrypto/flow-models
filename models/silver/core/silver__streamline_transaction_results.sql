@@ -1,8 +1,9 @@
 -- depends_on: {{ ref('bronze__streamline_transaction_results') }}
 {{ config(
     materialized = 'incremental',
+    incremental_predicates = ['DBT_INTERNAL_DEST.block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = "tx_id",
-    cluster_by = "_inserted_timestamp::date",
+    cluster_by = ["block_number","_inserted_timestamp::date"],
     tags = ['streamline_load', 'core']
 ) }}
 
