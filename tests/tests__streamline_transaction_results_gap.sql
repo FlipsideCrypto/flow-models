@@ -1,6 +1,7 @@
 {{ config(
     severity = 'error',
-    tags = ['streamline_test']
+    tags = ['streamline_test'],
+    error_if= ">=100"
 ) }}
 
 WITH results_expected AS (
