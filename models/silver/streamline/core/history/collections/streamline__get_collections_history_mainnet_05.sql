@@ -16,14 +16,14 @@ WITH blocks AS (
     SELECT
         block_number AS block_height
     FROM
-        {{ ref("streamline__complete_get_collections") }}
+        {{ ref("streamline__complete_get_collections_history") }}
 ),
 collections AS (
     SELECT
         block_number AS block_height,
         DATA
     FROM
-        {{ ref('streamline__complete_get_blocks') }}
+        {{ ref('streamline__complete_get_blocks_history') }}
         JOIN blocks
         ON blocks.block_height = block_number
 ),
@@ -33,7 +33,7 @@ block_collections AS (
         cb.block_number AS block_height,
         collection_guarantee.value :collection_id AS collection_id
     FROM
-        {{ ref("streamline__complete_get_blocks") }}
+        {{ ref("streamline__complete_get_blocks_history") }}
         cb,
         LATERAL FLATTEN(
             input => cb.data :collection_guarantees
@@ -46,7 +46,7 @@ collections_to_ingest AS (
         bc.collection_id
     FROM
         block_collections bc
-        LEFT JOIN {{ ref("streamline__complete_get_collections") }} C
+        LEFT JOIN {{ ref("streamline__complete_get_collections_history") }} C
         ON bc.block_height = C.block_number
         AND bc.collection_id = C.id
     WHERE

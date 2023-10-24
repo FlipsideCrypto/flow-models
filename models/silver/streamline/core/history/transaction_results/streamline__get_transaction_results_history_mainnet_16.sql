@@ -16,14 +16,14 @@ WITH blocks AS (
     SELECT
         block_number AS block_height
     FROM
-        {{ ref("streamline__complete_get_transaction_results") }}
+        {{ ref("streamline__complete_get_transaction_results_history") }}
 ),
 tx AS (
     SELECT
         block_number AS block_height,
         DATA
     FROM
-        {{ ref('streamline__complete_get_collections') }}
+        {{ ref('streamline__complete_get_collections_history') }}
         JOIN blocks
         ON blocks.block_height = block_number
 )
