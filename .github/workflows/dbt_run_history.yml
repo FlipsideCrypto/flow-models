@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s 1+models/silver/streamline/core/history/blocks --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+        dbt run -s 2+models/silver/streamline/core/history/ --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
