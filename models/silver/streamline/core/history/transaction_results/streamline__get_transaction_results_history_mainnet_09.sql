@@ -43,11 +43,11 @@ SELECT
         'block_height',
         block_height :: INTEGER,
         'transaction_id',
-        transaction_id.value :: STRING,
+        transaction_id,
         'method_params',
         OBJECT_CONSTRUCT(
             'id',
-            transaction_id.value :: STRING
+            transaction_id
         )
     ) AS request
 FROM
