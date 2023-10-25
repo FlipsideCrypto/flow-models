@@ -12,7 +12,7 @@ block_collections AS (
 
     SELECT
         cb.block_number AS block_height,
-        collection_guarantee.value :collection_id AS collection_id
+        collection_guarantee.value :collection_id :: STRING AS collection_id
     FROM
         {{ ref("streamline__complete_get_blocks_history") }}
         cb,
@@ -35,10 +35,6 @@ collections_to_ingest AS (
         AND bc.collection_id = C.id
     WHERE
         C.id IS NULL
-        AND (
-            block_height BETWEEN root_height
-            AND end_height
-        )
 ) 
 -- Generate the requests based on the missing collections
 SELECT
