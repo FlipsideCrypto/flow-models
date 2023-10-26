@@ -13,23 +13,33 @@ WITH blocks AS (
         block_height
     FROM
         {{ ref("streamline__blocks") }}
+    WHERE
+        block_height BETWEEN root_height
+        AND end_height
     EXCEPT
     SELECT
         block_number AS block_height
     FROM
         {{ ref("streamline__complete_get_blocks_history") }}
+    WHERE
+        block_height BETWEEN root_height
+        AND end_height
 )
 SELECT
     OBJECT_CONSTRUCT(
-        'grpc', 'proto3',
-        'method', 'get_block_by_height',
-        'block_height', block_height,
-        'method_params', OBJECT_CONSTRUCT('height', block_height)
+        'grpc',
+        'proto3',
+        'method',
+        'get_block_by_height',
+        'block_height',
+        block_height,
+        'method_params',
+        OBJECT_CONSTRUCT(
+            'height',
+            block_height
+        )
     ) AS request
 FROM
     blocks
-WHERE
-    block_height BETWEEN root_height
-    AND end_height
 ORDER BY
     block_height ASC

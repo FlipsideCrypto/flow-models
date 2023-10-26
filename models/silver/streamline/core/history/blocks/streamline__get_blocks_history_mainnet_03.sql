@@ -13,23 +13,33 @@ WITH blocks AS (
         block_height
     FROM
         {{ ref("streamline__blocks") }}
+    WHERE
+        block_height BETWEEN 9737133
+        AND 9992019
     EXCEPT
     SELECT
         block_number AS block_height
     FROM
         {{ ref("streamline__complete_get_blocks_history") }}
+    WHERE
+        block_height BETWEEN 9737133
+        AND 9992019
 )
 SELECT
     OBJECT_CONSTRUCT(
-        'grpc', 'proto3',
-        'method', 'get_block_by_height',
-        'block_height', block_height,
-        'method_params', OBJECT_CONSTRUCT('height', block_height)
+        'grpc',
+        'proto3',
+        'method',
+        'get_block_by_height',
+        'block_height',
+        block_height,
+        'method_params',
+        OBJECT_CONSTRUCT(
+            'height',
+            block_height
+        )
     ) AS request
 FROM
     blocks
-WHERE
-    block_height BETWEEN 9737133
-    AND 9992019
 ORDER BY
     block_height ASC
