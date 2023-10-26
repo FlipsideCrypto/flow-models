@@ -24,7 +24,7 @@ dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTER
 
 ```zsh 
 # dev bronze__streamline_blocks.sql
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/bronze/core/bronze__streamline_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/bronze/core/realtime/bronze__streamline_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
 ```
 
 ```zsh
