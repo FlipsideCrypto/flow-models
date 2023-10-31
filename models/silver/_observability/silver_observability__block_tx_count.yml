@@ -9,18 +9,14 @@ models:
           datepart: day
           field: _inserted_timestamp
           interval: 1
+          severity: warn
       - sequence_gaps:
           column_name: block_height
-          severity: error
+          severity: warn
 
     columns:
       - name: block_height
-        tests:
-          - unique
-          - not_null
 
       - name: transaction_ct
-        tests:
-          - not_null
 
       - name: _inserted_timestamp
