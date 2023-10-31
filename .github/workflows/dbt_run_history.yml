@@ -4,8 +4,8 @@ run-name: dbt_run_history
 on:
   workflow_dispatch:
   schedule:
-    # Runs every hour (see https://crontab.guru)
-    - cron: '0 * * * *'
+    # Runs every half hour (see https://crontab.guru)
+    - cron: '*/30 * * * *'
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
