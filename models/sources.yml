@@ -12,7 +12,7 @@ sources:
     database: crosschain
     schema: core
     tables:
-      - name: address_labels
+      - name: dim_labels
 
   - name: bronze_streamline
     database: streamline
