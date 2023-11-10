@@ -3,7 +3,7 @@
     materialized = 'incremental',
     unique_key = "collection_id",
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['streamline_load', 'core']
+    tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
 
 SELECT

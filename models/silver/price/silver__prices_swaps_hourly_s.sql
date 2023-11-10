@@ -2,7 +2,7 @@
     materialized = 'table',
     cluster_by = ['recorded_hour::date'],
     unique_key = "CONCAT_WS('-', recorded_hour, token)",
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH swap_prices AS (

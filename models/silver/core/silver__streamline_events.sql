@@ -2,7 +2,7 @@
     materialized = 'incremental',
     unique_key = 'event_id',
     cluster_by = "_inserted_timestamp::date",
-    tags = ['core', 'streamline_scheduled', 'scheduled']
+    tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
 
 WITH transactions AS (

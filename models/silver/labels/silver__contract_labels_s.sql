@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['event_contract'],
     unique_key = 'event_contract',
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH splt AS (

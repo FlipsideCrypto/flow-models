@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-     # Every 30 minutes (see https://crontab.guru)
-    - cron: "*/30 * * * *"
+     # Every hour (see https://crontab.guru)
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -30,7 +30,7 @@ jobs:
       dbt_command: >
         dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
         dbt seed; 
-        dbt run -s tag:scheduled_core tag:streamline_complete models/gold --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
+        dbt run -s tag:scheduled_non_core --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
