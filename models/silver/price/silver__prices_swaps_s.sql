@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::date'],
     unique_key = "CONCAT_WS('-', block_timestamp, token_contract)",
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH swaps AS (

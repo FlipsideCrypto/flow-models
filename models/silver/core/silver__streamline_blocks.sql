@@ -3,7 +3,7 @@
     materialized = 'incremental',
     unique_key = "block_number",
     cluster_by = "block_timestamp::date",
-    tags = ['streamline_load', 'core']
+    tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
 
 WITH

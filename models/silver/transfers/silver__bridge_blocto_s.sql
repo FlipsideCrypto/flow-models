@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
     unique_key = 'tx_id',
-    tags = ['bridge', 'scheduled', 'streamline_scheduled']
+    tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH events AS (

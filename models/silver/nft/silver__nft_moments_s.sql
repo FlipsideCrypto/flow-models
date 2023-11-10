@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = "CONCAT_WS('-', tx_id, event_index)",
-    tags = ['nft', 'scheduled', 'streamline_scheduled']
+    tags = ['nft', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH events AS (

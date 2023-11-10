@@ -2,7 +2,7 @@
     materialized = 'table',
     cluster_by = ['_inserted_timestamp'],
     unique_key = "concat_ws('-',event_contract,edition_id,nft_id)",
-    tags = ['nft', 'dapper', 'scheduled', 'streamline_scheduled']
+    tags = ['nft', 'dapper', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH moments AS (

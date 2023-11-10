@@ -3,7 +3,7 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'tx_id',
     incremental_strategy = 'delete+insert',
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH swaps_events AS (

@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
     unique_key = "CONCAT_WS('-', tx_id, sender, recipient, token_contract, amount)",
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH events AS (

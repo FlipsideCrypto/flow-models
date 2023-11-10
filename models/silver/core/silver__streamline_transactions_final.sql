@@ -3,7 +3,7 @@
     materialized = 'incremental',
     unique_key = "tx_id",
     cluster_by = "_inserted_timestamp::date",
-    tags = ['core', 'streamline_scheduled', 'scheduled']
+    tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
 
 {% if execute %}

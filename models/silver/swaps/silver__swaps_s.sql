@@ -3,7 +3,7 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = "CONCAT_WS('-', tx_id, swap_index)",
     incremental_strategy = 'delete+insert',
-    tags = ['scheduled', 'streamline_scheduled']
+    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH events AS (
