@@ -8,36 +8,60 @@ models:
     columns:
       - name: TX_ID
         description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
 
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
 
       - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
 
       - name: SWAP_CONTRACT
         description: "{{ doc('swap_contract') }}"
+        tests:
+          - not_null
 
       - name: SWAP_INDEX
         description: "{{ doc('swap_index') }}"
+        tests:
+          - not_null
 
       - name: TRADER
         description: "{{ doc('trader') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_OUT_SOURCE
         description: "{{ doc('token_out_source') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_OUT_AMOUNT
         description: "{{ doc('token_out_amount') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_OUT_CONTRACT
         description: "{{ doc('token_out_contract') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_IN_DESTINATION
         description: "{{ doc('token_in_destination') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_IN_AMOUNT
         description: "{{ doc('token_in_amount') }}"
+        tests:
+          - not_null
 
       - name: TOKEN_IN_CONTRACT
         description: "{{ doc('token_in_contract') }}"
+        tests:
+          - not_null
