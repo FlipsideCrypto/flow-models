@@ -68,3 +68,5 @@ SELECT
     *
 FROM
     FINAL
+WHERE
+    token_in_destination IS NOT NULL

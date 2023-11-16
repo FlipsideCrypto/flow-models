@@ -29,6 +29,7 @@ flatten_events AS (
         block_timestamp,
         tx_id,
         tx_succeeded,
+        events_count,
         VALUE :: variant AS event_data_full,
         VALUE :event_index :: INT AS event_index,
         concat_ws(
@@ -105,6 +106,7 @@ FINAL AS (
         e.block_timestamp,
         e.event_id,
         e.event_index,
+        e.events_count,
         e.payload,
         e.event_contract,
         e.event_type,
