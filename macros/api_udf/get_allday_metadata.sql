@@ -118,7 +118,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
         row_count = res.getColumnValue(1);
 
         lambda_num = 2
-        batch_size = 2 // limit on their end - 40 -
+        batch_size = 2 // limit on their end - 40 -g
 
         //call_groups = Math.ceil(row_count / (lambda_num * batch_size))
         call_groups = 1

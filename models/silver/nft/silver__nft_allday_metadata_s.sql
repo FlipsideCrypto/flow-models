@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::DATE'],
-    unique_key = 'nft_id',
+    merge_exclude_columns = ["inserted_timestamp"],
+    unique_key = 'nft_unique_id',
     tags = ['nft', 'scheduled_non_core']
 ) }}
 
@@ -30,6 +31,9 @@ AND _inserted_timestamp >= (
 FINAL AS (
     SELECT
         DATA :flowID  :: STRING AS nft_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['nft_id']
+        ) }} AS nft_unique_id,
         contract AS nft_collection,
         DATA :id :: STRING AS nflallday_id,
         DATA :serialNumber :: NUMBER AS serial_number,
@@ -52,6 +56,9 @@ FINAL AS (
         DATA :edition :play :metadata :videos :: ARRAY AS video_urls,
         DATA :edition :play :: OBJECT AS moment_stats_full,
         _inserted_timestamp
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS invocation_id
     FROM
         metadata
 )
