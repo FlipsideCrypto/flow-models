@@ -1,17 +1,16 @@
 {% macro get_allday_metadata() %}
-
 {% set create_table %}
 CREATE SCHEMA IF NOT EXISTS {{ target.database }}.bronze_api;
 CREATE TABLE IF NOT EXISTS {{ target.database }}.bronze_api.allday_metadata(
     data VARIANT,
-    fetch_time TIMESTAMP_NTZ,
+    _inserted_timestamp TIMESTAMP_NTZ,
     contract STRING
 );
 {% endset %}
 
 {% set event_table %}
 
-CREATE TABLE IF NOT EXISTS {{ target.database }}.bronze_api.log_messages (
+CREATE OR REPLACE TABLE {{ target.database }}.bronze_api.log_messages (
     timestamp TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
     log_level STRING,
     message STRING
@@ -30,6 +29,28 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
 
         const nfl_contract =  'A.e4cf4bdc1751c65d.AllDay'
 
+        check_table = `
+            SELECT
+                *
+            FROM
+                {{ target.database }}.bronze_api.allday_metadata
+            LIMIT 1
+        `;
+
+        var res = snowflake.execute({sqlText: check_table});
+
+        let new_table = ``
+
+        if (res.next() == true) {
+            new_table = `
+             EXCEPT
+                SELECT
+                    nft_collection AS event_contract,
+                    nft_id AS moment_id
+                FROM
+                    {{ target.database }}.silver.nft_allday_metadata_s -- new view 
+            `
+        }
         function logMessage(level, message) {
             var log_sql = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES (?, ?)`;
             snowflake.execute({sqlText: log_sql, binds: [level, message]});
@@ -42,7 +63,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                         event_contract,
                         event_data :id :: STRING AS moment_id
                     FROM
-                        flow.silver.nft_moments_s
+                        {{ target.database }}.silver.nft_moments_s
                     WHERE
                         event_contract = '${nfl_contract}'
                         AND event_type = 'MomentNFTMinted'
@@ -52,7 +73,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                         nft_collection AS event_contract,
                         nft_id AS moment_id
                     FROM
-                        flow.silver.nft_sales_s
+                        {{ target.database }}.silver.nft_sales_s
                     WHERE
                         nft_collection = '${nfl_contract}'
                 ),
@@ -76,7 +97,8 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                     nft_collection AS event_contract,
                     nft_id AS moment_id
                 FROM
-                    flow.silver.nft_allday_metadata -- old view
+                    {{ target.database }}.silver.nft_allday_metadata -- old view
+                ${new_table}
                 ORDER BY MOMENT_ID ASC
             `;
                     
@@ -96,7 +118,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
         row_count = res.getColumnValue(1);
 
         lambda_num = 2
-        batch_size = 2 // limit on their end
+        batch_size = 2 // limit on their end - 40 -
 
         //call_groups = Math.ceil(row_count / (lambda_num * batch_size))
         call_groups = 1
@@ -245,7 +267,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                 SELECT
                     flattened_array.value as data,
                     api_call.res:status_code as status_code,
-                    SYSDATE() as fetch_time
+                    SYSDATE() as _inserted_timestamp
                 FROM api_call,
                 LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
                 WHERE api_call.res:status_code = 200 
@@ -254,7 +276,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             SELECT
                 data,
                 status_code,
-                SYSDATE() as fetch_time,
+                SYSDATE() as _inserted_timestamp,
                 '${nfl_contract}' as contract
             FROM
             flatten_res
@@ -265,18 +287,28 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             var insert_command = `
                 INSERT INTO {{ target.database }}.bronze_api.allday_metadata(
                             data,
-                            fetch_time,
+                            _inserted_timestamp,
                             contract
                         )
                         SELECT
                             data:node as data,
-                            fetch_time,
+                            _inserted_timestamp,
                             contract
                         FROM {{ target.database }}.bronze_api.response_data           
             `;
             snowflake.execute({sqlText: insert_command});
+
+            var insert_count_command = `
+                SELECT
+                    COUNT(*)
+                FROM {{ target.database }}.bronze_api.response_data           
+            `;
+            var counter = snowflake.execute({sqlText: insert_count_command});
+    
+            counter.next()
+            row_count = counter.getColumnValue(1);
             
-            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete.')`;
+            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete. Rows inserted: ${row_count}')`;
             snowflake.execute({sqlText: log_message});
         }
         return 'Success';
@@ -284,4 +316,12 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
 $$;
 {% endset %}
 {% do run_query(query) %}
+
+
+{% set sql %}
+    CALL {{ target.database }}.bronze_api.allday_metadata();
+{% endset %}
+    
+    {% do run_query(sql) %}
+
 {% endmacro %}

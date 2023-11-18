@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs 0000 UTC daily (see https://crontab.guru)
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -28,7 +28,8 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s tag:livequery
+        dbt run-operation get_allday_metadata;
+        dbt run -m silver__nft_allday_metadata_s;
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+    secrets: inherit
