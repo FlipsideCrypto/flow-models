@@ -17,7 +17,6 @@ SELECT
     set_name,
     metadata,
     inserted_timestamp,
-    modified_timestamp,
-    invocation_id
+    modified_timestamp
 FROM
     {{ ref('silver__nft_ufc_strike_metadata') }}
