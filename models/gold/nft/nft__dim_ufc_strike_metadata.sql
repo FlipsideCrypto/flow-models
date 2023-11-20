@@ -12,8 +12,7 @@
 
 SELECT
     nft_id,
-    edition_id,
-    listing_id,
+    serial_number,
     set_name,
     metadata,
     inserted_timestamp,
