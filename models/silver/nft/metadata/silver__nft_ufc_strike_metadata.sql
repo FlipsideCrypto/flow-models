@@ -23,7 +23,7 @@ WITH metadata AS (
             'ufc_strike_metadata'
         ) }}
 
-{% if is_incremental %}
+{% if is_incremental() %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -35,7 +35,7 @@ WHERE
 )
 SELECT
     token_id AS nft_id,
-    edition AS edition_id,
+    edition AS serial_number,
     owner,
     listing_id,
     set_name,

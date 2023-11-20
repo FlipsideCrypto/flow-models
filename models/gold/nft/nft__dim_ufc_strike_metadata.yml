@@ -12,8 +12,8 @@ models:
           - not_null
           - unique
 
-      - name: EDITION_ID
-        description: "{{ doc('edition_id')}}"
+      - name: SERIAL_NUMBER
+        description: "{{ doc('serial_number')}}"
         tests:
           - not_null
 
