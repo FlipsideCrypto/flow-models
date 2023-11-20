@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: silver__nft_ufc_strike_metadata
+    description: |-
+      UFC Strike NFT Metadata
+
+    columns:
+      - name: NFT_ID
+        description: "{{ doc('nft_id')}}"
+        tests:
+          - not_null
+          - unique
+
+      - name: EDITION_ID
+        description: "{{ doc('edition_id')}}"
+        tests:
+          - not_null
+
+      - name: OWNER
+        description: "The last known owner of this NFT at time of data pull"
+        tests:
+          - not_null
+
+      - name: LISTING_ID
+        description: "{{ doc('listing_id')}}"
+        tests:
+          - not_null
+
+      - name: SET_NAME
+        description: "{{ doc('set_name')}}"
+        tests:
+          - not_null
+
+      - name: METADATA
+        description: "{{ doc('metadata')}}"
+        tests:
+          - not_null
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{doc('_inserted_timestamp')}}"
+
+      - name: _FILENAME
+        description: "{{doc('_filename')}}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{doc('inserted_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{doc('modified_timestamp')}}"
+        tests:
+          - not_null
+
+      - name: INVOCATION_ID
+        description: "{{doc('invocation_id')}}"
+        tests:
+          - not_null
