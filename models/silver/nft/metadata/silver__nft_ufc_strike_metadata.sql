@@ -38,7 +38,7 @@ SELECT
     edition AS serial_number,
     owner,
     listing_id,
-    metadata :SET AS set_name,
+    metadata :SET :: STRING AS set_name,
     set_name AS set_description,
     metadata,
     _inserted_timestamp,
