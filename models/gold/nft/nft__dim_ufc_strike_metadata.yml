@@ -17,6 +17,11 @@ models:
         tests:
           - not_null
 
+      - name: LISTING_ID
+        description: "{{ doc('listing_id')}}"
+        tests:
+          - not_null
+
       - name: SET_NAME
         description: "{{ doc('set_name')}}"
         tests:
