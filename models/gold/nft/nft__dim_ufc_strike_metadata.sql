@@ -15,6 +15,7 @@ SELECT
     serial_number,
     listing_id,
     set_name,
+    set_description,
     metadata,
     inserted_timestamp,
     modified_timestamp

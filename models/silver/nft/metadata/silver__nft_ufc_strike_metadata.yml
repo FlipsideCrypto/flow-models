@@ -29,6 +29,9 @@ models:
 
       - name: SET_NAME
         description: "{{ doc('set_name')}}"
+
+      - name: SET_DESCRIPTION
+        description: "{{ doc('set_description')}}"
         tests:
           - not_null
 
