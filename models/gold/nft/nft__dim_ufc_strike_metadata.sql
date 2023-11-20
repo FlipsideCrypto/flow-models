@@ -3,7 +3,7 @@
     meta={
     'database_tags':{
         'table': {
-            'PURPOSE': 'NFT, TOPSHOT'
+            'PURPOSE': 'NFT, UFCSTRIKE'
             }
         }
     },
