@@ -28,91 +28,19 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
     AS $$
 
         const nfl_contract =  'A.e4cf4bdc1751c65d.AllDay'
-
-        check_table = `
-            SELECT
-                *
-            FROM
-                {{ target.database }}.bronze_api.allday_metadata
-            LIMIT 1
-        `;
-
-        var res = snowflake.execute({sqlText: check_table});
-
-        let new_table = ``
-
-        if (res.next() == true) {
-            new_table = `
-             EXCEPT
-                SELECT
-                    nft_collection AS event_contract,
-                    nft_id AS moment_id
-                FROM
-                    {{ target.database }}.silver.nft_allday_metadata_s -- new view 
-            `
-        }
-        function logMessage(level, message) {
-            var log_sql = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES (?, ?)`;
-            snowflake.execute({sqlText: log_sql, binds: [level, message]});
-        }
-        create_temp_moments_table = `
-            CREATE OR REPLACE TEMPORARY TABLE {{ target.database }}.bronze_api.moments_table AS
-                WITH mints AS (
-
-                    SELECT
-                        event_contract,
-                        event_data :id :: STRING AS moment_id
-                    FROM
-                        {{ target.database }}.silver.nft_moments_s
-                    WHERE
-                        event_contract = '${nfl_contract}'
-                        AND event_type = 'MomentNFTMinted'
-                ),
-                sales AS (
-                    SELECT
-                        nft_collection AS event_contract,
-                        nft_id AS moment_id
-                    FROM
-                        {{ target.database }}.silver.nft_sales_s
-                    WHERE
-                        nft_collection = '${nfl_contract}'
-                ),
-                all_day_ids AS (
-                    SELECT
-                        *
-                    FROM
-                        mints
-                    UNION
-                    SELECT
-                        *
-                    FROM
-                        sales
-                )
-                SELECT
-                    *
-                FROM
-                    all_day_ids
-                EXCEPT
-                SELECT
-                    nft_collection AS event_contract,
-                    nft_id AS moment_id
-                FROM
-                    {{ target.database }}.silver.nft_allday_metadata -- old view
-                ${new_table}
-                ORDER BY MOMENT_ID ASC
-            `;
-                    
-        snowflake.execute({sqlText:create_temp_moments_table})
-  
         
-        var res = snowflake.execute({sqlText: `
-        WITH subset as (
+        var res = snowflake.execute({sqlText: `select * from {{ target.database }}.silver.allday_moments_metadata_needed_s ORDER BY MOMENT_ID ASC`})
+        query_id = res.getQueryId();
+
+        res = snowflake.execute({sqlText: `
+            WITH subset as (
                 SELECT *
-                FROM {{ target.database }}.bronze_api.moments_table
+                 FROM table(result_scan('${query_id}'))
             )
             SELECT count(*)
             FROM subset
-            LIMIT 10 -- Delete when has been tested`});
+            LIMIT 10 -- Delete when has been tested
+        `});
 
         res.next()
         row_count = res.getColumnValue(1);
@@ -123,13 +51,14 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
         //call_groups = Math.ceil(row_count / (lambda_num * batch_size))
         call_groups = 1
 
-        for (i = 0; i < call_groups; i++) {
 
+
+        for (i = 0; i < call_groups; i++) {
 
             var flows_ids = snowflake.execute({sqlText: `
             WITH subset as (
                 SELECT *
-                FROM {{ target.database }}.bronze_api.moments_table
+                FROM table(result_scan('${query_id}'))
                 ORDER BY MOMENT_ID ASC
                 limit ${batch_size * lambda_num} offset ${i * batch_size * lambda_num}
             )
@@ -140,7 +69,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             row_list = flows_ids.getColumnValue(1);
             
             var create_temp_table_command = `
-                CREATE OR REPLACE TEMPORARY TABLE {{ target.database }}.bronze_api.response_data AS
+                INSERT INTO {{ target.database }}.bronze_api.allday_metadata
                 WITH api_call AS (
             `;
             
@@ -252,7 +181,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                 create_temp_table_command += `
                 SELECT * FROM (
                     SELECT 
-                        livequery_dev.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res 
+                        _live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res 
                     )
                 `;
 
@@ -275,7 +204,6 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             )
             SELECT
                 data,
-                status_code,
                 SYSDATE() as _inserted_timestamp,
                 '${nfl_contract}' as contract
             FROM
@@ -283,32 +211,8 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             `;
             snowflake.execute({sqlText: create_temp_table_command});
             // Second command: Insert data into the target table from the temporary table
-            
-            var insert_command = `
-                INSERT INTO {{ target.database }}.bronze_api.allday_metadata(
-                            data,
-                            _inserted_timestamp,
-                            contract
-                        )
-                        SELECT
-                            data:node as data,
-                            _inserted_timestamp,
-                            contract
-                        FROM {{ target.database }}.bronze_api.response_data           
-            `;
-            snowflake.execute({sqlText: insert_command});
-
-            var insert_count_command = `
-                SELECT
-                    COUNT(*)
-                FROM {{ target.database }}.bronze_api.response_data           
-            `;
-            var counter = snowflake.execute({sqlText: insert_count_command});
-    
-            counter.next()
-            row_count = counter.getColumnValue(1);
-            
-            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete. Rows inserted: ${row_count}')`;
+             
+            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete.')`;
             snowflake.execute({sqlText: log_message});
         }
         return 'Success';
