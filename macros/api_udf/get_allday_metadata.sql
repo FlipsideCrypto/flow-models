@@ -2,7 +2,8 @@
 {% set create_table %}
 CREATE SCHEMA IF NOT EXISTS {{ target.database }}.bronze_api;
 CREATE TABLE IF NOT EXISTS {{ target.database }}.bronze_api.allday_metadata(
-    data VARIANT,
+    requested_ids ARRAY,
+    res VARIANT,
     _inserted_timestamp TIMESTAMP_NTZ,
     contract STRING
 );
@@ -33,12 +34,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
         query_id = res.getQueryId();
 
         res = snowflake.execute({sqlText: `
-            WITH subset as (
-                SELECT *
-                 FROM table(result_scan('${query_id}'))
-            )
-            SELECT count(*)
-            FROM subset
+            SELECT count(*) FROM table(result_scan('${query_id}'))
         `});
 
         res.next()
@@ -46,7 +42,8 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
 
         batch_size = 40 // limit on their end - 40
 
-        call_groups = Math.ceil(row_count / batch_size))
+        let call_groups = Math.ceil(row_count / batch_size)
+        call_groups = 1
 
         for (i = 0; i < call_groups; i++) {
 
@@ -54,7 +51,6 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             WITH subset as (
                 SELECT *
                 FROM table(result_scan('${query_id}'))
-                ORDER BY MOMENT_ID ASC
                 limit ${batch_size } offset ${i * batch_size}
             )
             SELECT ARRAY_AGG(CAST(MOMENT_ID AS INTEGER))
@@ -172,32 +168,21 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                 }`;
 
             create_temp_table_command += `
-            SELECT * FROM (
                 SELECT 
-                    {{ target.database }}.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res 
-                )
+                    {{ target.database }}.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res
             `;
             
 
             create_temp_table_command+= `
-            ),
-            flatten_res AS (
-                SELECT
-                    flattened_array.value as data,
-                    api_call.res:status_code as status_code,
-                    SYSDATE() as _inserted_timestamp
-                FROM api_call,
-                LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
-                WHERE api_call.res:status_code = 200 
-                AND data IS NOT NULL    
             )
             SELECT
-                data,
-                SYSDATE() as _inserted_timestamp,
-                '${nfl_contract}' as contract
-            FROM
-            flatten_res
-            `;
+                [${row_list}] AS requested_ids,
+                res,
+                SYSDATE() AS _inserted_timestamp,
+                '${nfl_contract}' AS contract
+            FROM api_call
+            `
+            
             snowflake.execute({sqlText: create_temp_table_command});
             // Second command: Insert data into the target table from the temporary table
              

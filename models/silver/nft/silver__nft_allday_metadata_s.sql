@@ -3,11 +3,11 @@
     incremental_strategy = 'merge',
     cluster_by = ['_inserted_timestamp::DATE'],
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'nft_unique_id',
+    unique_key = 'nft_allday_metadata_s_id',
     tags = ['nft', 'scheduled_non_core']
 ) }}
 
-WITH metadata AS (
+WITH api_call AS (
 
     SELECT
         *
@@ -28,12 +28,24 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
+FLATTEN_RES AS (
+    SELECT
+        flattened_array.value:node as data,
+        api_call.res:status_code as status_code,
+        SYSDATE() as _inserted_timestamp,
+        contract
+    FROM api_call,
+    LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
+    WHERE api_call.res:status_code = 200 
+    AND data IS NOT NULL    
+),
+
 FINAL AS (
     SELECT
         DATA :flowID  :: STRING AS nft_id,
         {{ dbt_utils.generate_surrogate_key(
             ['nft_id']
-        ) }} AS nft_unique_id,
+        ) }} AS nft_allday_metadata_s_id,
         contract AS nft_collection,
         DATA :id :: STRING AS nflallday_id,
         DATA :serialNumber :: NUMBER AS serial_number,
@@ -55,12 +67,12 @@ FINAL AS (
         DATA :edition: set :name :: STRING AS set_name,
         DATA :edition :play :metadata :videos :: ARRAY AS video_urls,
         DATA :edition :play :: OBJECT AS moment_stats_full,
-        _inserted_timestamp
+        _inserted_timestamp,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS invocation_id
     FROM
-        metadata
+        FLATTEN_RES
 )
 SELECT
     *
