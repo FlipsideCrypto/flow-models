@@ -39,19 +39,14 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             )
             SELECT count(*)
             FROM subset
-            LIMIT 10 -- Delete when has been tested
         `});
 
         res.next()
         row_count = res.getColumnValue(1);
 
-        lambda_num = 2
-        batch_size = 2 // limit on their end - 40 -g
+        batch_size = 40 // limit on their end - 40
 
-        //call_groups = Math.ceil(row_count / (lambda_num * batch_size))
-        call_groups = 1
-
-
+        call_groups = Math.ceil(row_count / batch_size))
 
         for (i = 0; i < call_groups; i++) {
 
@@ -60,7 +55,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                 SELECT *
                 FROM table(result_scan('${query_id}'))
                 ORDER BY MOMENT_ID ASC
-                limit ${batch_size * lambda_num} offset ${i * batch_size * lambda_num}
+                limit ${batch_size } offset ${i * batch_size}
             )
             SELECT ARRAY_AGG(CAST(MOMENT_ID AS INTEGER))
             FROM subset`});
@@ -73,11 +68,8 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                 WITH api_call AS (
             `;
             
-            for (let j = 0; j < lambda_num; j++) {
-                // Extract a subset of row_list for the current API call
-                let subset = row_list.slice(j * batch_size, (j + 1) * batch_size);
-                let query = `{
-                searchMomentNFTsV2(input: {filters: {byFlowIDs: [${subset}]}}) {
+            let query = `{
+                searchMomentNFTsV2(input: {filters: {byFlowIDs: [${row_list}]}}) {
                     edges {
                     cursor
                     node {
@@ -178,17 +170,14 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
                     }
                 }
                 }`;
-                create_temp_table_command += `
-                SELECT * FROM (
-                    SELECT 
-                        _live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res 
-                    )
-                `;
 
-                if (j < lambda_num - 1) {
-                        create_temp_table_command += `  UNION ALL `;
-                    }
-                }
+            create_temp_table_command += `
+            SELECT * FROM (
+                SELECT 
+                    {{ target.database }}.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res 
+                )
+            `;
+            
 
             create_temp_table_command+= `
             ),
