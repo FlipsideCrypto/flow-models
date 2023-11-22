@@ -43,7 +43,6 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
         batch_size = 40 // limit on their end - 40
 
         let call_groups = Math.ceil(row_count / batch_size)
-        call_groups = 1
 
         for (i = 0; i < call_groups; i++) {
 
