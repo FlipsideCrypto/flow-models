@@ -6,27 +6,14 @@
   tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
-WITH swap_contracts AS (
+WITH swaps_txs AS (
 
-  SELECT
-    *
-  FROM
-    {{ ref('silver__contract_labels') }}
-  WHERE
-    contract_name LIKE '%SwapPair%'
-),
-swaps_txs AS (
   SELECT
     *
   FROM
     {{ ref('silver__streamline_events') }}
   WHERE
-    event_contract IN (
-      SELECT
-        event_contract
-      FROM
-        swap_contracts
-    )
+    event_contract LIKE '%SwapPair%'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -48,7 +35,9 @@ swap_events AS (
         tx_id
       FROM
         swaps_txs
-    )
+    ) 
+    -- exclude infra events, always final 3
+    AND event_index < events_count - 3
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

@@ -129,6 +129,7 @@ FINAL AS (
         t.script,
         tr.error_message,
         tr.events,
+        ARRAY_SIZE(tr.events) AS events_count,
         tr.status,
         tr.status_code,
         GREATEST(
@@ -159,6 +160,7 @@ SELECT
     proposer,
     script,
     events,
+    events_count,
     status,
     status_code,
     error_message,

@@ -123,6 +123,7 @@ token_withdraws AS (
             FROM
                 pool_info
         )
+        AND event_data :from :: STRING != 'null'
 ),
 token_deposits AS (
     SELECT
@@ -157,6 +158,7 @@ token_deposits AS (
             FROM
                 pool_info
         )
+        AND event_data :to :: STRING != 'null'
 ),
 link_token_movement AS (
     SELECT

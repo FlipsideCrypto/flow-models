@@ -140,3 +140,9 @@ sources:
       bronze_api
     tables:
       - name: allday_metadata
+      
+  - name: flow_bronze
+    database: flow
+    schema: bronze
+    tables:
+      - name: ufc_strike_metadata
