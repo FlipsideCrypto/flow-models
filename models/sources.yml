@@ -133,6 +133,14 @@ sources:
       - name: hourly_prices_coin_market_cap
       - name: number_sequence
 
+  - name: bronze_api
+    database: |
+      {{ "FLOW" if target.database == 'FLOW' else "FLOW_DEV" }}
+    schema: |
+      bronze_api
+    tables:
+      - name: allday_metadata
+      
   - name: flow_bronze
     database: flow
     schema: bronze
