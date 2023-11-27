@@ -30,7 +30,7 @@ jobs:
       dbt_command: >
         dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
         dbt seed; 
-        dbt run -s tag:scheduled_core tag:streamline_complete models/gold --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
+        dbt run -s tag:scheduled_core tag:streamline_complete "flow_models,models/gold" --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
