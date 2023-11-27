@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -s 2+models/silver/streamline/core/history/blocks 2+models/silver/streamline/core/history/collections --vars '{"STREAMLINE_INVOKE_STREAMS": True, "sql_limit": ${{ vars.SQL_LIMIT_HISTORY }}, "producer_batch_size": ${{ vars.PRODUCER_BATCH_SIZE_HISTORY }}, "worker_batch_size": ${{ vars.WORKER_BATCH_SIZE_HISTORY }}, "batch_call_limit": ${{ vars.BATCH_CALL_LIMIT_HISTORY }}}'
+        dbt run -s 2+models/silver/streamline/core/history/blocks 2+models/silver/streamline/core/history/collections 2+models/silver/streamline/core/history/transactions 2+models/silver/streamline/core/history/transaction_results --vars '{"STREAMLINE_INVOKE_STREAMS": True, "sql_limit": ${{ vars.SQL_LIMIT_HISTORY }}, "producer_batch_size": ${{ vars.PRODUCER_BATCH_SIZE_HISTORY }}, "worker_batch_size": ${{ vars.WORKER_BATCH_SIZE_HISTORY }}, "batch_call_limit": ${{ vars.BATCH_CALL_LIMIT_HISTORY }}}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit 
