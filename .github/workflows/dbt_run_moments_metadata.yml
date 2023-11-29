@@ -28,7 +28,7 @@ jobs:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
       dbt_command: >
-        dbt run -m silver__allday_moments_metadata_needed_s.sql
+        dbt run -m silver__allday_moments_metadata_needed_s.sql;
         dbt run-operation get_allday_metadata;
         dbt run -m silver__nft_allday_metadata_s;
       environment: workflow_prod
