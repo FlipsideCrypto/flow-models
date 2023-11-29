@@ -185,7 +185,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             snowflake.execute({sqlText: create_temp_table_command});
             // Second command: Insert data into the target table from the temporary table
              
-            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete. rowlist ${row_list}')`;
+            var log_message = `INSERT INTO {{ target.database }}.bronze_api.log_messages (log_level, message) VALUES ('INFO', ' Iteration ${i} of ${call_groups} complete.')`;
             snowflake.execute({sqlText: log_message});
         }
         return 'Success';
