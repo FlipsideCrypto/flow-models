@@ -73,6 +73,8 @@ FINAL AS (
         '{{ invocation_id }}' AS invocation_id
     FROM
         FLATTEN_RES
+    qualify
+        row_number() over (partition by nft_allday_metadata_s_id order by _inserted_timestamp desc) = 1
 )
 SELECT
     *
