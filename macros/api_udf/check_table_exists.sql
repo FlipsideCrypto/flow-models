@@ -10,9 +10,9 @@
   {% set results = run_query(query) %}
   {% if execute %}
     {% if results and results.rows[0][0] > 0 %}
-      True
+      "True"
     {% else %}
-      False
+      "False"
     {% endif %}
   {% endif %}
 {% endmacro %}
