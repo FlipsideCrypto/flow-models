@@ -78,3 +78,8 @@ SELECT
     *
 FROM
     FINAL
+qualify ROW_NUMBER() over (
+        PARTITION BY nft_allday_metadata_s_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
