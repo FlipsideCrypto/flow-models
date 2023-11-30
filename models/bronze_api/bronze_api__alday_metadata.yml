@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: bronze_api
+    database: SILVER
+    schema: NFT_ALLDAY_METADATA_S
+    tests:
+      - check_mismatch_percentage:
+          threshold_percentage: 50
