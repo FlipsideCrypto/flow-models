@@ -1,19 +1,12 @@
 {% test check_mismatch_percentage(model, threshold_percentage) %}
 
-WITH latest_day AS (
-    SELECT
-        DATE_TRUNC('day', MAX(_inserted_timestamp)) AS last_ingestion_day
-    FROM
-        {{ model }}
-),
-api_call AS (
+WITH api_call AS (
     SELECT
         *
     FROM
         {{ model }}
     WHERE
-        _inserted_timestamp >= (SELECT last_ingestion_day FROM latest_day)
-        AND _inserted_timestamp < (SELECT last_ingestion_day FROM latest_day) + INTERVAL '1 day'
+        _inserted_timestamp = ((SELECT DATE_TRUNC('day', MAX(_inserted_timestamp)) FROM {{ model }}))
         AND contract = 'A.e4cf4bdc1751c65d.AllDay'
 ),
 FLATTEN_RES AS (
