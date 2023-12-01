@@ -1,7 +1,6 @@
 {{ config(
     severity = "warn",
     error_if = ">100",
-    enabled = False,
     tags = ['metadata']
 ) }}
 
