@@ -17,7 +17,10 @@ api_call AS (
     SELECT
         *
     FROM
-        flow.bronze_api.allday_metadata
+        {{ source(
+            'bronze_api',
+            'allday_metadata'
+        ) }}
     WHERE
         _inserted_timestamp :: DATE = (
             SELECT
