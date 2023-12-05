@@ -106,7 +106,13 @@ FINAL AS (
         action,
         amount,
         node_id,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS stacking_actions_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS invocation_id
     FROM
         flow_staking s
         LEFT JOIN add_auth A USING (tx_id)
