@@ -2,6 +2,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "collection_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
     tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
@@ -14,6 +16,12 @@ SELECT
     ) AS tx_count,
     DATA: transaction_ids :: ARRAY AS transaction_ids,
     _partition_by_block_id,
+    {{ dbt_utils.generate_surrogate_key(
+            ['block_number']
+        ) }} AS blocks_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id,
     _inserted_timestamp
 FROM
 

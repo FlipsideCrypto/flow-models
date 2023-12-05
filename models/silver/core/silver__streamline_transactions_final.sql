@@ -2,6 +2,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "tx_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "_inserted_timestamp::date",
     tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
