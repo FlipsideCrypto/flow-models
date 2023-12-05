@@ -8,7 +8,7 @@
 WITH labels AS (
 
     SELECT
-        _ingested_at,
+        _ingested_at as _inserted_timestamp,
         blockchain,
         address,
         creator,
@@ -16,6 +16,12 @@ WITH labels AS (
         label_subtype,
         address_name,
         project_name
+        {{ dbt_utils.generate_surrogate_key(
+            ['event_id']
+        ) }} AS labels_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id,
     FROM
         {{ ref('bronze__labels') }}
 )

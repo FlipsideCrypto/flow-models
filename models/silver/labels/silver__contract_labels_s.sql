@@ -43,7 +43,13 @@ FINAL AS (
         ec_s [0] != 'flow'
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['event_contract']
+    ) }} AS event_contract_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL qualify ROW_NUMBER() over (
         PARTITION BY event_contract

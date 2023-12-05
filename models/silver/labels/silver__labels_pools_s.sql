@@ -55,6 +55,12 @@ FINAL AS (
         token0_contract,
         token1_contract,
         l.event_contract AS swap_contract,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS labels_pools_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id,
         _inserted_timestamp
     FROM
         pair_creation p
