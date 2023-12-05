@@ -49,6 +49,12 @@ AND _inserted_timestamp >= (
 {% endif %}
 )
 SELECT
-  *
+  *,
+  {{ dbt_utils.generate_surrogate_key(
+      ['tx_id', 'event_index']
+  ) }} AS swaps_events_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS invocation_id
 FROM
   swap_events

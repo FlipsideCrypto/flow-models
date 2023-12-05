@@ -118,3 +118,15 @@ models:
 
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: bridge_celer_id
+        description: "{{ doc('bridge_blockto_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"

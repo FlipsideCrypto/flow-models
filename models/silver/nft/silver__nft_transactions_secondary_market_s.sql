@@ -496,7 +496,7 @@ dedupe_gaia AS (
         ) = 1
 )
 SELECT
-    *
+    *,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_id']
     ) }} AS transactions_secundary_market_id,

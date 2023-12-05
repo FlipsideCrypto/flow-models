@@ -148,7 +148,13 @@ FINAL AS (
         l.blockchain,
         direction,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS bridge_celer_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS invocation_id
     FROM
         tbl_union t
         LEFT JOIN chain_ids l USING (chain_id)
