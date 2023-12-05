@@ -45,8 +45,8 @@ models:
       - name: _INSERTED_TIMESTAMP
         description: "{{ doc('_inserted_timestamp') }}"
 
-      - name: block_id
-        description: "{{ doc('block_id') }}"
+      - name: streamline_tx_id
+        description: "{{ doc('tx_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

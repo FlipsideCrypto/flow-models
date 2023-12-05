@@ -21,8 +21,8 @@ SELECT
     DATA: proposal_key :: variant AS proposal_key,
     DATA: script :: STRING AS script,
     {{ dbt_utils.generate_surrogate_key(
-        ['block_number']
-    ) }} AS block_id,
+        ['tx_id']
+    ) }} AS streamline_tx_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id,

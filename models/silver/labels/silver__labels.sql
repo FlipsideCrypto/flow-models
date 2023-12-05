@@ -8,7 +8,7 @@
 WITH labels AS (
 
     SELECT
-        _ingested_at as _inserted_timestamp,
+        _ingested_at,
         blockchain,
         address,
         creator,
@@ -17,7 +17,7 @@ WITH labels AS (
         address_name,
         project_name
         {{ dbt_utils.generate_surrogate_key(
-            ['event_id']
+            ['tx_id']
         ) }} AS labels_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,

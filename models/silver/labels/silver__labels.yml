@@ -6,7 +6,7 @@ models:
       This table provides labels for addresses on the Flow blockchain.
 
     columns:
-      - name: _INSERTED_TIMESTAMP
+      - name: _ingested_at
         description: "{{ doc('_ingested_at') }}"
 
       - name: blockchain
@@ -76,3 +76,6 @@ models:
 
       - name: _INVOCATION_ID
         description: "{{ doc('invocation_id') }}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_ingested_at') }}"

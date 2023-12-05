@@ -168,6 +168,12 @@ SELECT
     error_message,
     NOT status_code :: BOOLEAN AS tx_succeeded,
     _inserted_timestamp,
-    _partition_by_block_id
+    _partition_by_block_id,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id']
+    ) }} AS streamline_transaction_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id 
 FROM
     FINAL

@@ -105,6 +105,12 @@ combo AS (
         currency,
         tx_succeeded,
         _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS nft_sales_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS invocation_id
         tokenflow,
         counterparties
     FROM

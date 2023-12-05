@@ -19,8 +19,8 @@ SELECT
     _partition_by_block_id,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-            ['block_number']
-        ) }} AS block_id,
+            ['tx_id']
+        ) }} AS tx_results_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id  

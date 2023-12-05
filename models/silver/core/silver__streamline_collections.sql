@@ -17,12 +17,12 @@ SELECT
     DATA: transaction_ids :: ARRAY AS transaction_ids,
     _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
-            ['block_number']
-        ) }} AS blocks_id,
+            ['collection_id']
+        ) }} AS streamline_collection_id,
+    _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id,
-    _inserted_timestamp
+    '{{ invocation_id }}' AS _invocation_id
 FROM
 
 {% if is_incremental() %}
