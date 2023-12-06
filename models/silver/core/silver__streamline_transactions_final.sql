@@ -52,17 +52,17 @@
 
     {% set run = run_query(query ~ incr) %}
 {% endif %}
-
 /* 
    Do this because snowflake does not do well with dynamic query pruning. 
    This will set a "static" timestamp value which will always enable query pruning if the timestamp is a cluster key
    Coalesce in case there are 0 txs returned by the temp table
 */
 {% if execute %}
-{% set min_time = run_query("select coalesce(min(_inserted_timestamp),current_timestamp()) from silver.streamline_transactions_final_intermediate_tmp").columns[0].values()[0] %}
+    {% set min_time = run_query("select coalesce(min(_inserted_timestamp),current_timestamp()) from silver.streamline_transactions_final_intermediate_tmp").columns [0].values() [0] %}
 {% endif %}
 
 WITH txs AS (
+
     SELECT
         *
     FROM
@@ -76,7 +76,13 @@ tx_results AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= '{{ min_time }}'
+    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    AND tx_id IN (
+        SELECT
+            DISTINCT tx_id
+        FROM
+            silver.streamline_transactions_final_intermediate_tmp
+    )
 {% endif %}
 ),
 blocks AS (
@@ -87,15 +93,13 @@ blocks AS (
 
 {% if is_incremental() %}
 WHERE
-    DATE_TRUNC(
-        'day',
-        _inserted_timestamp
-    ) >= (
+    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    AND block_number IN (
         SELECT
-            MAX(DATE_TRUNC('day', _inserted_timestamp))
+            DISTINCT block_number
         FROM
-            {{ this }}
-    ) - INTERVAL '3 days'
+            silver.streamline_transactions_final_intermediate_tmp
+    )
 {% endif %}
 ),
 FINAL AS (
@@ -129,7 +133,9 @@ FINAL AS (
         t.script,
         tr.error_message,
         tr.events,
-        ARRAY_SIZE(tr.events) AS events_count,
+        ARRAY_SIZE(
+            tr.events
+        ) AS events_count,
         tr.status,
         tr.status_code,
         GREATEST(
