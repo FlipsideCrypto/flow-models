@@ -76,7 +76,8 @@ tx_results AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= '{{ min_time }}'
+    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    AND tx_id in (select distinct tx_id from silver.streamline_transactions_final_intermediate_tmp)
 {% endif %}
 ),
 blocks AS (
@@ -87,15 +88,8 @@ blocks AS (
 
 {% if is_incremental() %}
 WHERE
-    DATE_TRUNC(
-        'day',
-        _inserted_timestamp
-    ) >= (
-        SELECT
-            MAX(DATE_TRUNC('day', _inserted_timestamp))
-        FROM
-            {{ this }}
-    ) - INTERVAL '3 days'
+    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    AND block_number in (select distinct block_number from silver.streamline_transactions_final_intermediate_tmp)
 {% endif %}
 ),
 FINAL AS (
