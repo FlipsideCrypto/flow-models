@@ -49,7 +49,19 @@ AND _inserted_timestamp >= (
 {% endif %}
 )
 SELECT
-  *,
+  tx_id,
+  block_height,
+  block_timestamp,
+  event_id,
+  event_index,
+  events_count,
+  payload,
+  event_contract,
+  event_type,
+  event_data,
+  tx_succeeded,
+  _inserted_timestamp,
+  _partition_by_block_id,
   {{ dbt_utils.generate_surrogate_key(
       ['tx_id', 'event_index']
   ) }} AS swaps_events_id,
