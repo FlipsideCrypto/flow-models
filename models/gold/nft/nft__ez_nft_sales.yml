@@ -4,7 +4,7 @@ models:
   - name: nft__ez_nft_sales
     description: |-
       This ez_ view is the same data table as the prior `fact_nft_sales` view. NFT market sales on the Flow blockchain. Currently supported in this ez_ view are transactions that interact with the primary NFT Marketplace contract (), the Fabricant NFT Marketplace contract, and NBA TopShot primary market sales. More markets can and will be added.
-      
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -136,3 +136,12 @@ models:
                 - ARRAY
                 - OBJECT
                 - VARIANT
+
+      - name: NFT_SALES_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

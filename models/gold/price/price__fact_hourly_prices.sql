@@ -6,6 +6,7 @@
 WITH api AS (
 
     SELECT
+        NULL AS prices_swaps_hourly_id,
         recorded_hour,
         id,
         token,
@@ -19,6 +20,7 @@ WITH api AS (
 ),
 swaps_cw AS (
     SELECT
+        NULL AS prices_swaps_hourly_id,
         recorded_hour,
         id,
         CASE
@@ -36,12 +38,16 @@ swaps_cw AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_hourly') }}
 ),
 swaps_s AS (
     SELECT
+        prices_swaps_hourly_id,
         recorded_hour,
         id,
         CASE
@@ -59,7 +65,10 @@ swaps_s AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_hourly_s') }}
 ),
@@ -80,8 +89,31 @@ FINAL AS (
         swaps_s
 )
 SELECT
-    *
+    COALESCE (
+        prices_swaps_hourly_id,
+        {{ dbt_utils.generate_surrogate_key(['recorded_hour', 'token']) }}
+    ) AS prices_swaps_hourly_id,
+    recorded_hour,
+    id,
+    token,
+    OPEN,
+    high,
+    low,
+    CLOSE,
+    provider,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
     FINAL
 WHERE
-    recorded_hour IS NOT NULL
+    recorded_hour IS NOT NULL qualify ROW_NUMBER() over (
+        PARTITION BY prices_swaps_hourly_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
