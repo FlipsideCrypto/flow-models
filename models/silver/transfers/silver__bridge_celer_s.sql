@@ -154,7 +154,7 @@ FINAL AS (
         ) }} AS bridge_celer_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS invocation_id
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         tbl_union t
         LEFT JOIN chain_ids l USING (chain_id)

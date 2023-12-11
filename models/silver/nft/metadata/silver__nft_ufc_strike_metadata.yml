@@ -56,7 +56,7 @@ models:
         tests:
           - not_null
 
-      - name: INVOCATION_ID
+      - name: _INVOCATION_ID
         description: "{{doc('invocation_id')}}"
         tests:
           - not_null

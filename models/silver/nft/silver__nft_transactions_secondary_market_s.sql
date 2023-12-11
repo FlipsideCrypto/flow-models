@@ -502,7 +502,7 @@ SELECT
     ) }} AS transactions_secundary_market_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS invocation_id
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 EXCEPT
@@ -513,6 +513,6 @@ SELECT
     ) }} AS transactions_secundary_market_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS invocation_id
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     dedupe_gaia

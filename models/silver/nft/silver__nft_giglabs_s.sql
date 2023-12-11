@@ -332,7 +332,7 @@ FINAL AS (
         _inserted_timestamp,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS invocation_id
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         giglabs_final s
         LEFT JOIN counterparty_data C USING (tx_id)

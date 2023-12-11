@@ -286,7 +286,7 @@ FINAL AS (
         ) }} AS bridge_blockto_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS invocation_id
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         tbl_union t
         LEFT JOIN tele_labels l USING (teleport_contract)
