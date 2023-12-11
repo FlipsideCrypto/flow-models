@@ -1,19 +1,13 @@
 {{ config (
     materialized = 'view',
     tags = ['ez', 'scheduled'],
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'SWAPS'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'SWAPS' }}}
 ) }}
 
 WITH chainwalkers AS (
 
     SELECT
-        tx_id,
+        NULL AS swaps_id tx_id,
         block_timestamp,
         block_height,
         swap_contract,
@@ -24,7 +18,10 @@ WITH chainwalkers AS (
         token_out_amount,
         token_in_destination,
         token_in_contract,
-        token_in_amount
+        token_in_amount,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__swaps') }}
     WHERE
@@ -34,6 +31,7 @@ WITH chainwalkers AS (
 ),
 streamline AS (
     SELECT
+        swaps_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -45,7 +43,10 @@ streamline AS (
         token_out_amount,
         token_in_destination,
         token_in_contract,
-        token_in_amount
+        token_in_amount,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__swaps_s') }}
     WHERE
@@ -65,8 +66,33 @@ FINAL AS (
         streamline
 )
 SELECT
-    *
+    COALESCE (
+        bridge_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
+    ) AS swaps_id,
+    tx_id,
+    block_timestamp,
+    block_height,
+    swap_contract,
+    swap_index,
+    trader,
+    token_out_source,
+    token_out_contract,
+    token_out_amount,
+    token_in_destination,
+    token_in_contract,
+    token_in_amount COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
-    FINAL
 WHERE
-    token_in_destination IS NOT NULL
+    token_in_destination IS NOT NULL FINAL qualify ROW_NUMBER() over (
+        PARTITION BY bridge_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

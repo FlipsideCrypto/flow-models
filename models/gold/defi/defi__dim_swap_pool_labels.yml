@@ -26,3 +26,12 @@ models:
 
       - name: SWAP_CONTRACT
         description: "{{ doc('swap_contract') }}"
+
+      - name: LABELS_POOLS_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
