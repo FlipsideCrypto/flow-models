@@ -6,6 +6,7 @@
 WITH chainwalkers AS (
 
     SELECT
+        NULL AS token_transfers_id,
         block_height,
         block_timestamp,
         tx_id,
@@ -13,7 +14,10 @@ WITH chainwalkers AS (
         recipient,
         token_contract,
         amount,
-        tx_succeeded
+        tx_succeeded,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__token_transfers') }}
     WHERE
@@ -27,6 +31,7 @@ WITH chainwalkers AS (
 ),
 streamline AS (
     SELECT
+        token_transfers_id,
         block_height,
         block_timestamp,
         tx_id,
@@ -34,7 +39,10 @@ streamline AS (
         recipient,
         token_contract,
         amount,
-        tx_succeeded
+        tx_succeeded,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__token_transfers_s') }}
     WHERE
@@ -45,13 +53,45 @@ streamline AS (
         AND block_height >= {{ var(
             'STREAMLINE_START_BLOCK'
         ) }}
+),
+FINAL AS (
+    SELECT
+        *
+    FROM
+        streamline
+    UNION ALL
+    SELECT
+        *
+    FROM
+        chainwalkers
 )
 SELECT
-    *
+    COALESCE (
+        token_transfers_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id','sender', 'recipient','token_contract', 'amount']
+        ) }}
+    ) AS token_transfers_id,
+    block_height,
+    block_timestamp,
+    tx_id,
+    sender,
+    recipient,
+    token_contract,
+    amount,
+    tx_succeeded,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
-    streamline
-UNION ALL
-SELECT
-    *
-FROM
-    chainwalkers
+    FINAL qualify ROW_NUMBER() over (
+        PARTITION BY token_transfers_id
+        ORDER BY
+            inserted_timestamp,
+            DESC
+    ) = 1

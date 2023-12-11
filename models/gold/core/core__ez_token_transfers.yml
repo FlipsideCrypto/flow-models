@@ -17,13 +17,12 @@ models:
             severity: warn
             error_if: ">10"
 
-
     columns:
       - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
-              
+
       - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
@@ -41,8 +40,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - NUMBER    
-                - FLOAT  
+                - NUMBER
+                - FLOAT
 
       - name: SENDER
         description: "{{ doc('sender') }}"
@@ -50,8 +49,8 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-              - STRING
-              - VARCHAR
+                - STRING
+                - VARCHAR
 
       - name: RECIPIENT
         description: "{{ doc('recipient') }}"
@@ -59,7 +58,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
-                - VARCHAR    
+                - VARCHAR
 
       - name: TOKEN_CONTRACT
         description: "{{ doc('token_contract') }}"
@@ -86,3 +85,12 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - BOOLEAN
+
+      - name: TOKEN_TRANSFERS_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

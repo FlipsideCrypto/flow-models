@@ -6,6 +6,7 @@
 WITH chainwalkers AS (
 
     SELECT
+        NULL AS streamline_transaction_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -18,7 +19,10 @@ WITH chainwalkers AS (
         gas_limit,
         transaction_result,
         tx_succeeded,
-        error_msg
+        error_msg,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__transactions') }}
     WHERE
@@ -28,6 +32,7 @@ WITH chainwalkers AS (
 ),
 streamline AS (
     SELECT
+        streamline_transaction_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -47,7 +52,10 @@ streamline AS (
             status
         ) AS transaction_result,
         tx_succeeded,
-        error_message AS error_msg
+        error_message AS error_msg,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
@@ -55,13 +63,42 @@ streamline AS (
         AND block_height >= {{ var(
             'STREAMLINE_START_BLOCK'
         ) }}
+),
+FINAL AS (
+    SELECT
+        *
+    FROM
+        chainwalkers
+    UNION ALL
+    SELECT
+        *,
+    FROM
+        streamline
 )
 SELECT
-    *
+    COALESCE (
+        streamline_transaction_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS streamline_transaction_id,
+    tx_id,
+    block_timestamp,
+    block_height,
+    tx_succeeded,
+    event_index,
+    event_contract,
+    event_type,
+    event_data,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
-    chainwalkers
-UNION ALL
-SELECT
-    *
-FROM
-    streamline
+    FINAL qualify ROW_NUMBER() over (
+        PARTITION BY streamline_transaction_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
