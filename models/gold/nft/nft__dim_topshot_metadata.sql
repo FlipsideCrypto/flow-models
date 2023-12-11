@@ -13,7 +13,7 @@
 WITH topshot AS (
 
     SELECT
-        nft_moment_metadata_id
+        nft_moment_metadata_topshot_id,
         nft_id,
         nft_collection,
         nbatopshot_id,

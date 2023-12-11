@@ -53,14 +53,14 @@ FINAL AS (
         chainwalkers
     UNION ALL
     SELECT
-        *,
+        *
     FROM
         streamline
 )
 SELECT
     COALESCE (
         streamline_event_id,
-        {{ dbt_utils.generate_surrogate_key(['event_id']) }}
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
     ) AS streamline_event_id,
     tx_id,
     block_timestamp,

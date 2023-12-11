@@ -60,7 +60,7 @@ combo AS (
         bridge,
         _inserted_timestamp,
         NULL AS inserted_timestamp,
-        NULL AS modified_timestamp,
+        NULL AS modified_timestamp
     FROM
         blocto_cw
     UNION ALL
@@ -78,7 +78,7 @@ combo AS (
         bridge,
         _inserted_timestamp,
         NULL AS inserted_timestamp,
-        NULL AS modified_timestamp,
+        NULL AS modified_timestamp
     FROM
         celer_cw
     UNION ALL

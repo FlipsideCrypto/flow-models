@@ -84,7 +84,7 @@ SELECT
     ) AS modified_timestamp
 FROM
     FINAL qualify ROW_NUMBER() over (
-        PARTITION BY streamline_event_id
+        PARTITION BY stacking_actions_id
         ORDER BY
             _inserted_timestamp DESC
     ) = 1

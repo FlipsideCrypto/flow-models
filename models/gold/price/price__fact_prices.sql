@@ -28,7 +28,8 @@ prices_swaps_cw AS (
         block_timestamp AS TIMESTAMP,
         token_contract,
         swap_price AS price_usd,
-        source
+        source,
+        _inserted_timestamp
     FROM
         {{ ref('silver__prices_swaps') }}
 ),
@@ -40,6 +41,7 @@ prices_swaps_s AS (
         token_contract,
         swap_price AS price_usd,
         source,
+        _inserted_timestamp,
         inserted_timestamp,
         modified_timestamp
     FROM
@@ -53,7 +55,9 @@ viewnion AS (
         l.token_contract,
         price_usd,
         source,
-        NULL AS tx_id NULL AS prices_swaps_id,
+        NULL AS tx_id,
+        NULL AS prices_swaps_id,
+        NULL AS _inserted_timestamp,
         NULL AS inserted_timestamp,
         NULL AS modified_timestamp
     FROM
@@ -69,6 +73,7 @@ viewnion AS (
         source,
         tx_id,
         NULL AS prices_swaps_id,
+        _inserted_timestamp,
         NULL AS inserted_timestamp,
         NULL AS modified_timestamp
     FROM
@@ -84,6 +89,7 @@ viewnion AS (
         price_usd,
         source,
         tx_id,
+        _inserted_timestamp,
         inserted_timestamp,
         modified_timestamp
     FROM
@@ -93,12 +99,12 @@ viewnion AS (
 SELECT
     COALESCE (
         prices_swaps_id,
-        {{ dbt_utils.generate_surrogate_key(['block_timestamp', 'token_contract']) }}
+        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP', 'token_contract']) }}
     ) AS prices_swaps_id,
     TIMESTAMP,
-    l.token,
-    l.symbol,
-    pss.token_contract,
+    token,
+    symbol,
+    token_contract,
     price_usd,
     source,
     tx_id,

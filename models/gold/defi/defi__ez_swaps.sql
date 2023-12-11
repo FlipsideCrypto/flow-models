@@ -7,7 +7,8 @@
 WITH chainwalkers AS (
 
     SELECT
-        NULL AS swaps_id tx_id,
+        NULL AS swaps_id,
+        tx_id,
         block_timestamp,
         block_height,
         swap_contract,
@@ -67,7 +68,7 @@ FINAL AS (
 )
 SELECT
     COALESCE (
-        bridge_id,
+        swaps_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
     ) AS swaps_id,
     tx_id,
@@ -81,7 +82,8 @@ SELECT
     token_out_amount,
     token_in_destination,
     token_in_contract,
-    token_in_amount COALESCE (
+    token_in_amount,
+    COALESCE (
         inserted_timestamp,
         _inserted_timestamp
     ) AS inserted_timestamp,
@@ -90,9 +92,10 @@ SELECT
         _inserted_timestamp
     ) AS modified_timestamp
 FROM
+    FINAL
 WHERE
-    token_in_destination IS NOT NULL FINAL qualify ROW_NUMBER() over (
-        PARTITION BY bridge_id
+    token_in_destination IS NOT NULL qualify ROW_NUMBER() over (
+        PARTITION BY swaps_id
         ORDER BY
             _inserted_timestamp DESC
     ) = 1

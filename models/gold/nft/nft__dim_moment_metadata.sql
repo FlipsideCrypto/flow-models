@@ -1,7 +1,7 @@
 {{ config (
     materialized = 'view',
     tags = ['nft', 'dapper', 'scheduled'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, ALLDAY, GOLAZOS, TOPSHOT' }}}
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, ALLDAY, GOLAZOS, TOPSHOT' }} }
 ) }}
 
 WITH chainwalkers AS (
@@ -78,9 +78,9 @@ FINAL AS (
 )
 SELECT
     COALESCE (
-        nft_unique_id,
+        nft_moment_metadata_id,
         {{ dbt_utils.generate_surrogate_key(
-            ['event_contract','edition_id','nft_id']
+            ['nft_collection','edition_id','nft_id']
         ) }}
     ) AS nft_moment_metadata_id,
     nft_collection,

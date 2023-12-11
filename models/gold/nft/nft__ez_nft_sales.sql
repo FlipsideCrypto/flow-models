@@ -43,7 +43,7 @@ FINAL AS (
         counterparties,
         NULL AS inserted_timestamp,
         _inserted_timestamp,
-        modified_timestamp
+        NULL AS modified_timestamp
     FROM
         chainwalkers
     UNION ALL

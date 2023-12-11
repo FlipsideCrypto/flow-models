@@ -14,7 +14,10 @@ WITH api AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        NULL AS _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_hourly') }}
 ),
@@ -39,7 +42,7 @@ swaps_cw AS (
         low,
         CLOSE,
         provider,
-        _inserted_timestamp,
+        NULL AS _inserted_timestamp,
         NULL AS inserted_timestamp,
         NULL AS modified_timestamp
     FROM
@@ -66,9 +69,15 @@ swaps_s AS (
         low,
         CLOSE,
         provider,
-        _inserted_timestamp,
-        inserted_timestamp,
-        modified_timestamp
+        NULL AS _inserted_timestamp,
+        COALESCE(
+            inserted_timestamp,
+            '2000-01-01' :: timestamp_ntz
+        ) AS inserted_timestamp,
+        COALESCE(
+            modified_timestamp,
+            '2000-01-01' :: timestamp_ntz
+        ) AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_hourly_s') }}
 ),
@@ -115,5 +124,5 @@ WHERE
     recorded_hour IS NOT NULL qualify ROW_NUMBER() over (
         PARTITION BY prices_swaps_hourly_id
         ORDER BY
-            _inserted_timestamp DESC
+            inserted_timestamp DESC
     ) = 1

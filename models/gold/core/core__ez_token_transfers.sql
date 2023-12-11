@@ -92,6 +92,5 @@ FROM
     FINAL qualify ROW_NUMBER() over (
         PARTITION BY token_transfers_id
         ORDER BY
-            inserted_timestamp,
-            DESC
+            inserted_timestamp DESC
     ) = 1

@@ -63,7 +63,7 @@ SELECT
         ) }} AS nft_moment_metadata_topshot_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id,    
+    '{{ invocation_id }}' AS _invocation_id   
 FROM
     lq_final qualify ROW_NUMBER() over (
         PARTITION BY nft_id

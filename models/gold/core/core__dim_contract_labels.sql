@@ -35,7 +35,7 @@ FINAL AS (
         chainwalkers
     UNION ALL
     SELECT
-        *,
+        *
     FROM
         streamline
 )

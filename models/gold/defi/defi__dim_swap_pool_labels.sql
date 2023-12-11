@@ -6,17 +6,7 @@
 WITH pairs_cw AS (
 
     SELECT
-        swap_contract,
-        deployment_timestamp,
-        token0_contract,
-        token1_contract,
-        pool_id,
-        vault_address
-    FROM
-        {{ ref('silver__labels_pools') }}
-),
-metapier_cw AS (
-    SELECT
+        tx_id,
         NULL AS labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
@@ -24,14 +14,31 @@ metapier_cw AS (
         token1_contract,
         pool_id,
         vault_address,
-        inserted_timestamp,
+        NULL AS inserted_timestamp,
         _inserted_timestamp,
-        modified_timestamp
+        NULL AS modified_timestamp
+    FROM
+        {{ ref('silver__labels_pools') }}
+),
+metapier_cw AS (
+    SELECT
+        tx_id,
+        NULL AS labels_pools_metapier_id,
+        swap_contract,
+        deployment_timestamp,
+        token0_contract,
+        token1_contract,
+        pool_id,
+        vault_address,
+        NULL AS inserted_timestamp,
+        _inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__labels_pools_metapier') }}
 ),
 pairs_s AS (
     SELECT
+        tx_id,
         labels_pools_id AS labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
@@ -47,6 +54,7 @@ pairs_s AS (
 ),
 metapier_s AS (
     SELECT
+        tx_id,
         labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
@@ -83,7 +91,7 @@ FINAL AS (
 )
 SELECT
     COALESCE (
-        streamline_transaction_id,
+        labels_pools_metapier_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
     ) AS labels_pools_id,
     swap_contract,
