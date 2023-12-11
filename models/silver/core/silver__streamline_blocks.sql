@@ -138,7 +138,7 @@ FINAL AS (
         ) }} AS blocks_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        '{{ invocation_id }}' AS _invocation_id,
         b._inserted_timestamp
     FROM
         streamline_blocks b
