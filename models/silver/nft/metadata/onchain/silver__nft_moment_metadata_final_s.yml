@@ -37,3 +37,9 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
         tests:
           - not_null
+      - name: nft_moment_metadata_id
+        description: "{{ doc('pk_id') }}"
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"

@@ -62,3 +62,12 @@ models:
 
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: nft_moment_metadata_topshot_id
+        description: "{{ doc('pk_id') }}"
+
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"

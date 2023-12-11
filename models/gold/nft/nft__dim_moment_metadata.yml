@@ -4,7 +4,7 @@ models:
   - name: nft__dim_moment_metadata
     description: |-
       NFT Moment Metadata scraped from on-chain activity, where available. This should be joinable on sales or mints using the nft_collection (event_contract) and nft id.
-    
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -57,3 +57,12 @@ models:
         tests:
           - not_null:
               where: not (nft_collection = 'A.e4cf4bdc1751c65d.AllDay' and series_name = 'Historical 2') and nft_collection != 'A.87ca73a41bb50ad5.Golazos'
+
+      - name: NFT_MOMENT_METADATA_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

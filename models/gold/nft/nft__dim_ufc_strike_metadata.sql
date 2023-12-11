@@ -1,12 +1,6 @@
 {{ config(
     materialized = 'view',
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'NFT, UFCSTRIKE'
-            }
-        }
-    },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, UFCSTRIKE' }}},
     tags = ['scheduled_non_core']
 ) }}
 
