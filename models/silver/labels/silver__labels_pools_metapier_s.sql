@@ -105,7 +105,7 @@ FINAL AS (
         p.pool_id,
         e.vault_address,
         pa.swap_contract,
-        C._inserted_timestamp
+        C._inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS labels_pools_metapier_id,

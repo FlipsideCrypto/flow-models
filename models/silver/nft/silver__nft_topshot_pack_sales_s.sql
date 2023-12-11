@@ -56,9 +56,9 @@ SELECT
     MD5(
         CAST(COALESCE(CAST(A.tx_id AS VARCHAR), '') AS VARCHAR)
     ) AS pack_id,
-    A._inserted_timestamp
+    A._inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_id', 'nft_id']
+        ['A.tx_id', 'nft_id']
     ) }} AS nft_topshot_pack_sales_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

@@ -115,11 +115,10 @@ FINAL AS (
         A.event_data,
         e.tx_succeeded,
         e._inserted_timestamp,
-        e._partition_by_block_id
+        e._partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
                 ['event_id']
             ) }} AS streamline_event_id,
-        _inserted_timestamp,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id        

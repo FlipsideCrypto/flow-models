@@ -53,14 +53,14 @@ FINAL AS (
         chainwalkers
     UNION ALL
     SELECT
-        *,
+        *
     FROM
         streamline
 )
 SELECT
     COALESCE (
         blocks_id,
-        {{ dbt_utils.generate_surrogate_key(['block_number']) }}
+        {{ dbt_utils.generate_surrogate_key(['block_height']) }}
     ) AS blocks_id,
     block_height,
     block_timestamp,
@@ -69,7 +69,8 @@ SELECT
     chain_id,
     tx_count,
     id,
-    parent_id COALESCE (
+    parent_id,
+    COALESCE (
         inserted_timestamp,
         _inserted_timestamp
     ) AS inserted_timestamp,

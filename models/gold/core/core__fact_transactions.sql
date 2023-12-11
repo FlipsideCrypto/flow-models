@@ -71,7 +71,7 @@ FINAL AS (
         chainwalkers
     UNION ALL
     SELECT
-        *,
+        *
     FROM
         streamline
 )
@@ -80,14 +80,19 @@ SELECT
         streamline_transaction_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
     ) AS streamline_transaction_id,
-    tx_id,
-    block_timestamp,
-    block_height,
-    tx_succeeded,
-    event_index,
-    event_contract,
-    event_type,
-    event_data,
+        tx_id,
+        block_timestamp,
+        block_height,
+        chain_id,
+        tx_index,
+        proposer,
+        payer,
+        authorizers,
+        count_authorizers,
+        gas_limit,
+        transaction_result,
+        tx_succeeded,
+        error_msg,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp
