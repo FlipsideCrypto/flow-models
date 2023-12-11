@@ -50,7 +50,7 @@ models:
           - not_null
 
       - name: labels_pools_metapier_id
-        description: "{{ doc('tx_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

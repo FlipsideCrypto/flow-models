@@ -120,7 +120,7 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
 
       - name: bridge_celer_id
-        description: "{{ doc('bridge_blockto_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

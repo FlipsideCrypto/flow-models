@@ -31,7 +31,7 @@ models:
         description: "{{ doc('tx_succeeded') }}"
 
       - name: token_transfers_id
-        description: "{{ doc('swaps_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

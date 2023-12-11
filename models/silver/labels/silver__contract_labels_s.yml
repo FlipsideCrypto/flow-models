@@ -19,7 +19,7 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
 
       - name: event_contract_id
-        description: "{{ doc('event_contract') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

@@ -92,7 +92,7 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
 
       - name: nft_topshot_sales_id
-          description: "{{ doc('nft_topshot_pack_sales_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

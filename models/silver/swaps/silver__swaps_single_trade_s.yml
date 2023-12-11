@@ -121,7 +121,7 @@ models:
         description: "{{ doc('_inserted_timestamp') }}"
 
       - name: swaps_single_trade_id
-        description: "{{ doc('swaps_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"

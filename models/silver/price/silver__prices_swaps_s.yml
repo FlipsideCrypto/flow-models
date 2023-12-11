@@ -58,7 +58,7 @@ models:
                 - VARCHAR
 
       - name: prices_swaps_id
-        description: "{{ doc('prices_swaps_id') }}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"
