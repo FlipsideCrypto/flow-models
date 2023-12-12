@@ -121,8 +121,4 @@ SELECT
 FROM
     FINAL
 WHERE
-    recorded_hour IS NOT NULL qualify ROW_NUMBER() over (
-        PARTITION BY prices_swaps_hourly_id
-        ORDER BY
-            inserted_timestamp DESC
-    ) = 1
+    recorded_hour IS NOT NULL

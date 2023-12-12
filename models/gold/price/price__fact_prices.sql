@@ -119,8 +119,4 @@ SELECT
 FROM
     viewnion
 WHERE
-    TIMESTAMP IS NOT NULL qualify ROW_NUMBER() over (
-        PARTITION BY prices_swaps_id
-        ORDER BY
-            _inserted_timestamp DESC
-    ) = 1
+    TIMESTAMP IS NOT NULL

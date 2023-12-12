@@ -89,8 +89,4 @@ SELECT
         _inserted_timestamp
     ) AS modified_timestamp
 FROM
-    FINAL qualify ROW_NUMBER() over (
-        PARTITION BY token_transfers_id
-        ORDER BY
-            inserted_timestamp DESC
-    ) = 1
+    FINAL

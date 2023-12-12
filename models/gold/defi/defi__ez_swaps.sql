@@ -94,8 +94,4 @@ SELECT
 FROM
     FINAL
 WHERE
-    token_in_destination IS NOT NULL qualify ROW_NUMBER() over (
-        PARTITION BY swaps_id
-        ORDER BY
-            _inserted_timestamp DESC
-    ) = 1
+    token_in_destination IS NOT NULL

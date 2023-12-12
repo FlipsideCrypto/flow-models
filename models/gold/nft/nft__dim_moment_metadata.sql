@@ -104,9 +104,4 @@ SELECT
         _inserted_timestamp
     ) AS modified_timestamp
 FROM
-    FINAL qualify ROW_NUMBER() over (
-        PARTITION BY nft_moment_metadata_id
-        ORDER BY
-            series_name IS NOT NULL DESC,
-            _inserted_timestamp DESC
-    ) = 1
+    FINAL

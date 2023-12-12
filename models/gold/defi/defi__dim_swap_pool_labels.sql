@@ -109,8 +109,4 @@ SELECT
         _inserted_timestamp
     ) AS modified_timestamp
 FROM
-    FINAL qualify ROW_NUMBER() over (
-        PARTITION BY labels_pools_id
-        ORDER BY
-            _inserted_timestamp DESC
-    ) = 1
+    FINAL
