@@ -166,5 +166,6 @@ models:
               column_type_list:
                 - OBJECT
                 - VARIANT
+
       - name: DIM_TOPSHOT_METADATA_ID
         description: "{{ doc('pk_id') }}"

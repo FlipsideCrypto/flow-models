@@ -31,7 +31,7 @@ WITH topshot AS (
         moment_stats_full,
         player_stats_game,
         player_stats_season_to_date,
-        nft_moment_metadata_topshot_id as dim_topshot_metadata,
+        nft_ufc_strike_metadata_id as dim_topshot_metadata,
         inserted_timestamp,
         modified_timestamp
     FROM
