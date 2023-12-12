@@ -47,7 +47,7 @@ models:
         description: "{{doc('_filename')}}"
 
       - name: NFT_UFC_STRIKE_METADATA_ID
-        decription: "{{doc('pk_id')}}"
+        description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
