@@ -58,6 +58,7 @@ FINAL AS (
         streamline
 )
 SELECT
+    blocks_id,
     block_height,
     block_timestamp,
     network,

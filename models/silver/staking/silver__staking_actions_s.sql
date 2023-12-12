@@ -108,7 +108,7 @@ FINAL AS (
         node_id,
         _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
-            ['tx_id']
+            ['tx_id', 'event_index', 'action']
         ) }} AS staking_actions_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,

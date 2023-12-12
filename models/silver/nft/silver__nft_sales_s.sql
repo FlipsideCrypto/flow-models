@@ -70,7 +70,7 @@ combo AS (
         tx_succeeded,
         _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
-            ['tx_id']
+            ['tx_id','seller', 'buyer', 'nft_collection', 'nft_id']
         ) }} AS nft_sales_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
@@ -94,7 +94,7 @@ combo AS (
         tx_succeeded,
         _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
-            ['tx_id']
+            ['tx_id','seller', 'buyer', 'nft_collection', 'nft_id']
         ) }} AS nft_sales_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
