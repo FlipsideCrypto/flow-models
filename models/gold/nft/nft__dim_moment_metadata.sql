@@ -1,18 +1,13 @@
 {{ config (
     materialized = 'view',
     tags = ['nft', 'dapper', 'scheduled'],
-    meta = {
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'NFT, ALLDAY, GOLAZOS, TOPSHOT'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, ALLDAY, GOLAZOS, TOPSHOT' }} }
 ) }}
 
 WITH chainwalkers AS (
 
     SELECT
+        NULL AS nft_moment_metadata_id,
         event_contract AS nft_collection,
         nft_id,
         serial_number,
@@ -25,7 +20,9 @@ WITH chainwalkers AS (
         edition_id,
         tier,
         metadata,
-        _inserted_timestamp
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__nft_moment_metadata_final') }}
     WHERE
@@ -40,6 +37,7 @@ WITH chainwalkers AS (
 ),
 streamline AS (
     SELECT
+        nft_moment_metadata_id,
         event_contract AS nft_collection,
         nft_id,
         serial_number,
@@ -52,7 +50,9 @@ streamline AS (
         edition_id,
         tier,
         metadata,
-        _inserted_timestamp
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__nft_moment_metadata_final_s') }}
     WHERE
@@ -77,12 +77,31 @@ FINAL AS (
         streamline
 )
 SELECT
-    *
+    nft_collection,
+    nft_id,
+    serial_number,
+    max_mint_size,
+    play_id,
+    series_id,
+    series_name,
+    set_id,
+    set_name,
+    edition_id,
+    tier,
+    metadata,
+    COALESCE (
+        nft_moment_metadata_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['nft_collection','edition_id','nft_id']
+        ) }}
+    ) AS dim_moment_metadata_id,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
-    FINAL qualify ROW_NUMBER() over (
-        PARTITION BY nft_collection,
-        nft_id
-        ORDER BY
-            series_name is not null DESC,
-            _inserted_timestamp DESC
-    ) = 1
+    FINAL

@@ -2,6 +2,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "collection_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
     tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
@@ -14,7 +16,13 @@ SELECT
     ) AS tx_count,
     DATA: transaction_ids :: ARRAY AS transaction_ids,
     _partition_by_block_id,
-    _inserted_timestamp
+    {{ dbt_utils.generate_surrogate_key(
+            ['collection_id']
+        ) }} AS streamline_collection_id,
+    _inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
 
 {% if is_incremental() %}

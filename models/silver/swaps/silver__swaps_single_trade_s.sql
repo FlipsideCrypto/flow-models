@@ -159,7 +159,13 @@ combo AS (
         td.swap_side,
         td.token_1_amount,
         td.token_2_amount,
-        tod._inserted_timestamp
+        tod._inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS swaps_single_trade_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         token_out_data tod
         LEFT JOIN trade_data td USING (tx_id)

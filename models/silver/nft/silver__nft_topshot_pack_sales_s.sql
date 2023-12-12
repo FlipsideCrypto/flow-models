@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = ['tx_id','nft_id'],
     tags = ['nft', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
@@ -55,7 +56,13 @@ SELECT
     MD5(
         CAST(COALESCE(CAST(A.tx_id AS VARCHAR), '') AS VARCHAR)
     ) AS pack_id,
-    A._inserted_timestamp
+    A._inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['A.tx_id', 'nft_id']
+    ) }} AS nft_topshot_pack_sales_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     nft_txs A
     JOIN silver_events b

@@ -46,6 +46,9 @@ models:
       - name: _FILENAME
         description: "{{doc('_filename')}}"
 
+      - name: NFT_UFC_STRIKE_METADATA_ID
+        description: "{{ doc('pk_id') }}"
+
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"
         tests:
@@ -56,7 +59,7 @@ models:
         tests:
           - not_null
 
-      - name: INVOCATION_ID
+      - name: _INVOCATION_ID
         description: "{{doc('invocation_id')}}"
         tests:
           - not_null

@@ -174,7 +174,13 @@ FINAL AS (
         swap_price IS NOT NULL
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+    ['block_timestamp', 'token_contract']
+    ) }} AS prices_swaps_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 WHERE

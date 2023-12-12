@@ -15,7 +15,13 @@ WITH labels AS (
         label_type,
         label_subtype,
         address_name,
-        project_name
+        project_name,
+        {{ dbt_utils.generate_surrogate_key(
+            ['blockchain','label_type','label_subtype']
+        ) }} AS labels_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('bronze__labels') }}
 )

@@ -28,17 +28,22 @@ prices_swaps_cw AS (
         block_timestamp AS TIMESTAMP,
         token_contract,
         swap_price AS price_usd,
-        source
+        source,
+        _inserted_timestamp
     FROM
         {{ ref('silver__prices_swaps') }}
 ),
 prices_swaps_s AS (
     SELECT
+        prices_swaps_id,
         tx_id,
         block_timestamp AS TIMESTAMP,
         token_contract,
         swap_price AS price_usd,
-        source
+        source,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_s') }}
 ),
@@ -50,7 +55,11 @@ viewnion AS (
         l.token_contract,
         price_usd,
         source,
-        NULL AS tx_id
+        NULL AS tx_id,
+        NULL AS prices_swaps_id,
+        NULL AS _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         prices p
         LEFT JOIN token_labels l USING (symbol)
@@ -62,25 +71,51 @@ viewnion AS (
         ps.token_contract,
         price_usd,
         source,
-        tx_id
+        tx_id,
+        NULL AS prices_swaps_id,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         prices_swaps_cw ps
         LEFT JOIN token_labels l USING (token_contract)
     UNION ALL
     SELECT
+        prices_swaps_id,
         TIMESTAMP,
         l.token,
         l.symbol,
         pss.token_contract,
         price_usd,
         source,
-        tx_id
+        tx_id,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         prices_swaps_s pss
         LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
-    *
+    TIMESTAMP,
+    token,
+    symbol,
+    token_contract,
+    price_usd,
+    source,
+    tx_id,
+    COALESCE (
+        prices_swaps_id,
+        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP', 'token_contract']) }}
+    ) AS fact_prices_id,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
     viewnion
 WHERE

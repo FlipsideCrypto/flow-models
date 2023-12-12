@@ -3,6 +3,8 @@
     materialized = 'incremental',
     incremental_predicates = ['DBT_INTERNAL_DEST.block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = "tx_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["block_number","_inserted_timestamp::date"],
     tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
@@ -15,7 +17,13 @@ SELECT
     DATA :status :: INT AS status,
     DATA :status_code :: INT AS status_code,
     _partition_by_block_id,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS tx_results_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id  
 FROM
 
 {% if is_incremental() %}

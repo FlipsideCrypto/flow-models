@@ -64,7 +64,13 @@ FINAL AS (
         low,
         CLOSE,
         num_swaps,
-        'Swaps' as provider
+        'Swaps' as provider,
+        {{ dbt_utils.generate_surrogate_key(
+        ['recorded_hour', 'token']
+        ) }} AS prices_swaps_hourly_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         lowhigh l
         LEFT JOIN openclose o USING (

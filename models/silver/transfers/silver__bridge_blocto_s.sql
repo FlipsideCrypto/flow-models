@@ -280,7 +280,13 @@ FINAL AS (
         END AS teleport_direction,
         l.blockchain,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS bridge_blocto_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         tbl_union t
         LEFT JOIN tele_labels l USING (teleport_contract)

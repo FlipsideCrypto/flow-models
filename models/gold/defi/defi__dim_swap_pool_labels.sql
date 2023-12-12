@@ -6,45 +6,65 @@
 WITH pairs_cw AS (
 
     SELECT
+        tx_id,
+        NULL AS labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
         token0_contract,
         token1_contract,
         pool_id,
-        vault_address
+        vault_address,
+        NULL AS inserted_timestamp,
+        _inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__labels_pools') }}
 ),
 metapier_cw AS (
     SELECT
+        tx_id,
+        NULL AS labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
         token0_contract,
         token1_contract,
         pool_id,
-        vault_address
+        vault_address,
+        NULL AS inserted_timestamp,
+        _inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__labels_pools_metapier') }}
 ),
 pairs_s AS (
     SELECT
+        tx_id,
+        labels_pools_id AS labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
         token0_contract,
         token1_contract,
         pool_id,
-        vault_address
+        vault_address,
+        inserted_timestamp,
+        _inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__labels_pools_s') }}
 ),
 metapier_s AS (
     SELECT
+        tx_id,
+        labels_pools_metapier_id,
         swap_contract,
         deployment_timestamp,
         token0_contract,
         token1_contract,
         pool_id,
-        vault_address
+        vault_address,
+        inserted_timestamp,
+        _inserted_timestamp,
+        modified_timestamp
     FROM
         {{ ref('silver__labels_pools_metapier_s') }}
 ),
@@ -70,6 +90,23 @@ FINAL AS (
         metapier_s
 )
 SELECT
-    *
+    swap_contract,
+    deployment_timestamp,
+    token0_contract,
+    token1_contract,
+    pool_id,
+    vault_address,
+    COALESCE (
+        labels_pools_metapier_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS dim_swap_pool_labels_id,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
     FINAL

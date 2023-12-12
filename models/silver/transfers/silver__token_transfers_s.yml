@@ -29,3 +29,15 @@ models:
 
       - name: tx_succeeded
         description: "{{ doc('tx_succeeded') }}"
+
+      - name: token_transfers_id
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"

@@ -1,13 +1,7 @@
 {{ config(
     materialized = 'view',
     tags = ['ez', 'bridge', 'scheduled'],
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'BRIDGE'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'BRIDGE' }} }
 ) }}
 
 WITH blocto_cw AS (
@@ -53,6 +47,7 @@ celer_s AS (
 ),
 combo AS (
     SELECT
+        NULL AS bridge_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -62,11 +57,15 @@ combo AS (
         flow_wallet_address,
         blockchain,
         teleport_direction AS direction,
-        bridge
+        bridge,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         blocto_cw
     UNION ALL
     SELECT
+        NULL AS bridge_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -76,11 +75,15 @@ combo AS (
         flow_wallet_address,
         blockchain,
         direction,
-        bridge
+        bridge,
+        _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         celer_cw
     UNION ALL
     SELECT
+        bridge_blocto_id AS bridge_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -90,11 +93,15 @@ combo AS (
         flow_wallet_address,
         blockchain,
         teleport_direction AS direction,
-        bridge
+        bridge,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         blocto_s
     UNION ALL
     SELECT
+        bridge_celer_id AS bridge_id,
         tx_id,
         block_timestamp,
         block_height,
@@ -104,11 +111,35 @@ combo AS (
         flow_wallet_address,
         blockchain,
         direction,
-        bridge
+        bridge,
+        _inserted_timestamp,
+        inserted_timestamp,
+        modified_timestamp
     FROM
         celer_s
 )
 SELECT
-    *
+    tx_id,
+    block_timestamp,
+    block_height,
+    bridge_contract,
+    token_contract,
+    amount,
+    flow_wallet_address,
+    blockchain,
+    direction,
+    bridge,
+    COALESCE (
+        bridge_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS ez_bridge_transactions_id,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
     combo

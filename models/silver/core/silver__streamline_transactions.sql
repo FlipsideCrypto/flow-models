@@ -2,6 +2,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "tx_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "_inserted_timestamp::date",
     tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
@@ -18,6 +20,12 @@ SELECT
     DATA: payload_signatures :: ARRAY AS payload_signatures,
     DATA: proposal_key :: variant AS proposal_key,
     DATA: script :: STRING AS script,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id']
+    ) }} AS streamline_tx_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id,
     _partition_by_block_id,
     _inserted_timestamp
 FROM

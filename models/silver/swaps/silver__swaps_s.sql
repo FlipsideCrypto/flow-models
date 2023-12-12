@@ -309,7 +309,13 @@ FINAL AS (
         deposits :to1 :: STRING AS token_in_destination,
         tokens :token1 :: STRING AS token_in_contract,
         amounts :amount1 :: DOUBLE AS token_in_amount,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id', 'swap_index']
+        ) }} AS swaps_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         boilerplate
         LEFT JOIN pool_token_alignment USING (tx_id)

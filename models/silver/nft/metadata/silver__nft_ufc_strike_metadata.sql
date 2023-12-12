@@ -43,8 +43,11 @@ SELECT
     metadata,
     _inserted_timestamp,
     _filename,
+    {{ dbt_utils.generate_surrogate_key(
+            ['nft_id']
+    ) }} AS nft_ufc_strike_metadata_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{invocation_id}}' AS invocation_id
+    '{{invocation_id}}' AS _invocation_id
 FROM
     metadata

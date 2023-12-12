@@ -4,7 +4,7 @@ models:
   - name: nft__dim_allday_metadata
     description: |-
       Data for NFL AllDay Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
-    
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -160,3 +160,12 @@ models:
               column_type_list:
                 - OBJECT
                 - VARIANT
+
+      - name: DIM_ALLDAY_METADATA
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

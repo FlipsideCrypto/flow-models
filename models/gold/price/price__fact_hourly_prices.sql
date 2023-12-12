@@ -6,6 +6,7 @@
 WITH api AS (
 
     SELECT
+        NULL AS prices_swaps_hourly_id,
         recorded_hour,
         id,
         token,
@@ -13,12 +14,16 @@ WITH api AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        NULL AS _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_hourly') }}
 ),
 swaps_cw AS (
     SELECT
+        NULL AS prices_swaps_hourly_id,
         recorded_hour,
         id,
         CASE
@@ -36,12 +41,16 @@ swaps_cw AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        NULL AS _inserted_timestamp,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_hourly') }}
 ),
 swaps_s AS (
     SELECT
+        prices_swaps_hourly_id,
         recorded_hour,
         id,
         CASE
@@ -59,7 +68,16 @@ swaps_s AS (
         high,
         low,
         CLOSE,
-        provider
+        provider,
+        NULL AS _inserted_timestamp,
+        COALESCE(
+            inserted_timestamp,
+            '2000-01-01' :: timestamp_ntz
+        ) AS inserted_timestamp,
+        COALESCE(
+            modified_timestamp,
+            '2000-01-01' :: timestamp_ntz
+        ) AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_hourly_s') }}
 ),
@@ -80,7 +98,26 @@ FINAL AS (
         swaps_s
 )
 SELECT
-    *
+    COALESCE (
+        prices_swaps_hourly_id,
+        {{ dbt_utils.generate_surrogate_key(['recorded_hour', 'token']) }}
+    ) AS fact_hourly_prices_id,
+    recorded_hour,
+    id,
+    token,
+    OPEN,
+    high,
+    low,
+    CLOSE,
+    provider,
+    COALESCE (
+        inserted_timestamp,
+        _inserted_timestamp
+    ) AS inserted_timestamp,
+    COALESCE (
+        modified_timestamp,
+        _inserted_timestamp
+    ) AS modified_timestamp
 FROM
     FINAL
 WHERE

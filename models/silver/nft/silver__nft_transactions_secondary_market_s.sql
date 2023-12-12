@@ -496,11 +496,23 @@ dedupe_gaia AS (
         ) = 1
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id']
+    ) }} AS transactions_secondary_market_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
 EXCEPT
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id']
+    ) }} AS transactions_secondary_market_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     dedupe_gaia

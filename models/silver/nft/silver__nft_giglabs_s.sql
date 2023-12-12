@@ -313,6 +313,9 @@ counterparty_data AS (
 FINAL AS (
     SELECT
         s.tx_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_id']
+        ) }} AS nft_giglabs_id,
         block_timestamp,
         block_height,
         marketplace,
@@ -326,7 +329,10 @@ FINAL AS (
         tokenflow,
         counterparties,
         tx_succeeded,
-        _inserted_timestamp
+        _inserted_timestamp,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         giglabs_final s
         LEFT JOIN counterparty_data C USING (tx_id)

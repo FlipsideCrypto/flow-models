@@ -1,6 +1,8 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'event_id',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "_inserted_timestamp::date",
     tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
@@ -113,7 +115,13 @@ FINAL AS (
         A.event_data,
         e.tx_succeeded,
         e._inserted_timestamp,
-        e._partition_by_block_id
+        e._partition_by_block_id,
+        {{ dbt_utils.generate_surrogate_key(
+                ['event_id']
+            ) }} AS streamline_event_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id        
     FROM
         flatten_events e
         LEFT JOIN attributes A USING (event_id)
