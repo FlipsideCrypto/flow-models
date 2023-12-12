@@ -283,7 +283,7 @@ FINAL AS (
         _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
-        ) }} AS bridge_blockto_id,
+        ) }} AS bridge_blocto_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id

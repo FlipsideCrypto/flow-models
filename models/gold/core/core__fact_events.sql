@@ -79,4 +79,4 @@ SELECT
         _inserted_timestamp
     ) AS modified_timestamp
 FROM
-    FINA
+    FINAL

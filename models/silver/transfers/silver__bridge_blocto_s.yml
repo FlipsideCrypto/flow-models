@@ -122,7 +122,7 @@ models:
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
 
-      - name: bridge_blockto_id
+      - name: bridge_blocto_id Blocto
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

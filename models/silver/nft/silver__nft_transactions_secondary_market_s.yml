@@ -166,7 +166,7 @@ models:
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
 
-      - name: transactions_secundary_market_id
+      - name: transactions_secondary_market_id
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

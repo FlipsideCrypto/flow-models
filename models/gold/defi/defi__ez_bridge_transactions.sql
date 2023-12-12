@@ -83,7 +83,7 @@ combo AS (
         celer_cw
     UNION ALL
     SELECT
-        bridge_blockto_id AS bridge_id,
+        bridge_blocto_id AS bridge_id,
         tx_id,
         block_timestamp,
         block_height,
