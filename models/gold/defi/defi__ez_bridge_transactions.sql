@@ -119,10 +119,6 @@ combo AS (
         celer_s
 )
 SELECT
-    COALESCE (
-        bridge_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS bridge_id,
     tx_id,
     block_timestamp,
     block_height,
@@ -133,6 +129,10 @@ SELECT
     blockchain,
     direction,
     bridge,
+    COALESCE (
+        bridge_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS ez_bridge_transactions_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

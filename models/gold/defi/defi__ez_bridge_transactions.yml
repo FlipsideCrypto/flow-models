@@ -101,7 +101,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: BRIDGE_ID
+      - name: EZ_BRIDGE_TRANSACTIONS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

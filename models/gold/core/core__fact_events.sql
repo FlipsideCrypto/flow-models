@@ -58,10 +58,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        streamline_event_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS streamline_event_id,
     tx_id,
     block_timestamp,
     block_height,
@@ -70,6 +66,10 @@ SELECT
     event_contract,
     event_type,
     event_data,
+    COALESCE (
+        streamline_event_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS fact_events_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

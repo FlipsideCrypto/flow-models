@@ -27,7 +27,7 @@ streamline AS (
 ),
 FINAL AS (
     SELECT
-        NULL AS stacking_actions_id,
+        NULL AS staking_actions_id,
         tx_id,
         event_index,
         block_timestamp,
@@ -44,7 +44,7 @@ FINAL AS (
         chainwalkers
     UNION ALL
     SELECT
-        stacking_actions_id,
+        staking_actions_id,
         tx_id,
         event_index,
         block_timestamp,
@@ -61,10 +61,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        stacking_actions_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS stacking_actions_id,
     tx_id,
     event_index,
     block_timestamp,
@@ -75,6 +71,10 @@ SELECT
     amount,
     node_id,
     COALESCE (
+        staking_actions_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS ez_staking_actions_id,
+    COALESCE (
         inserted_timestamp,
         _inserted_timestamp
     ) AS inserted_timestamp,
@@ -84,7 +84,7 @@ SELECT
     ) AS modified_timestamp
 FROM
     FINAL qualify ROW_NUMBER() over (
-        PARTITION BY stacking_actions_id
+        PARTITION BY staking_actions_id
         ORDER BY
             _inserted_timestamp DESC
     ) = 1

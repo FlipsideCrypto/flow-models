@@ -27,7 +27,7 @@ models:
       - name: SWAP_CONTRACT
         description: "{{ doc('swap_contract') }}"
 
-      - name: LABELS_POOLS_ID
+      - name: DIM_SWAP_POOL_LABELS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

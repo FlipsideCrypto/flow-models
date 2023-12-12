@@ -137,7 +137,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: NFT_SALES_ID
+      - name: EZ_NFT_SALES_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

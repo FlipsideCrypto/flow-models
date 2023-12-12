@@ -40,13 +40,13 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        event_contract_id,
-        {{ dbt_utils.generate_surrogate_key(['event_contract']) }}
-    ) AS event_contract_id,
     event_contract,
     contract_name,
     account_address,
+    COALESCE (
+        event_contract_id,
+        {{ dbt_utils.generate_surrogate_key(['event_contract']) }}
+    ) AS dim_contract_labels_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

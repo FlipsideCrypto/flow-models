@@ -85,10 +85,6 @@ WITH allday AS (
         {{ ref('silver__allday_moments_metadata_error') }}
 )
 SELECT
-    COALESCE (
-        nft_unique_id,
-        {{ dbt_utils.generate_surrogate_key(['nft_id']) }}
-    ) AS nft_unique_id,
     nft_id,
     nft_collection,
     nflallday_id,
@@ -107,6 +103,10 @@ SELECT
     set_name,
     video_urls,
     moment_stats_full,
+    COALESCE (
+        nft_unique_id,
+        {{ dbt_utils.generate_surrogate_key(['nft_id']) }}
+    ) AS dim_allday_metadata,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

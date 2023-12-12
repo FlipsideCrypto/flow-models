@@ -60,7 +60,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: PRICES_SWAPS_ID
+      - name: FACT_PRICES_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

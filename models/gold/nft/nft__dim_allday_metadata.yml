@@ -161,7 +161,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: NFT_UNIQUE_ID
+      - name: DIM_ALLDAY_METADATA
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

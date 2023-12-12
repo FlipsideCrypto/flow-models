@@ -90,16 +90,16 @@ FINAL AS (
         metapier_s
 )
 SELECT
-    COALESCE (
-        labels_pools_metapier_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS labels_pools_id,
     swap_contract,
     deployment_timestamp,
     token0_contract,
     token1_contract,
     pool_id,
     vault_address,
+    COALESCE (
+        labels_pools_metapier_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS dim_swap_pool_labels_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

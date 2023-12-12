@@ -58,10 +58,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        blocks_id,
-        {{ dbt_utils.generate_surrogate_key(['block_height']) }}
-    ) AS blocks_id,
     block_height,
     block_timestamp,
     network,
@@ -70,6 +66,10 @@ SELECT
     tx_count,
     id,
     parent_id,
+    COALESCE (
+        blocks_id,
+        {{ dbt_utils.generate_surrogate_key(['block_height']) }}
+    ) AS fact_blocks_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

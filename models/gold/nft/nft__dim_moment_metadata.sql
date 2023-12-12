@@ -77,12 +77,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        nft_moment_metadata_id,
-        {{ dbt_utils.generate_surrogate_key(
-            ['nft_collection','edition_id','nft_id']
-        ) }}
-    ) AS nft_moment_metadata_id,
     nft_collection,
     nft_id,
     serial_number,
@@ -95,6 +89,12 @@ SELECT
     edition_id,
     tier,
     metadata,
+    COALESCE (
+        nft_moment_metadata_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['nft_collection','edition_id','nft_id']
+        ) }}
+    ) AS dim_moment_metadata_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

@@ -69,10 +69,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        nft_sales_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS nft_sales_id,
     tx_id,
     block_height,
     block_timestamp,
@@ -86,6 +82,10 @@ SELECT
     tx_succeeded,
     tokenflow,
     counterparties,
+    COALESCE (
+        nft_sales_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
+    ) AS ez_nft_sales_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

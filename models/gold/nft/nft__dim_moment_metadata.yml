@@ -58,7 +58,7 @@ models:
           - not_null:
               where: not (nft_collection = 'A.e4cf4bdc1751c65d.AllDay' and series_name = 'Historical 2') and nft_collection != 'A.87ca73a41bb50ad5.Golazos'
 
-      - name: NFT_MOMENT_METADATA_ID
+      - name: DIM_MOMENT_METADATA_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

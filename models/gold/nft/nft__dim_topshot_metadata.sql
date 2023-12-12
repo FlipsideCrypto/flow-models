@@ -13,7 +13,6 @@
 WITH topshot AS (
 
     SELECT
-        nft_moment_metadata_topshot_id,
         nft_id,
         nft_collection,
         nbatopshot_id,
@@ -32,6 +31,7 @@ WITH topshot AS (
         moment_stats_full,
         player_stats_game,
         player_stats_season_to_date,
+        nft_moment_metadata_topshot_id,
         inserted_timestamp,
         modified_timestamp
     FROM

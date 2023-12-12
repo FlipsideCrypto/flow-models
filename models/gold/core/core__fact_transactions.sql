@@ -76,23 +76,23 @@ FINAL AS (
         streamline
 )
 SELECT
+    tx_id,
+    block_timestamp,
+    block_height,
+    chain_id,
+    tx_index,
+    proposer,
+    payer,
+    authorizers,
+    count_authorizers,
+    gas_limit,
+    transaction_result,
+    tx_succeeded,
+    error_msg,
     COALESCE (
         streamline_transaction_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
-    ) AS streamline_transaction_id,
-        tx_id,
-        block_timestamp,
-        block_height,
-        chain_id,
-        tx_index,
-        proposer,
-        payer,
-        authorizers,
-        count_authorizers,
-        gas_limit,
-        transaction_result,
-        tx_succeeded,
-        error_msg,
+    ) AS fact_transactions_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

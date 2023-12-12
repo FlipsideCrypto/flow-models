@@ -101,7 +101,7 @@ SELECT
     COALESCE (
         prices_swaps_hourly_id,
         {{ dbt_utils.generate_surrogate_key(['recorded_hour', 'token']) }}
-    ) AS prices_swaps_hourly_id,
+    ) AS fact_hourly_prices_id,
     recorded_hour,
     id,
     token,

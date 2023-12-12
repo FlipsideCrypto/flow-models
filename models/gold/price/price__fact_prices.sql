@@ -97,10 +97,6 @@ viewnion AS (
         LEFT JOIN token_labels l USING (token_contract)
 )
 SELECT
-    COALESCE (
-        prices_swaps_id,
-        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP', 'token_contract']) }}
-    ) AS prices_swaps_id,
     TIMESTAMP,
     token,
     symbol,
@@ -108,6 +104,10 @@ SELECT
     price_usd,
     source,
     tx_id,
+    COALESCE (
+        prices_swaps_id,
+        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP', 'token_contract']) }}
+    ) AS fact_prices_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

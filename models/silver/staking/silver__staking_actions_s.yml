@@ -36,7 +36,7 @@ models:
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
 
-      - name: stacking_actions_id
+      - name: staking_actions_id
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

@@ -82,7 +82,7 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: STACKING_ACTIONS_ID
+      - name: EZ_STAKING_ACTIONS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

@@ -67,10 +67,6 @@ FINAL AS (
         streamline
 )
 SELECT
-    COALESCE (
-        swaps_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
-    ) AS swaps_id,
     tx_id,
     block_timestamp,
     block_height,
@@ -83,6 +79,10 @@ SELECT
     token_in_destination,
     token_in_contract,
     token_in_amount,
+    COALESCE (
+        swaps_id,
+        {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
+    ) AS ez_swaps_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp

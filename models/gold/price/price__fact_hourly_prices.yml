@@ -76,7 +76,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: PRICES_SWAPS_HOURLY_ID
+      - name: FACT_HOURLY_PRICES_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

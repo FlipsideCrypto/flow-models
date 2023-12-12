@@ -78,7 +78,7 @@ models:
               column_type_list:
                 - OBJECT
 
-      - name: STREAMLINE_EVENT_ID
+      - name: FACT_EVENTS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
