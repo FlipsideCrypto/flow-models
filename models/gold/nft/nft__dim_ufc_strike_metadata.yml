@@ -6,7 +6,7 @@ models:
       UFC Strike NFT Metadata
 
     columns:
-      - name: DIM_UFC_STRIKE_METADATA_ID
+      - name: NFT_ID
         description: "{{ doc('nft_id')}}"
         tests:
           - not_null
@@ -32,6 +32,8 @@ models:
         description: "{{ doc('metadata')}}"
         tests:
           - not_null
+      - name: DIM_UFC_STRIKE_METADATA_ID
+        description: "{{doc('pk_id')}}"
 
       - name: INSERTED_TIMESTAMP
         description: "{{doc('inserted_timestamp')}}"

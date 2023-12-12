@@ -5,12 +5,13 @@
 ) }}
 
 SELECT
-    nft_id as dim_ufc_strike_metadata_id,
+    nft_id,
     serial_number,
     listing_id,
     set_name,
     set_description,
     metadata,
+    nft_ufc_strike_metadata_id as dim_ufc_strike_metadata_id,
     inserted_timestamp,
     modified_timestamp
 FROM
