@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   schedule:
     # 4x/hour schedule = Every 15 minutes (see https://crontab.guru)
-    - cron: "*/15 * * * *"
+    # - cron: "*/15 * * * *"
     # 3x/hour schedule = Every 20 minutes (see https://crontab.guru)
-    # - cron: "*/20 * * * *"
+    - cron: "*/20 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
