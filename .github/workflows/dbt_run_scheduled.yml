@@ -4,9 +4,9 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-     # 4x/day schedule = Every 15 minutes (see https://crontab.guru)
+    # 4x/hour schedule = Every 15 minutes (see https://crontab.guru)
     - cron: "*/15 * * * *"
-     # 3x/day schedule = Every 20 minutes (see https://crontab.guru)
+    # 3x/hour schedule = Every 20 minutes (see https://crontab.guru)
     # - cron: "*/20 * * * *"
 
 env:
