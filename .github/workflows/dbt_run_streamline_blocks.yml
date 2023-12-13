@@ -4,8 +4,10 @@ run-name: dbt_run_streamline_blocks
 on:
   workflow_dispatch:
   schedule:
-    # At minute 10, and 40 every hour (see https://crontab.guru)
-    - cron: "7,27,47 * * * *"
+    # 4x/hour schedule = At minute 3, 18, 33, 48 every hour (see https://crontab.guru)
+    - cron: "3,18,33,48 * * * *"
+    # 3x/hour schedule = At minute 7, 27, 47 every hour (see https://crontab.guru)
+    # - cron: "7,27,47 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

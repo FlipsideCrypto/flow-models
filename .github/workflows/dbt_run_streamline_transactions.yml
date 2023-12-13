@@ -4,8 +4,10 @@ run-name: dbt_run_streamline_transactions
 on:
   workflow_dispatch:
   schedule:
-    # At minute 20, and 50 every hour (see https://crontab.guru)
-    - cron: "20,50 * * * *"
+    # 4x/hour schedule = At minute 12, 27, 42, 57 every hour (see https://crontab.guru)
+    - cron: "12,27,42,57 * * * *"
+    # 3x/hour schedule = At minute 15, 35, 55 every hour (see https://crontab.guru)
+    # - cron: "15,35,55 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
