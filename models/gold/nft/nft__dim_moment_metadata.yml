@@ -9,6 +9,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - nft_collection
+            - edition_id
             - nft_id
 
     columns:
