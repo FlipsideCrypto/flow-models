@@ -1,19 +1,29 @@
 flow:
-  target: dev
+  config:
+    send_anonymous_usage_stats: false
   outputs:
     dev:
-      type: snowflake
-      account: "{{ env_var('SF_ACCOUNT') }}"
-      # User/password auth
-      user: "{{ env_var('SF_USERNAME') }}"
+      account: vna27887.us-east-1
+      client_session_keep_alive: false
+      database: FLOW_DEV
       authenticator: externalbrowser
-      role: "{{ env_var('SF_ROLE') }}"
-      schema: "{{ env_var('SF_SCHEMA') }}"
-      region: "{{ env_var('SF_REGION') }}"
-      database: "{{ env_var('SF_DATABASE') }}"
-      warehouse: "{{ env_var('SF_WAREHOUSE') }}"
+      region: us-east-1
+      role: INTERNAL_DEV
+      schema: SILVER
       threads: 4
-      client_session_keep_alive: False
-      query_tag: flow_curator
-  config:
-    send_anonymous_usage_stats: False
+      type: snowflake
+      user: juan@flipsidecrypto.com
+      warehouse: DATA_SCIENCE
+    prod:
+      account: vna27887.us-east-1
+      client_session_keep_alive: false
+      database: FLOW
+      authenticator: externalbrowser
+      region: us-east-1
+      role: DBT_CLOUD_FLOW
+      schema: SILVER
+      threads: 4
+      type: snowflake
+      user: juan@flipsidecrypto.com
+      warehouse: DATA_SCIENCE
+  target: dev
