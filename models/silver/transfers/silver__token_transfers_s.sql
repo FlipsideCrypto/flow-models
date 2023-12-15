@@ -70,7 +70,7 @@ usdc_withdraws AS (
                 transfers
         )
         AND event_contract = 'A.b19436aae4d94622.FiatToken'
-        AND event_type in ('FiatTokenDeposited')
+        AND event_type IN ('FiatTokenDeposited')
     GROUP BY
         block_height,
         _inserted_timestamp,
@@ -125,7 +125,7 @@ withdraws AS (
             FROM
                 transfers
         )
-        AND event_type in ('TokensWithdrawn')
+        AND event_type IN ('TokensWithdrawn')
     GROUP BY
         block_height,
         _inserted_timestamp,
@@ -218,19 +218,18 @@ usdc_w_d AS (
         w.token_contract,
         tx_succeeded
 ),
-FINAL AS
-(
-    SELECT 
+FINAL AS (
+    SELECT
         *
     FROM
         w_d
     UNION
-    SELECT 
+    SELECT
         *
     FROM
         usdc_w_d
 )
 SELECT
-    * 
+    *
 FROM
     FINAL
