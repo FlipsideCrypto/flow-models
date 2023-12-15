@@ -110,7 +110,7 @@ SELECT
     COALESCE (
         prices_swaps_id,
         {{ dbt_utils.generate_surrogate_key(['TIMESTAMP','TOKEN', 'TOKEN_CONTRACT', 'SOURCE']) }}
-    ) AS price_act_prices,
+    ) AS fact_prices_id,
     COALESCE (
         inserted_timestamp,
         TIMESTAMP
