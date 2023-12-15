@@ -29,7 +29,10 @@ prices_swaps_cw AS (
         token_contract,
         swap_price AS price_usd,
         source,
-        _inserted_timestamp
+        _inserted_timestamp,
+        NULL AS prices_swaps_id,
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps') }}
 ),
@@ -42,8 +45,8 @@ prices_swaps_s AS (
         swap_price AS price_usd,
         source,
         _inserted_timestamp,
-        inserted_timestamp,
-        modified_timestamp
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         {{ ref('silver__prices_swaps_s') }}
 ),
@@ -72,7 +75,7 @@ viewnion AS (
         price_usd,
         source,
         tx_id,
-        NULL AS prices_swaps_id,
+        prices_swaps_id,
         _inserted_timestamp,
         NULL AS inserted_timestamp,
         NULL AS modified_timestamp
@@ -81,7 +84,6 @@ viewnion AS (
         LEFT JOIN token_labels l USING (token_contract)
     UNION ALL
     SELECT
-        prices_swaps_id,
         TIMESTAMP,
         l.token,
         l.symbol,
@@ -89,9 +91,10 @@ viewnion AS (
         price_usd,
         source,
         tx_id,
+        prices_swaps_id,
         _inserted_timestamp,
-        inserted_timestamp,
-        modified_timestamp
+        NULL AS inserted_timestamp,
+        NULL AS modified_timestamp
     FROM
         prices_swaps_s pss
         LEFT JOIN token_labels l USING (token_contract)
@@ -106,17 +109,24 @@ SELECT
     tx_id,
     COALESCE (
         prices_swaps_id,
-        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP', 'token_contract']) }}
+        {{ dbt_utils.generate_surrogate_key(['TIMESTAMP','TOKEN', 'TOKEN_CONTRACT', 'SOURCE']) }}
     ) AS fact_prices_id,
     COALESCE (
         inserted_timestamp,
-        _inserted_timestamp
+        TIMESTAMP
     ) AS inserted_timestamp,
     COALESCE (
         modified_timestamp,
-        _inserted_timestamp
+        TIMESTAMP
     ) AS modified_timestamp
 FROM
     viewnion
 WHERE
-    TIMESTAMP IS NOT NULL
+    TIMESTAMP IS NOT NULL qualify ROW_NUMBER() over (
+        PARTITION BY TIMESTAMP,
+        token,
+        token_contract,
+        source
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1
