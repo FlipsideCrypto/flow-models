@@ -50,69 +50,17 @@ transfers AS (
         event_count = max_index
         OR event_contract = 'A.b19436aae4d94622.FiatToken'
 ),
-usdc_withdraws AS (
-    SELECT
-        block_height,
-        _inserted_timestamp,
-        block_timestamp,
-        tx_id,
-        event_data :to :: STRING AS sender,
-        event_contract AS token_contract,
-        event_data :amount :: FLOAT AS amount,
-        tx_succeeded
-    FROM
-        events
-    WHERE
-        tx_id IN (
-            SELECT
-                tx_id
-            FROM
-                transfers
-        )
-        AND event_contract = 'A.b19436aae4d94622.FiatToken'
-        AND event_type IN ('FiatTokenDeposited')
-    GROUP BY
-        block_height,
-        _inserted_timestamp,
-        block_timestamp,
-        tx_id,
-        sender,
-        token_contract,
-        amount,
-        tx_succeeded
-),
-usdc_deposits AS (
-    SELECT
-        tx_id,
-        _inserted_timestamp,
-        event_data :to :: STRING AS recipient,
-        event_contract AS token_contract,
-        event_data :amount :: FLOAT AS amount
-    FROM
-        events
-    WHERE
-        tx_id IN (
-            SELECT
-                tx_id
-            FROM
-                transfers
-        )
-        AND event_type = 'TokensDeposited'
-        AND event_contract = 'A.b19436aae4d94622.FiatToken'
-    GROUP BY
-        tx_id,
-        _inserted_timestamp,
-        recipient,
-        token_contract,
-        amount
-),
 withdraws AS (
     SELECT
         block_height,
         _inserted_timestamp,
         block_timestamp,
         tx_id,
-        event_data :from :: STRING AS sender,
+        CASE
+            WHEN event_type = 'FiatTokenDeposited'
+            AND event_contract = 'A.b19436aae4d94622.FiatToken' THEN event_data :to :: STRING
+            ELSE event_data :from :: STRING
+        END AS sender,
         event_contract AS token_contract,
         event_data :amount :: FLOAT AS amount,
         tx_succeeded
@@ -125,7 +73,12 @@ withdraws AS (
             FROM
                 transfers
         )
-        AND event_type IN ('TokensWithdrawn')
+        AND (
+            event_type IN (
+                'TokensWithdrawn',
+                'FiatTokenDeposited'
+            )
+        )
     GROUP BY
         block_height,
         _inserted_timestamp,
@@ -160,7 +113,7 @@ deposits AS (
         token_contract,
         amount
 ),
-w_d AS (
+FINAL AS (
     SELECT
         block_height,
         w._inserted_timestamp AS _inserted_timestamp,
@@ -188,48 +141,14 @@ w_d AS (
         recipient,
         w.token_contract,
         tx_succeeded
-),
-usdc_w_d AS (
-    SELECT
-        block_height,
-        w._inserted_timestamp AS _inserted_timestamp,
-        block_timestamp,
-        w.tx_id,
-        sender,
-        recipient,
-        w.token_contract,
-        SUM(COALESCE(d.amount, w.amount)) AS amount,
-        tx_succeeded
-    FROM
-        usdc_withdraws w
-        LEFT JOIN usdc_deposits d
-        ON w.tx_id = d.tx_id
-        AND w.token_contract = d.token_contract
-        AND w.amount = d.amount
-    WHERE
-        sender IS NOT NULL
-    GROUP BY
-        block_height,
-        w._inserted_timestamp,
-        block_timestamp,
-        w.tx_id,
-        sender,
-        recipient,
-        w.token_contract,
-        tx_succeeded
-),
-FINAL AS (
-    SELECT
-        *
-    FROM
-        w_d
-    UNION
-    SELECT
-        *
-    FROM
-        usdc_w_d
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id','sender', 'recipient','token_contract', 'amount']
+    ) }} AS token_transfers_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
