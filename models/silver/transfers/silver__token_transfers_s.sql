@@ -56,7 +56,11 @@ withdraws AS (
         _inserted_timestamp,
         block_timestamp,
         tx_id,
-        event_data :from :: STRING AS sender,
+        CASE
+            WHEN event_type = 'FiatTokenDeposited'
+            AND event_contract = 'A.b19436aae4d94622.FiatToken' THEN event_data :to :: STRING
+            ELSE event_data :from :: STRING
+        END AS sender,
         event_contract AS token_contract,
         event_data :amount :: FLOAT AS amount,
         tx_succeeded
@@ -69,7 +73,12 @@ withdraws AS (
             FROM
                 transfers
         )
-        AND event_type = 'TokensWithdrawn'
+        AND (
+            event_type IN (
+                'TokensWithdrawn',
+                'FiatTokenDeposited'
+            )
+        )
     GROUP BY
         block_height,
         _inserted_timestamp,
