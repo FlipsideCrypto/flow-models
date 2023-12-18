@@ -81,13 +81,15 @@ attributes AS (
         event_id,
         OBJECT_AGG(
             VALUE :name :: variant,
-            COALESCE(
-                VALUE :value :value :fields,
-                VALUE :value :value :staticType,
-                VALUE :value :value :value :value :: STRING,
-                VALUE :value :value :value :: STRING,
-                VALUE :value :value :: STRING,
-                'null'
+            TRY_PARSE_JSON(
+                COALESCE(
+                    VALUE :value :value :fields,
+                    VALUE :value :value :staticType,
+                    VALUE :value :value :value :value :: STRING,
+                    VALUE :value :value :value :: STRING,
+                    VALUE :value :value :: STRING,
+                    'null'
+                )
             ) :: variant
         ) AS event_data
     FROM
@@ -117,11 +119,11 @@ FINAL AS (
         e._inserted_timestamp,
         e._partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
-                ['event_id']
-            ) }} AS streamline_event_id,
+            ['event_id']
+        ) }} AS streamline_event_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id        
+        '{{ invocation_id }}' AS _invocation_id
     FROM
         flatten_events e
         LEFT JOIN attributes A USING (event_id)
