@@ -3,5 +3,5 @@ version: 2
 models:
   - name: beta__dim_nfl_teams
     description: |-
-      An archive of the ESPN Teams Endpoint. This view is in beta mode and subject to change, thus is not thoroughly documented. Please do not use for production purposes without accepting the risk of change.
+      An archive of the ESPN Teams Endpoint. This view is in beta mode and subject to change, thus is not thoroughly documented. Please do not use for production purposes without accepting the risk of sudden change or deletion.
 
