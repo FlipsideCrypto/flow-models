@@ -142,7 +142,10 @@ sources:
       - name: allday_metadata
       
   - name: flow_bronze
-    database: flow
+    database: |
+      {{ "FLOW" if target.database == 'FLOW' else "FLOW_DEV" }}
     schema: bronze
     tables:
       - name: ufc_strike_metadata
+      - name: espn_nfl_teams
+      - name: espn_nfl_athletes
