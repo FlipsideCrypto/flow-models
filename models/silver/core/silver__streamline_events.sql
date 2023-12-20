@@ -24,6 +24,8 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
+    AND
+        block_timestamp > CURRENT_DATE - INTERVAL '1 MONTH'
 ),
 flatten_events AS (
     SELECT
