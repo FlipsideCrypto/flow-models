@@ -80,55 +80,59 @@ attributes AS (
     SELECT
         event_id,
         OBJECT_AGG(
-            VALUE :name :: variant,
-            TRY_PARSE_JSON(
-                COALESCE(
-                    VALUE :value :value :fields,
-                    VALUE :value :value :staticType,
-                    VALUE :value :value :value :value :: STRING,
-                    VALUE :value :value :value :: STRING,
-                    VALUE :value :value :: STRING,
-                    'null'
+            data_key,
+            IFF (LEFT(data_value, 2) = '0x', data_value, TRY_PARSE_JSON(data_value)) :: variant) AS event_data
+            FROM
+                (
+                    SELECT
+                        event_id,
+                        VALUE :name :: variant AS data_key,
+                        COALESCE(
+                            VALUE :value :value :fields,
+                            VALUE :value :value :staticType,
+                            VALUE :value :value :value :value :: STRING,
+                            VALUE :value :value :value :: STRING,
+                            VALUE :value :value :: STRING,
+                            'null'
+                        ) AS data_value
+                    FROM
+                        flatten_events,
+                        LATERAL FLATTEN (
+                            COALESCE(
+                                decoded_payload :value :fields :: variant,
+                                event_values :value :fields :: variant
+                            )
+                        )
                 )
-            ) :: variant
-        ) AS event_data
-    FROM
-        flatten_events,
-        LATERAL FLATTEN (
-            COALESCE(
-                decoded_payload :value :fields :: variant,
-                event_values :value :fields :: variant
-            )
+            GROUP BY
+                1
+        ),
+        FINAL AS (
+            SELECT
+                e.tx_id,
+                e.block_height,
+                e.block_timestamp,
+                e.event_id,
+                e.event_index,
+                e.events_count,
+                e.payload,
+                e.event_contract,
+                e.event_type,
+                A.event_data,
+                e.tx_succeeded,
+                e._inserted_timestamp,
+                e._partition_by_block_id,
+                {{ dbt_utils.generate_surrogate_key(
+                    ['event_id']
+                ) }} AS streamline_event_id,
+                SYSDATE() AS inserted_timestamp,
+                SYSDATE() AS modified_timestamp,
+                '{{ invocation_id }}' AS _invocation_id
+            FROM
+                flatten_events e
+                LEFT JOIN attributes A USING (event_id)
         )
-    GROUP BY
-        1
-),
-FINAL AS (
     SELECT
-        e.tx_id,
-        e.block_height,
-        e.block_timestamp,
-        e.event_id,
-        e.event_index,
-        e.events_count,
-        e.payload,
-        e.event_contract,
-        e.event_type,
-        A.event_data,
-        e.tx_succeeded,
-        e._inserted_timestamp,
-        e._partition_by_block_id,
-        {{ dbt_utils.generate_surrogate_key(
-            ['event_id']
-        ) }} AS streamline_event_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
+        *
     FROM
-        flatten_events e
-        LEFT JOIN attributes A USING (event_id)
-)
-SELECT
-    *
-FROM
-    FINAL
+        FINAL
