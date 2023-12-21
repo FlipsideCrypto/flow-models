@@ -82,7 +82,8 @@ attributes AS (
         event_id,
         OBJECT_AGG(
             data_key,
-            IFF (LEFT(data_value, 2) = '0x', data_value :: variant, TRY_PARSE_JSON(data_value) :: variant)) AS event_data
+            IFF(IS_ARRAY(TRY_PARSE_JSON(data_value)) OR  IS_OBJECT(TRY_PARSE_JSON(data_value)), PARSE_JSON(data_value)::VARIANT, data_value::VARIANT)
+            ) AS event_data
             FROM
                 (
                     SELECT
