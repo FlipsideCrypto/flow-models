@@ -13,6 +13,7 @@ models:
             - buyer
             - nft_collection
             - nft_id
+            - price
 
     columns:
       - name: TX_ID
