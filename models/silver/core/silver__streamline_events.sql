@@ -24,6 +24,7 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
+AND _inserted_timestamp :: DATE >= '2023-12-01'
 ),
 flatten_events AS (
     SELECT
@@ -81,7 +82,7 @@ attributes AS (
         event_id,
         OBJECT_AGG(
             data_key,
-            IFF (LEFT(data_value, 2) = '0x', data_value, TRY_PARSE_JSON(data_value)) :: variant) AS event_data
+            IFF (LEFT(data_value, 2) = '0x', data_value :: variant, TRY_PARSE_JSON(data_value) :: variant)) AS event_data
             FROM
                 (
                     SELECT
