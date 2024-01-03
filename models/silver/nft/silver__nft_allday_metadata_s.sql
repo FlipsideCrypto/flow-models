@@ -36,13 +36,13 @@ FLATTEN_RES AS (
         contract
     FROM api_call,
     LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
-
+    WHERE api_call.res:status_code = 200 
+    AND data IS NOT NULL    
 ),
 
 FINAL AS (
     SELECT
         DATA :flowID  :: STRING AS nft_id,
-        status_code,
         {{ dbt_utils.generate_surrogate_key(
             ['nft_id']
         ) }} AS nft_allday_metadata_s_id,
