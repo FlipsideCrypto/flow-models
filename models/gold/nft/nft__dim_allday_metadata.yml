@@ -161,7 +161,7 @@ models:
                 - OBJECT
                 - VARIANT
 
-      - name: DIM_ALLDAY_METADATA
+      - name: DIM_ALLDAY_METADATA_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
