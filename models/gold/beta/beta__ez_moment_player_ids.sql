@@ -9,6 +9,7 @@ WITH espn AS (
             -- slight name mismatches
             WHEN A.full_name = 'Patrick Mahomes' THEN 'Patrick Mahomes II'
             WHEN A.full_name = 'Joshua Palmer' THEN 'Josh Palmer'
+            WHEN A.full_name = 'Gabe Davis' THEN 'Gabriel Davis'
             ELSE A.full_name
         END AS player,
         t.display_name AS team,
@@ -73,11 +74,11 @@ WITH espn AS (
             FROM
                 allday ad
                 LEFT JOIN espn
-                ON LOWER(
+                ON TRIM(LOWER(
                     ad.player
-                ) = LOWER(
+                )) = TRIM(LOWER(
                     espn.player
-                )
+                ))
         )
     SELECT
         *
