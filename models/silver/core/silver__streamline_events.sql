@@ -24,7 +24,6 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
-AND _inserted_timestamp :: DATE >= '2023-12-01'
 ),
 flatten_events AS (
     SELECT
