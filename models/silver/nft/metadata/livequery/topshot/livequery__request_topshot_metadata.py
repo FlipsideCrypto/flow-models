@@ -51,7 +51,11 @@ def model(dbt, session):
     # define params for UDF_API
     method = 'POST'
     headers = {
-        'Content-Type': 'application/json'
+        'Accept': 'application/json',
+        'Accept-Encoding': 'gzip',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/json',
+        'User-Agent': 'Flipside_LQ/0.1'
     }
     url = topshot_gql_params[0][0]
 
