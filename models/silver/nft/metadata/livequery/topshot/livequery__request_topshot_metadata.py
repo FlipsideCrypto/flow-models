@@ -55,7 +55,7 @@ def model(dbt, session):
         'Accept-Encoding': 'gzip',
         'Connection': 'keep-alive',
         'Content-Type': 'application/json',
-        'User-Agent': 'Flipside_LQ/0.1'
+        'User-Agent': 'Flipside_Flow_metadata/0.1'
     }
     url = topshot_gql_params[0][0]
 
