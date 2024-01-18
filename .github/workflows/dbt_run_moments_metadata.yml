@@ -31,6 +31,7 @@ jobs:
         dbt run -m silver__allday_moments_metadata_needed_s.sql;
         dbt run-operation get_allday_metadata;
         dbt run -m silver__nft_allday_metadata_s;
+        dbt run -s tag:topshot;
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit
