@@ -42,7 +42,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
 
         batch_size = 40 // limit on their end - 40
 
-        let call_groups = Math.ceil(row_count / batch_size)
+        let call_groups = 1
 
         for (i = 0; i < call_groups; i++) {
 
@@ -56,7 +56,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
             FROM subset`});
 
             flows_ids.next()
-            row_list = flows_ids.getColumnValue(1);
+            row_list = [5030890,5032153,5030923,5040851,5039641,5039459]
             
             var create_temp_table_command = `
                 INSERT INTO {{ target.database }}.bronze_api.allday_metadata
