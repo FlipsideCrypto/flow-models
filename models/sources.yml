@@ -10,9 +10,9 @@ sources:
 
   - name: crosschain_core
     database: crosschain
-    schema: core
+    schema: silver
     tables:
-      - name: dim_labels
+      - name: labels_combined
 
   - name: bronze_streamline
     database: streamline
@@ -140,7 +140,7 @@ sources:
       bronze_api
     tables:
       - name: allday_metadata
-      
+
   - name: flow_bronze
     database: |
       {{ "FLOW" if target.database == 'FLOW' else "FLOW_DEV" }}
