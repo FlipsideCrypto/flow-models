@@ -4,8 +4,10 @@
     tags = ['livequery', 'allday', 'moment_metadata'],
 ) }}
 
-{% set table_exists = check_table_exists('SILVER', 'NFT_ALLDAY_METADATA_S') %}
-
+{% set table_exists = check_table_exists(
+    'SILVER',
+    'NFT_ALLDAY_METADATA_S'
+) %}
 WITH mints AS (
 
     SELECT
@@ -49,9 +51,35 @@ FROM
     {{ ref('silver__nft_allday_metadata') }}
 {% if table_exists | trim == '"True"' %}
 EXCEPT
-    SELECT
-        nft_collection AS event_contract,
-        nft_id AS moment_id
-    FROM
-        {{ ref('silver__nft_allday_metadata_s') }}
+SELECT
+    nft_collection AS event_contract,
+    nft_id AS moment_id
+FROM
+    {{ ref('silver__nft_allday_metadata_s') }}
+EXCEPT
+(
+    WITH try_number AS (
+        SELECT
+            'A.e4cf4bdc1751c65d.AllDay' AS EVENT_CONTRACT,
+            FLATTENED.VALUE AS REQUESTED_ID, 
+            COUNT(*) AS REQUEST_COUNT
+
+        FROM
+            {{ source(
+                'bronze_api',
+                'allday_metadata'
+            ) }} AS mf, LATERAL FLATTEN(
+                input => mf.requested_ids
+            ) AS flattened
+        WHERE contract = 'A.e4cf4bdc1751c65d.AllDay'
+        GROUP BY FLATTENED.VALUE
+    )
+SELECT
+    event_contract,
+    REQUESTED_ID AS moment_id
+FROM
+    try_number
+WHERE
+    request_count > 10
+)
 {% endif %}
