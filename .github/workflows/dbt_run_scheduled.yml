@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@AN-4374/upgrade-dbt-1.7
     with:
       dbt_command: >
         dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
@@ -35,4 +35,4 @@ jobs:
         dbt run -s tag:scheduled_core tag:streamline_complete "flow_models,models/gold" --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+    secrets: inherit

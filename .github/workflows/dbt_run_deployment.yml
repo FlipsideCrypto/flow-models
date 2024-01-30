@@ -7,9 +7,9 @@ on:
       - "main"
     inputs:
       warehouse:
-        type: choice 
+        type: choice
         description: Snowflake warehouse
-        required: true 
+        required: true
         options:
           - DBT
           - DBT_CLOUD
@@ -17,9 +17,9 @@ on:
         default: DBT
       dbt_command:
         type: string
-        description: 'DBT Run Command'
+        description: "DBT Run Command"
         required: true
-    
+
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
   DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
@@ -33,16 +33,15 @@ env:
   WAREHOUSE: "${{ inputs.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
 
-
 concurrency:
   group: ${{ github.workflow }}
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_deployment_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_deployment_template.yml@AN-4374/upgrade-dbt-1.7
     with:
       dbt_command: |
-         ${{ inputs.dbt_command }}
+        ${{ inputs.dbt_command }}
       warehouse: ${{ inputs.WAREHOUSE }}
       environment: workflow_prod
-    secrets: inherit 
+    secrets: inherit
