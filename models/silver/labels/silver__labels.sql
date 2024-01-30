@@ -1,7 +1,10 @@
 {{ config(
-    materialized = 'table',
-    cluster_by = ['address'],
+    materialized = 'incremental',
     unique_key = 'event_id',
+    cluster_by = 'modified_timestamp::DATE',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(address); DELETE FROM {{ this }} WHERE _is_deleted = TRUE;",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
@@ -22,6 +25,17 @@ WITH labels AS (
         '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('bronze__labels') }}
+
+    {% if is_incremental() %}
+    AND modified_timestamp >= (
+        SELECT
+            MAX(
+                modified_timestamp
+            )
+        FROM
+            {{ this }}
+    )
+    {% endif %}
 )
 SELECT
     *

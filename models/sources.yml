@@ -8,7 +8,7 @@ sources:
       - name: flow_blocks
       - name: flow_txs
 
-  - name: crosschain_core
+  - name: crosschain_silver
     database: crosschain
     schema: silver
     tables:
