@@ -28,7 +28,7 @@ WITH labels AS (
         {{ ref('bronze__labels') }}
 
     {% if is_incremental() %}
-    AND modified_timestamp >= (
+    WHERE modified_timestamp >= (
         SELECT
             MAX(
                 modified_timestamp
