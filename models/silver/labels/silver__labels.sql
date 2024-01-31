@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'event_id',
+    unique_key = 'labels_id',
     cluster_by = 'modified_timestamp::DATE',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
