@@ -19,6 +19,7 @@ WITH labels AS (
         label_subtype,
         address_name,
         project_name,
+        _is_deleted,
         labels_combined_id AS labels_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
