@@ -9,56 +9,95 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - nft_id
+          severity: error
+          error_if: ">10"
+          warn_if: "<10"
 
     columns:
       - name: NFT_ID
         description: "{{ doc('nft_id') }}"
         tests:
-          - not_null
-          - unique
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
+          - unique:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
 
       - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
 
       - name: NFLALLDAY_ID
         description: "{{ doc('nflallday_id') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
 
       - name: SERIAL_NUMBER
         description: "{{ doc('serial_number') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
 
       - name: TOTAL_CIRCULATION
         description: "{{ doc('total_circulation') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
 
       - name: MOMENT_DESCRIPTION
         description: "{{ doc('moment_description') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -67,7 +106,10 @@ models:
       - name: PLAYER
         description: "{{ doc('player') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -76,7 +118,10 @@ models:
       - name: TEAM
         description: "{{ doc('team') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -85,7 +130,10 @@ models:
       - name: SEASON
         description: "{{ doc('season') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -94,7 +142,10 @@ models:
       - name: WEEK
         description: "{{ doc('week') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -103,7 +154,10 @@ models:
       - name: CLASSIFICATION
         description: "{{ doc('classification') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -112,7 +166,10 @@ models:
       - name: PLAY_TYPE
         description: "{{ doc('play_type') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -121,7 +178,10 @@ models:
       - name: MOMENT_DATE
         description: "{{ doc('moment_date') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - TIMESTAMP_NTZ
@@ -129,7 +189,10 @@ models:
       - name: SERIES
         description: "{{ doc('series') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -138,7 +201,10 @@ models:
       - name: SET_NAME
         description: "{{ doc('set_name') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -147,7 +213,10 @@ models:
       - name: VIDEO_URLS
         description: "{{ doc('video_urls') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - ARRAY
@@ -155,7 +224,10 @@ models:
       - name: MOMENT_STATS_FULL
         description: "{{ doc('moment_stats_full') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: error
+              error_if: ">10"
+              warn_if: "<10"
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - OBJECT
