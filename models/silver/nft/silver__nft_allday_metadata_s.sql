@@ -37,7 +37,7 @@ FLATTEN_RES AS (
     FROM api_call,
     LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
     WHERE api_call.res:status_code = 200 
-    AND data IS NOT NULL    
+    AND data IS NOT NULL AND data:editionFlowID != 0
 ),
 
 FINAL AS (
@@ -73,8 +73,6 @@ FINAL AS (
         '{{ invocation_id }}' AS _invocation_id
     FROM
         FLATTEN_RES
-    qualify
-        row_number() over (partition by nft_allday_metadata_s_id order by _inserted_timestamp desc) = 1
 )
 SELECT
     *
