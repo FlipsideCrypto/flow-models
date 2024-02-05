@@ -37,7 +37,7 @@ FLATTEN_RES AS (
     FROM api_call,
     LATERAL FLATTEN(input => api_call.res:data:data:searchMomentNFTsV2:edges) as flattened_array
     WHERE api_call.res:status_code = 200 
-    AND data IS NOT NULL AND data:editionFlowID != 0
+    AND data IS NOT NULL
 ),
 
 FINAL AS (
