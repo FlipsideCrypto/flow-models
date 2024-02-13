@@ -25,7 +25,7 @@ udfs:
 
 udf_2:
 	dbt run-operation create_udf_bulk_grpc_us_east_2 \
-	--vars '{"UPDATE_UDFS_AND_SPS":False}' \
+	--vars '{"UPDATE_UDFS_AND_SPS":True}' \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
@@ -83,7 +83,7 @@ tx_history:
 tx_results_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql \
+	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_22.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -95,3 +95,5 @@ lq_overloads:
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt \
 	--vars '{"UPDATE_EPHEMERAL_UDFS":True}'
+
+
