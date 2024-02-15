@@ -30,7 +30,7 @@ jobs:
       dbt_command: >
         dbt run -s 
         2+streamline__get_transactions_history_mainnet_18 
-        --vars '{"STREAMLINE_INVOKE_STREAMS": True, "sql_limit": ${{ vars.SQL_LIMIT_HISTORY }}, "producer_batch_size": ${{ vars.PRODUCER_BATCH_SIZE_HISTORY }}, "worker_batch_size": ${{ vars.WORKER_BATCH_SIZE_HISTORY }}, "batch_call_limit": ${{ vars.BATCH_CALL_LIMIT_HISTORY }}}'
+        --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit
