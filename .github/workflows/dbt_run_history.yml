@@ -30,15 +30,7 @@ jobs:
       dbt_command: >
         dbt run -s 
         2+streamline__get_transactions_history_mainnet_18 
-        2+streamline__get_transactions_history_mainnet_19 
-        2+streamline__get_transaction_results_history_mainnet_14
-        2+streamline__get_transaction_results_history_mainnet_15
-        2+streamline__get_transaction_results_history_mainnet_17
-        2+streamline__get_transaction_results_history_mainnet_16
-        2+streamline__get_transaction_results_history_mainnet_18
-        2+streamline__get_transaction_results_history_mainnet_19
-        2+streamline__get_transaction_results_history_mainnet_22
-        --vars '{"STREAMLINE_INVOKE_STREAMS": True, "sql_limit": ${{ vars.SQL_LIMIT_HISTORY }}, "producer_batch_size": ${{ vars.PRODUCER_BATCH_SIZE_HISTORY }}, "worker_batch_size": ${{ vars.WORKER_BATCH_SIZE_HISTORY }}, "batch_call_limit": ${{ vars.BATCH_CALL_LIMIT_HISTORY }}}'
+        --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
       environment: workflow_prod
       warehouse: ${{ vars.WAREHOUSE }}
     secrets: inherit
