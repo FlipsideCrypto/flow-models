@@ -15,7 +15,7 @@ SELECT
     unique_payer_count,
     total_fees AS total_fees_native,
     ROUND(
-        total_fees * ((open + close) / 2 ),
+        total_fees * p.close,
         2
     ) AS total_fees_usd,
     core_metrics_hourly_id AS ez_core_metrics_hourly_id,

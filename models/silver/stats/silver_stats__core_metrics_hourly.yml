@@ -62,7 +62,7 @@ models:
               column_type_list:
                 - NUMBER
                 - FLOAT
-      - name: UNIQUE_TO_COUNT
+      - name: UNIQUE_PAYER_COUNT
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
