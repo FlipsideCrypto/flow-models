@@ -42,11 +42,6 @@ transactions AS (
             'hour',
             block_timestamp
         ) AS block_timestamp_hour,
-        MIN(block_height) AS block_number_min,
-        MAX(block_height) AS block_number_max,
-        COUNT(
-            DISTINCT block_height
-        ) AS block_count,
         COUNT(
             DISTINCT tx_id
         ) AS transaction_count,
