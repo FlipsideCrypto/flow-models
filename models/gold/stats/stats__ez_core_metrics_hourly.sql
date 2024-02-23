@@ -1,6 +1,6 @@
 {{ config (
     materialized = 'view',
-    tags = ['scheduled']
+    tags = ['scheduled_non_core']
 ) }}
 
 

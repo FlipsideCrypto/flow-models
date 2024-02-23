@@ -56,7 +56,7 @@ There is more information on how to use dbt docs in the last section of this doc
 
 ### Stats Tables (flow.stats)
 
-- [ez_core_metrics_hourly](https://flipsidecrypto.github.io/flow-models/#!/model/model.flow_models.stats__ez_core_metrics_hourly)
+- [ez_core_metrics_hourly](#!/model/model.flow_models.stats__ez_core_metrics_hourly)
 
 ## **Data Model Overview**
 

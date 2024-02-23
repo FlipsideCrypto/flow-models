@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_timestamp_hour",
     cluster_by = ['block_timestamp_hour::DATE'],
-    tags = ['curated']
+    tags = ['curated', 'scheduled_non_core']
 ) }}
 
 WITH fees AS (
@@ -12,7 +12,7 @@ WITH fees AS (
             'hour',
             block_timestamp
         ) AS block_timestamp_hour,
-        SUM(event_data:amount):: DECIMAL as total_fees 
+        SUM(event_data:amount :: FLOAT ) as total_fees 
     FROM
         {{ ref('core__fact_events') }} -- TODO: change this to silver when the backfill is done
     WHERE 
@@ -85,7 +85,7 @@ transactions AS (
 )
 SELECT
     tx.*,
-    COALESCE(total_fees, 0) ::DECIMAL AS total_fees, -- As we are missing data, we miss the fee events. We need to coalesce to 0
+    COALESCE(total_fees, 0) AS total_fees, -- As we are missing data, we miss the fee events. We need to coalesce to 0
     {{ dbt_utils.generate_surrogate_key(
         ['tx.block_timestamp_hour']
     ) }} AS core_metrics_hourly_id,

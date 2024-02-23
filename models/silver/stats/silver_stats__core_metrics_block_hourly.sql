@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_timestamp_hour",
     cluster_by = ['block_timestamp_hour::DATE'],
-    tags = ['curated']
+    tags = ['curated', 'scheduled_non_core']
 ) }}
 
 SELECT
@@ -11,8 +11,8 @@ SELECT
         'hour',
         block_timestamp
     ) AS block_timestamp_hour,
-    MIN(block_height) AS block_number_min,
-    MAX(block_height) AS block_number_max,
+    MIN(block_height) :: INT AS block_number_min,
+    MAX(block_height) :: INT AS block_number_max,
     COUNT(
         1
     ) AS block_count,
@@ -31,10 +31,10 @@ WHERE
 {% if is_incremental() %}
 AND DATE_TRUNC(
     'hour',
-    _inserted_timestamp
+    inserted_timestamp
 ) >= (
     SELECT
-        MAX(DATE_TRUNC('hour', _inserted_timestamp)) - INTERVAL '12 hours'
+        MAX(DATE_TRUNC('hour', inserted_timestamp)) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
