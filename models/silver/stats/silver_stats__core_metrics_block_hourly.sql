@@ -5,7 +5,26 @@
     cluster_by = ['block_timestamp_hour::DATE'],
     tags = ['curated', 'scheduled_non_core']
 ) }}
+/* run incremental timestamp value first then use it as a static value */
+{% if execute %}
 
+{% if is_incremental() %}
+{% set query %}
+
+SELECT
+    MIN(DATE_TRUNC('hour', block_timestamp)) block_timestamp_hour
+FROM
+    {{ ref('core__fact_blocks') }}
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp) - INTERVAL '2 hours'
+        FROM
+            {{ this }}
+    ) {% endset %}
+    {% set min_block_timestamp_hour = run_query(query).columns [0].values() [0] %}
+{% endif %}
+{% endif %}
 SELECT
     DATE_TRUNC(
         'hour',
@@ -31,13 +50,8 @@ WHERE
 {% if is_incremental() %}
 AND DATE_TRUNC(
     'hour',
-    inserted_timestamp
-) >= (
-    SELECT
-        MAX(DATE_TRUNC('hour', inserted_timestamp)) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
-)
+    block_timestamp
+) >= '{{ min_block_timestamp_hour }}'
 {% endif %}
 GROUP BY
     1
