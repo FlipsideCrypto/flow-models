@@ -83,7 +83,15 @@ tx_history:
 tx_results_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_22.sql \
+	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_18.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+tx_results_batch_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_18.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -96,4 +104,9 @@ lq_overloads:
 	--profiles-dir ~/.dbt \
 	--vars '{"UPDATE_EPHEMERAL_UDFS":True}'
 
-
+bronze:
+	dbt run \
+	-s bronze__streamline_transaction_results_history \
+	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	--profiles-dir ~/.dbt \
+	--target $(DBT_TARGET)
