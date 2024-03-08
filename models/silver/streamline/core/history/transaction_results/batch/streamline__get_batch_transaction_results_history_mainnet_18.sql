@@ -9,7 +9,8 @@
             "sql_limit": "72000",
             "producer_batch_size": "8000",
             "worker_batch_size": "1000",
-            "sql_source": "{{this.identifier}}"
+            "sql_source": "{{this.identifier}}",
+            "concurrent_requests": "750"
         }
     )
 ) }}
