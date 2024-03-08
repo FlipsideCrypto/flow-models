@@ -3,6 +3,7 @@ SHELL := /bin/bash
 # set default target
 DBT_TARGET ?= dev
 AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_dev
+INVOKE_STREAMS ?= True
 
 dbt-console: 
 	docker-compose run dbt_console
@@ -90,8 +91,8 @@ tx_results_history:
 
 tx_results_batch_history:
 	dbt run \
-	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_18.sql \
+	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_19.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
