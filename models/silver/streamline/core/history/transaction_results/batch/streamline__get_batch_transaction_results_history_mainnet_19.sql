@@ -4,11 +4,11 @@
         func = 'udf_bulk_grpc_us_east_2',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
-            "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
-            "external_table": "transaction_results_batch_mainnet_18",
-            "sql_limit": "72000",
-            "producer_batch_size": "8000",
-            "worker_batch_size": "1000",
+            "node_url":"access-001.mainnet19.nodes.onflow.org:9000",
+            "external_table": "transaction_results_batch_mainnet_19",
+            "sql_limit": "188000",
+            "producer_batch_size": "14000",
+            "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}"
         }
     )
@@ -21,16 +21,16 @@ WITH blocks AS (
     FROM
         {{ ref("streamline__blocks") }}
     WHERE
-        block_height BETWEEN 31735955
-        AND 35858810
+        block_height BETWEEN 35858811
+        AND 40171633
     EXCEPT
     SELECT
         distinct block_number AS block_height
     FROM
         {{ ref("streamline__complete_get_transaction_results_history") }}
     WHERE
-        block_number BETWEEN 31735955 
-        AND 35858810
+        block_number BETWEEN 35858811 
+        AND 40171633
 ),
 block_ids AS (
 -- CTE to generate the block_ids for the missing block transactions
@@ -40,8 +40,8 @@ block_ids AS (
     FROM
         {{ ref("streamline__complete_get_blocks_history")}}
     WHERE
-        block_number BETWEEN 31735955
-        AND 35858810
+        block_number BETWEEN 35858811
+        AND 40171633
 )
 -- Generate the requests based on the missing block transactions
 SELECT
