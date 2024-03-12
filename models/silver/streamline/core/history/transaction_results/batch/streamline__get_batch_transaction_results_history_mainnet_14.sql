@@ -30,8 +30,8 @@ WITH blocks AS (
     FROM
         {{ ref("streamline__complete_get_transaction_results_history") }}
     WHERE
-        block_number BETWEEN 31735955 
-        AND 35858810
+        block_number BETWEEN 19050753
+        AND 21291691
 ),
 block_ids AS (
 -- CTE to generate the block_ids for the missing block transactions
@@ -41,8 +41,8 @@ block_ids AS (
     FROM
         {{ ref("streamline__complete_get_blocks_history")}}
     WHERE
-        block_number BETWEEN 31735955
-        AND 35858810
+        block_number BETWEEN 19050753
+        AND 21291691
 )
 -- Generate the requests based on the missing block transactions
 SELECT
