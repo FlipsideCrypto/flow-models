@@ -5,7 +5,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet15.nodes.onflow.org:9000",
-            "external_table": "transaction_results_batch_mainnet_15",
+            "external_table": "transaction_results_mainnet_15",
             "sql_limit": "72000",
             "producer_batch_size": "8000",
             "worker_batch_size": "1000",
