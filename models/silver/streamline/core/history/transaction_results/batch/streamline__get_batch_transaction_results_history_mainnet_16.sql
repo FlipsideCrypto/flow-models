@@ -1,16 +1,16 @@
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
-        func = 'udf_bulk_grpc_us_east_1',
+        func = 'udf_bulk_grpc',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet16.nodes.onflow.org:9000",
             "external_table": "transaction_results_mainnet_16",
-            "sql_limit": "72000",
-            "producer_batch_size": "8000",
-            "worker_batch_size": "1000",
+            "sql_limit": "188000",
+            "producer_batch_size": "14000",
+            "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "750"
+            "concurrent_requests": "1000"
         }
     )
 ) }}

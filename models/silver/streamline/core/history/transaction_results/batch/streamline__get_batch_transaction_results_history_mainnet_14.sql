@@ -6,11 +6,11 @@
         params = {
             "node_url":"access-001.mainnet14.nodes.onflow.org:9000",
             "external_table": "transaction_results_mainnet_14",
-            "sql_limit": "72000",
-            "producer_batch_size": "8000",
+            "sql_limit": "188000",
+            "producer_batch_size": "14000",
             "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "1000"
+            "concurrent_requests": "450"
         }
     )
 ) }}
