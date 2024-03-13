@@ -59,7 +59,7 @@ SELECT
         'grpc',
         'proto3',
         'method',
-        'get_transaction_by_block_i_d',
+        'get_transactions_by_block_i_d',
         'block_height',
         block_height :: INTEGER,
         'method_params',
