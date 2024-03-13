@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
-        func = 'udf_bulk_grpc_us_east_2',
+        func = 'udf_bulk_grpc_us_east_1',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet16.nodes.onflow.org:9000",
