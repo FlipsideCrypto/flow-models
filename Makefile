@@ -97,6 +97,14 @@ tx_results_batch_history:
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
 
+tx_batch_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transactions/batch/streamline__get_batch_transactions_mainnet_18.sql \
+	--profile flow \
+	--target dev \
+	--profiles-dir ~/.dbt
+
 lq_overloads:
 	dbt run \
 	-s models/deploy/core/ \
