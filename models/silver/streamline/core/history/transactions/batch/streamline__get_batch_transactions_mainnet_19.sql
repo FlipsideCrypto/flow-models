@@ -1,16 +1,16 @@
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
-        func = 'udf_bulk_grpc_us_east_1',
+        func = 'udf_bulk_grpc',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet19.nodes.onflow.org:9000",
-            "external_table": "transaction_mainnet_19",
-            "sql_limit": "70000",
-            "producer_batch_size": "7000",
-            "worker_batch_size": "1000",
+            "external_table": "transactions_mainnet_19",
+            "sql_limit": "72000",
+            "producer_batch_size": "14000",
+            "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "750"
+            "concurrent_requests": "1000"
         }
     )
 ) }}
@@ -33,7 +33,7 @@ WITH collection_transactions AS (
 -- CTE to identify transactions that haven't been ingested yet
 blocks AS (
     SELECT
-        distinct(.block_height)
+        distinct(block_height)
     FROM
         collection_transactions ct
         LEFT JOIN {{ ref("streamline__complete_get_transactions_history") }}

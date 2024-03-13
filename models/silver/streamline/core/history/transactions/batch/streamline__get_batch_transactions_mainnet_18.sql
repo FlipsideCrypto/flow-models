@@ -5,12 +5,12 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
-            "external_table": "transaction_mainnet_18",
-            "sql_limit": "1000",
-            "producer_batch_size": "100",
-            "worker_batch_size": "10",
+            "external_table": "transactions_mainnet_18",
+            "sql_limit": "2000",
+            "producer_batch_size": "1000",
+            "worker_batch_size": "500",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "750"
+            "concurrent_requests": "850"
         }
     )
 ) }}
@@ -27,8 +27,8 @@ WITH collection_transactions AS (
             input => cch.data :transaction_ids
         ) AS TRANSACTION
     WHERE
-        block_height BETWEEN 35858811
-        AND 40171633
+        block_height BETWEEN 31735955
+        AND 35858810
 ),
 -- CTE to identify transactions that haven't been ingested yet
 blocks AS (
@@ -50,8 +50,8 @@ block_ids AS (
     FROM
         {{ ref("streamline__complete_get_blocks_history")}}
     WHERE
-        block_number BETWEEN 35858811
-        AND 40171633
+        block_number BETWEEN 31735955
+        AND 35858810
 )
 -- Generate the requests based on the missing block transactions
 SELECT
