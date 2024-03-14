@@ -6,9 +6,9 @@
         params = {
             "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
             "external_table": "transactions_mainnet_18",
-            "sql_limit": "2000",
-            "producer_batch_size": "1000",
-            "worker_batch_size": "500",
+            "sql_limit": "188000",
+            "producer_batch_size": "14000",
+            "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
             "concurrent_requests": "850"
         }
