@@ -4,34 +4,43 @@
         func = 'udf_bulk_grpc',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
-            "node_url":"access-001.mainnet19.nodes.onflow.org:9000",
-            "external_table": "transaction_results_mainnet_19",
+            "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
+            "external_table": "transactions_mainnet_18",
             "sql_limit": "188000",
             "producer_batch_size": "14000",
             "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "750"
+            "concurrent_requests": "850"
         }
     )
 ) }}
 
-WITH blocks AS (
--- CTE to identify blocks that doesn't have tx_results ingested for mainnet 18
+WITH collection_transactions AS (
+
     SELECT
-        block_height
+        block_number AS block_height,
+        TRANSACTION.value :: STRING AS transaction_id
     FROM
-        {{ ref("streamline__blocks") }}
+        {{ ref('streamline__complete_get_collections_history') }}
+        cch,
+        LATERAL FLATTEN(
+            input => cch.data :transaction_ids
+        ) AS TRANSACTION
     WHERE
-        block_height BETWEEN 35858811
-        AND 40171633
-    EXCEPT
+        block_height BETWEEN 31735955
+        AND 35858810
+),
+-- CTE to identify transactions that haven't been ingested yet
+blocks AS (
     SELECT
-        distinct block_number AS block_height
+        distinct(block_height)
     FROM
-        {{ ref("streamline__complete_get_transaction_results_history") }}
+        collection_transactions ct
+        LEFT JOIN {{ ref("streamline__complete_get_transactions_history") }}
+        t
+        ON ct.transaction_id = t.id
     WHERE
-        block_number BETWEEN 35858811 
-        AND 40171633
+        t.id IS NULL
 ),
 block_ids AS (
 -- CTE to generate the block_ids for the missing block transactions
@@ -41,8 +50,8 @@ block_ids AS (
     FROM
         {{ ref("streamline__complete_get_blocks_history")}}
     WHERE
-        block_number BETWEEN 35858811
-        AND 40171633
+        block_number BETWEEN 31735955
+        AND 35858810
 )
 -- Generate the requests based on the missing block transactions
 SELECT
@@ -50,7 +59,7 @@ SELECT
         'grpc',
         'proto3',
         'method',
-        'get_transaction_results_by_block_i_d',
+        'get_transactions_by_block_i_d',
         'block_height',
         block_height :: INTEGER,
         'method_params',
