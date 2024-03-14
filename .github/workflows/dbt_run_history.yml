@@ -41,7 +41,7 @@ jobs:
           dbt deps
 
       - name: Run DBT Jobs
-        run:  >
+        run:  |
         dbt run -s 
         2+streamline__get_batch_transactions_mainnet_18
         2+streamline__get_batch_transactions_mainnet_19
