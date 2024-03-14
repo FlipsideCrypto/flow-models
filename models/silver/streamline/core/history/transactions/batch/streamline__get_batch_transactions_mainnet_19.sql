@@ -10,7 +10,7 @@
             "producer_batch_size": "14000",
             "worker_batch_size": "100",
             "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "1000"
+            "concurrent_requests": "800"
         }
     )
 ) }}
