@@ -4,8 +4,8 @@ run-name: dbt_run_history
 on:
   workflow_dispatch:
   schedule:
-    # Runs once per day at 00:00 UTC
-    - cron: "0 0 * * *"
+    # Runs every 20 minutes
+    - cron: "*/20 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -29,11 +29,11 @@ jobs:
     with:
       dbt_command: >
         dbt run -s 
-        2+streamline__get_transactions_history_mainnet_18
-        2+streamline__get_transactions_history_mainnet_19
-        2+streamline__get_batch_transaction_results_history_mainnet_14
-        2+streamline__get_batch_transaction_results_history_mainnet_15
-        2+streamline__get_batch_transaction_results_history_mainnet_16
+        2+streamline__get_batch_transactions_mainnet_18
+        2+streamline__get_batch_transactions_mainnet_19
+        2+streamline__get_transaction_results_history_mainnet_14
+        2+streamline__get_transaction_results_history_mainnet_15
+        2+streamline__get_transaction_results_history_mainnet_16
         2+streamline__get_batch_transaction_results_history_mainnet_17
         2+streamline__get_batch_transaction_results_history_mainnet_18
         2+streamline__get_batch_transaction_results_history_mainnet_19
