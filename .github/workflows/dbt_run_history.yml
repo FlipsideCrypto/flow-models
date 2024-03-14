@@ -41,15 +41,15 @@ jobs:
           dbt deps
 
       - name: Run DBT Jobs
-        run:  |
-        dbt run -s 
-        2+streamline__get_batch_transactions_mainnet_18
-        2+streamline__get_batch_transactions_mainnet_19
-        2+streamline__get_transaction_results_history_mainnet_14
-        2+streamline__get_transaction_results_history_mainnet_15
-        2+streamline__get_transaction_results_history_mainnet_16
-        2+streamline__get_batch_transaction_results_history_mainnet_17
-        2+streamline__get_batch_transaction_results_history_mainnet_18
-        2+streamline__get_batch_transaction_results_history_mainnet_19
-        2+streamline__get_batch_transaction_results_history_mainnet_22
-        --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
+        run: |
+          dbt run -s 
+          2+streamline__get_batch_transactions_mainnet_18
+          2+streamline__get_batch_transactions_mainnet_19
+          2+streamline__get_transaction_results_history_mainnet_14
+          2+streamline__get_transaction_results_history_mainnet_15
+          2+streamline__get_transaction_results_history_mainnet_16
+          2+streamline__get_batch_transaction_results_history_mainnet_17
+          2+streamline__get_batch_transaction_results_history_mainnet_18
+          2+streamline__get_batch_transaction_results_history_mainnet_19
+          2+streamline__get_batch_transaction_results_history_mainnet_22
+          --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
