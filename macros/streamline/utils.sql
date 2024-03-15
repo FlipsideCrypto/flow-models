@@ -47,3 +47,41 @@
       _utils.UDF_REGISTER_SECRET(REQUEST_ID, _utils.UDF_WHOAMI(), KEY)
 
 {% endmacro %}
+
+
+{% macro if_data_call_function_v2(
+        func,
+        target,
+        params
+    ) %}
+    {% if var(
+            "STREAMLINE_INVOKE_STREAMS"
+        ) %}
+        {% if execute %}
+            {{ log(
+                "Running macro `if_data_call_function`: Calling udf " ~ func ~ " with params: \n" ~ params | tojson(indent=2) ~  "\n on " ~ target,
+                True
+            ) }}
+        {% endif %}
+    SELECT
+        {{ func }}( parse_json($${{ params | tojson }}$$) )
+    WHERE
+        EXISTS(
+            SELECT
+                1
+            FROM
+                {{ target }}
+            LIMIT
+                1
+        )
+    {% else %}
+        {% if execute %}
+            {{ log(
+                "Running macro `if_data_call_function`: NOOP",
+                False
+            ) }}
+        {% endif %}
+    SELECT
+        NULL
+    {% endif %}
+{% endmacro %}
