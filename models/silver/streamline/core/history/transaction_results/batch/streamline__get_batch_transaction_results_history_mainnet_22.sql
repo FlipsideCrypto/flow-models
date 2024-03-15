@@ -2,7 +2,7 @@
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
         func = 'udf_bulk_grpc',
-        target = "{{this.schema}}.{{this.identifier}}",
+        target = "streamline.{{this.identifier}}",
         params = {
             "node_url":"access-001.mainnet22.nodes.onflow.org:9000",
             "external_table": "transaction_results_mainnet_22",
