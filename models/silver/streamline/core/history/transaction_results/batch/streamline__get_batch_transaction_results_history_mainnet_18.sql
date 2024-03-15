@@ -1,19 +1,11 @@
 {{ config (
     materialized = "view",
-    post_hook = if_data_call_function_v2(
-        func = 'udf_bulk_grpc',
-        target = "streamline.{{this.identifier}}",
-        params = {
-            "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
-            "external_table": "transaction_results_mainnet_18",
-            "sql_limit": "188000",
-            "producer_batch_size": "14000",
-            "worker_batch_size": "100",
-            "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "770"
-        }
+    post_hook = if_data_call_function(
+        func = "streamline.udf_bulk_grpc(object_construct('node_url','access-001.mainnet18.nodes.onflow.org:9000', 'external_table', 'transaction_results_mainnet_18', 'sql_limit', '188000', 'producer_batch_size', '14000', 'worker_batch_size', '100', 'sql_source', '{{this.identifier}}', 'concurrent_requests', '770'))",
+        target = "streamline.{{this.identifier}}"
+        )        
     )
-) }}
+}}
 
 WITH blocks AS (
 -- CTE to identify blocks that doesn't have tx_results ingested for mainnet 18

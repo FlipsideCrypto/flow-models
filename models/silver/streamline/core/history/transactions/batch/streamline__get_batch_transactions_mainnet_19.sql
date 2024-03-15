@@ -1,19 +1,11 @@
 {{ config (
     materialized = "view",
-    post_hook = if_data_call_function_v2(
-        func = 'udf_bulk_grpc',
-        target = "streamline.{{this.identifier}}",
-        params = {
-            "node_url":"access-001.mainnet19.nodes.onflow.org:9000",
-            "external_table": "transactions_mainnet_19",
-            "sql_limit": "188000",
-            "producer_batch_size": "14000",
-            "worker_batch_size": "100",
-            "sql_source": "{{this.identifier}}",
-            "concurrent_requests": "800"
-        }
+    post_hook = if_data_call_function(
+        func = "streamline.udf_bulk_grpc(object_construct('node_url','access-001.mainnet19.nodes.onflow.org:9000', 'external_table', 'transactions_mainnet_19', 'sql_limit', '188000', 'producer_batch_size', '14000', 'worker_batch_size', '100', 'sql_source', '{{this.identifier}}', 'concurrent_requests', '800'))",
+        target = "streamline.{{this.identifier}}"
+        )        
     )
-) }}
+}}
 
 WITH collection_transactions AS (
 
