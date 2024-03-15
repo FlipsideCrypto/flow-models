@@ -1,8 +1,8 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_bulk_grpc(object_construct('sql_source', '{{this.identifier}}','node_url','access-001.mainnet15.nodes.onflow.org:9000','external_table', 'transaction_results_mainnet_15','sql_limit', '500000', 'producer_batch_size','400000',  'worker_batch_size','100', 'batch_call_limit', {{var('batch_call_limit','1')}}))",
-        target = "{{this.schema}}.{{this.identifier}}"
+        func = "streamline.udf_bulk_grpc(object_construct('sql_source', '{{this.identifier}}','node_url','access-001.mainnet15.nodes.onflow.org:9000','external_table', 'transaction_results_mainnet_15','sql_limit', '500000', 'producer_batch_size','400000',  'worker_batch_size','100', 'batch_call_limit', {{var('batch_call_limit','1')}}))",
+        target = "streamline.{{this.identifier}}"
     )
 ) }}
 
