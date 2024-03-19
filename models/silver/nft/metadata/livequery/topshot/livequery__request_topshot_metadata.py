@@ -67,7 +67,7 @@ def model(dbt, session):
     inputs = dbt.ref(
         'livequery__topshot_moments_metadata_needed').select(
             "EVENT_CONTRACT", "MOMENT_ID"
-    ).limit(600)
+    ).limit(100)
     # Note prior limit of 3500 leads to 429 error / rate limit by system
     # Per Dapper team, 50 reqs per 10 seconds. If exceeded, blocked for 30s.
 
