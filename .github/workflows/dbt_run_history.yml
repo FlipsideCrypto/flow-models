@@ -5,7 +5,9 @@ on:
   workflow_dispatch:
   schedule:
     # Runs every 2 hours
-    - cron: "0 */2 * * *"
+    # - cron: "0 */2 * * *"
+    # Runs every hour
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
