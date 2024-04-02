@@ -6,7 +6,11 @@
     unique_key = "CONCAT_WS('-', tx_id, swap_index)",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
-{# Parse aggregator log events #}
+{# Parse aggregator log events
+TODO
+ - rename model? incl aggregator?
+ - compare against current swaps model. exclude dupes. is this enough to fill in missing swaps?
+#}
 WITH events AS (
 
     SELECT
