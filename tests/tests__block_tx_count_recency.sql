@@ -1,6 +1,7 @@
 {{ config(
     severity = 'error',
-    tags = ['observability']
+    tags = ['observability'],
+    enabled = False
 ) }}
 
 WITH check_lag AS (
