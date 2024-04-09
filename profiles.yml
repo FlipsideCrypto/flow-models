@@ -1,10 +1,11 @@
 flow:
+  target: dev
   outputs:
     dev:
       type: snowflake
       account: "{{ env_var('ACCOUNT') }}"
       user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
+      authenticator: externalbrowser
       role: "{{ env_var('ROLE') }}"
       schema: "{{ env_var('SCHEMA') }}"
       region: "{{ env_var('REGION') }}"
@@ -16,7 +17,7 @@ flow:
       type: snowflake
       account: "{{ env_var('ACCOUNT') }}"
       user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
+      authenticator: externalbrowser
       role: "{{ env_var('ROLE') }}"
       schema: "{{ env_var('SCHEMA') }}"
       region: "{{ env_var('REGION') }}"
