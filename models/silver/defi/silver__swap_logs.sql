@@ -14,7 +14,15 @@ TODO
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_type,
+        event_index,
+        event_contract,
+        event_data,
+        modified_timestamp AS _modified_timestamp
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
