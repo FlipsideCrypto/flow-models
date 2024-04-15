@@ -1,7 +1,7 @@
 {{ config (
     materialized = 'view',
     tags = ['ez', 'scheduled'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'SWAPS' }}}
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'SWAPS' }} }
 ) }}
 
 WITH chainwalkers AS (
@@ -86,4 +86,4 @@ SELECT
 FROM
     FINAL
 WHERE
-    token_in_destination IS NOT NULL
+    token_in_contract IS NOT NULL

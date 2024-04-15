@@ -26,7 +26,17 @@ WITH swaps_from_aggregator AS (
         modified_timestamp AS _modified_timestamp,
         0 AS _priority
     FROM
-        {{ ref('silver__swap_aggregator') }}
+        {{ ref('silver__swaps_aggregator') }}
+
+{% if is_incremental() %}
+WHERE
+    _modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
 ),
 swaps AS (
     SELECT
@@ -47,6 +57,22 @@ swaps AS (
         1 AS _priority
     FROM
         {{ ref('silver__swaps_s') }}
+    WHERE
+        tx_id NOT IN (
+            SELECT
+                DISTINCT tx_id
+            FROM
+                swaps_from_aggregator
+        )
+
+{% if is_incremental() %}
+AND _modified_timestamp >= (
+    SELECT
+        MAX(modified_timestamp)
+    FROM
+        {{ this }}
+)
+{% endif %}
 ),
 swaps_union AS (
     SELECT
@@ -58,10 +84,10 @@ swaps_union AS (
         *
     FROM
         swaps
-)
-{# Note - curr prices pipeline does not include token address data, making the join difficult and 
-inaccurate. New prices models do have this so will add price fields with May release.
- #}
+) {# Note - curr prices pipeline does not include token address data, making the join difficult and
+inaccurate.NEW prices models DO have this so will
+ADD
+    price fields WITH may RELEASE.#}
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
@@ -71,9 +97,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    swaps_union 
-    qualify ROW_NUMBER() over (
-        PARTITION BY tx_id
-        ORDER BY
-            _priority ASC
-    ) = 1
+    swaps_union
