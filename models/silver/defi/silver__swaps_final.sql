@@ -4,7 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'swaps_final_id',
-    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH swaps_from_aggregator AS (

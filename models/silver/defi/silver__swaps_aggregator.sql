@@ -4,7 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['inserted_timestamp::DATE'],
     unique_key = 'swap_log_id',
-    tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH events AS (
@@ -24,9 +24,9 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    _modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -59,7 +59,8 @@ parse_swap_log AS (
 transactions AS (
     SELECT
         tx_id,
-        authorizers
+        authorizers,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
@@ -72,9 +73,9 @@ transactions AS (
         AND block_height >= 67100587
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND _modified_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
