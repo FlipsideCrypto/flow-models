@@ -81,8 +81,8 @@ SELECT
         swaps_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
     ) AS ez_swaps_id,
-    inserted_timestamp,
-    modified_timestamp
+    COALESCE(inserted_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS inserted_timestamp,
+    COALESCE(modified_timestamp, '2000-01-01' :: TIMESTAMP_NTZ) AS modified_timestamp
 FROM
     FINAL
 WHERE
