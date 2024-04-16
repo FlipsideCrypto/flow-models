@@ -67,9 +67,6 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_out_source
-        description: "{{ doc('token_out_source') }}"
-
       - name: token_out_amount
         description: "{{ doc('token_out_amount') }}"
         tests:
@@ -87,9 +84,6 @@ models:
               column_type_list:
                 - STRING
                 - VARCHAR
-
-      - name: token_in_destination
-        description: "{{ doc('token_in_destination') }}"
 
       - name: token_in_amount
         description: "{{ doc('token_in_amount') }}"
@@ -112,7 +106,7 @@ models:
       - name: _inserted_timestamp
         description: "{{ doc('_inserted_timestamp') }}"
 
-      - name: swaps_id
+      - name: swaps_aggregator_id
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
