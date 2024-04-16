@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['inserted_timestamp::DATE'],
-    unique_key = 'swap_log_id',
+    unique_key = 'swaps_aggregator_id',
     tags = ['scheduled_non_core']
 ) }}
 
@@ -95,7 +95,7 @@ SELECT
     token_out_contract,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_id','swap_index']
-    ) }} AS swap_log_id,
+    ) }} AS swaps_aggregator_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS invocation_id
