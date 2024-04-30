@@ -19,7 +19,7 @@ WITH labels AS (
         labels_combined_id
     FROM
         {{ source(
-            'crosschain_silver',
+            'silver_crosschain',
             'labels_combined'
         ) }}
     WHERE

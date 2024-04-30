@@ -14,7 +14,7 @@ WITH txs AS (
         unique_from_count,
         total_fees AS total_fees_native,
         LAST_VALUE(
-            p.close ignore nulls
+            p.price ignore nulls
         ) over (
             ORDER BY
                 block_timestamp_hour rows unbounded preceding
@@ -25,10 +25,10 @@ WITH txs AS (
     FROM
         {{ ref('silver_stats__core_metrics_hourly') }}
         s
-        LEFT JOIN {{ ref('silver__prices_hourly') }}
+        LEFT JOIN {{ ref('silver__complete_native_prices') }}
         p
-        ON s.block_timestamp_hour = p.recorded_hour
-        AND p.id = 'Flow'
+        ON s.block_timestamp_hour = p.hour
+        AND p.asset_id = 'flow'
 )
 SELECT
     A.block_timestamp_hour,
