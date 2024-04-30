@@ -23,8 +23,8 @@ models:
       - name: IS_DEPRECATED
         description: '{{ doc("prices_is_deprecated") }}'
       - name: EZ_PRICES_HOURLY_ID
-        description: '{{ doc("id") }}'   
+        description: '{{ doc("pk_id") }}'
       - name: INSERTED_TIMESTAMP
-        description: '{{ doc("inserted_timestamp") }}'   
+        description: '{{ doc("inserted_timestamp") }}'
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("modified_timestamp") }}' 
+        description: '{{ doc("modified_timestamp") }}'

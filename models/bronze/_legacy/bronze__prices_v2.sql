@@ -16,7 +16,7 @@ WITH coingecko AS (
         _inserted_timestamp
     FROM
         {{ source(
-            'silver_crosschain',
+            'crosschain_silver',
             'hourly_prices_coin_gecko'
         ) }}
 ),
@@ -32,7 +32,7 @@ coinmarketcap AS (
         _inserted_timestamp
     FROM
         {{ source(
-            'silver_crosschain',
+            'crosschain_silver',
             'hourly_prices_coin_market_cap'
         ) }}
 ),

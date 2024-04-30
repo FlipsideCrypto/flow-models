@@ -3,7 +3,7 @@ version: 2
 models:
   - name: price__fact_hourly_prices
     description: |-
-      Will be deprecated soon. Use `ez_prices_hourlt or price__fact_prices_ohlc_hourly` instead.
+      Deprecating soon! Use `ez_prices_hourlt or price__fact_prices_ohlc_hourly` instead.
       This table provides hourly token price data for FLOW tokens from CoinGecko and CoinMarketCap.
 
     columns:

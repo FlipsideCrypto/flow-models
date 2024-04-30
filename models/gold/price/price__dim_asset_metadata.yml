@@ -19,5 +19,5 @@ models:
       - name: BLOCKCHAIN_ID
         description: '{{ doc("prices_blockchain_id") }}'
       - name: DIM_ASSET_METADATA_ID
-        description: '{{ doc("id") }}'   
+        description: '{{ doc("pk_id") }}'
       - name: INSERTED_TIMESTAMP
