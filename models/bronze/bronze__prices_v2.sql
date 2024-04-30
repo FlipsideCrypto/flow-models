@@ -3,11 +3,12 @@
     tags = ['scheduled']
 ) }}
 
-WITH coingecko AS (
+
+WITH token_prices AS (
 
     SELECT
-        'coingecko' AS provider,
-        id :: STRING AS id,
+        provider,
+        asset_id,
         recorded_hour,
         OPEN,
         high,
@@ -15,45 +16,14 @@ WITH coingecko AS (
         CLOSE,
         _inserted_timestamp
     FROM
-        {{ source(
-            'crosschain_silver',
-            'hourly_prices_coin_gecko'
-        ) }}
-),
-coinmarketcap AS (
-    SELECT
-        'coinmarketcap' AS provider,
-        id :: STRING AS id,
-        recorded_hour,
-        OPEN,
-        high,
-        low,
-        CLOSE,
-        _inserted_timestamp
-    FROM
-        {{ source(
-            'crosschain_silver',
-            'hourly_prices_coin_market_cap'
-        ) }}
-),
-token_prices AS (
-    SELECT
-        *
-    FROM
-        coingecko
-    UNION ALL
-    SELECT
-        *
-    FROM
-        coinmarketcap
+        {{ ref('bronze__complete_provider_prices') }}
 )
 SELECT
     *
 FROM
     token_prices
 WHERE
-    -- numeric ids are cmc, alpha are coingecko
-    id IN (
+    asset_id IN ( -- numeric ids are cmc, alpha are coingecko
         '4558',
         -- Flow
         '6993',

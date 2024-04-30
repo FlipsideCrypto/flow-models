@@ -125,12 +125,16 @@ sources:
       - name: TRANSACTION_RESULTS_MAINNET_21
       - name: TRANSACTION_RESULTS_MAINNET_22
 
-  - name: crosschain_silver
-    database: crosschain
+  - name: silver_crosschain
+    database: "{{ 'crosschain' if target.database == 'FLOW' else 'crosschain_dev' }}"
     schema: silver
     tables:
-      - name: hourly_prices_coin_gecko
-      - name: hourly_prices_coin_market_cap
+      - name: complete_token_asset_metadata
+      - name: complete_token_prices
+      - name: complete_provider_asset_metadata
+      - name: complete_provider_prices
+      - name: complete_native_asset_metadata
+      - name: complete_native_prices
       - name: number_sequence
 
   - name: bronze_api
@@ -140,7 +144,7 @@ sources:
       bronze_api
     tables:
       - name: allday_metadata
-      
+
   - name: flow_bronze
     database: |
       {{ "FLOW" if target.database == 'FLOW' else "FLOW_DEV" }}

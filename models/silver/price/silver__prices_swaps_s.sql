@@ -38,8 +38,6 @@ flow_price AS (
         open as price_usd
     FROM
         {{ ref('silver__prices_hourly') }}
-    WHERE
-        token = 'Flow'
 ),
 stable_out AS (
     SELECT

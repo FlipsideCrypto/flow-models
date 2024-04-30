@@ -66,7 +66,7 @@ block_range AS (
         _id AS block_height
     FROM
         {{ source(
-            'crosschain_silver',
+            'silver_crosschain',
             'number_sequence'
         ) }}
     WHERE

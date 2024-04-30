@@ -27,7 +27,7 @@ WHERE
 prices AS (
     SELECT
         recorded_hour,
-        id AS asset_id,
+        asset_id,
         INITCAP(SPLIT(asset_id, '-') [0]) AS token,
         OPEN,
         high,
