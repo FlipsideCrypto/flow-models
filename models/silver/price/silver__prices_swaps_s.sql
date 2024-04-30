@@ -37,7 +37,9 @@ flow_price AS (
         recorded_hour as _timestamp,
         open as price_usd
     FROM
-        {{ ref('silver__prices_hourly') }}
+        {{ ref('silver__complete_token_prices') }}
+    WHERE
+        token = 'Flow'
 ),
 stable_out AS (
     SELECT

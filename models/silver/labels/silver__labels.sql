@@ -1,7 +1,10 @@
 {{ config(
-    materialized = 'table',
-    cluster_by = ['address'],
-    unique_key = 'event_id',
+    materialized = 'incremental',
+    unique_key = 'labels_id',
+    cluster_by = 'modified_timestamp::DATE',
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(address); DELETE FROM {{ this }} WHERE _is_deleted = TRUE;",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
@@ -16,14 +19,24 @@ WITH labels AS (
         label_subtype,
         address_name,
         project_name,
-        {{ dbt_utils.generate_surrogate_key(
-            ['blockchain','label_type','label_subtype']
-        ) }} AS labels_id,
+        _is_deleted,
+        labels_combined_id AS labels_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id
     FROM
         {{ ref('bronze__labels') }}
+
+    {% if is_incremental() %}
+    WHERE modified_timestamp >= (
+        SELECT
+            MAX(
+                modified_timestamp
+            )
+        FROM
+            {{ this }}
+    )
+    {% endif %}
 )
 SELECT
     *

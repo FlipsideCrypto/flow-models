@@ -14,11 +14,13 @@ WITH labels AS (
         label_type,
         label_subtype,
         address_name,
-        project_name
+        project_name,
+        _is_deleted,
+        labels_combined_id
     FROM
         {{ source(
-            'crosschain_core',
-            'dim_labels'
+            'crosschain_silver',
+            'labels_combined'
         ) }}
     WHERE
         blockchain = 'flow'

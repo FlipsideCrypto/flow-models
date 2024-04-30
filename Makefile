@@ -3,6 +3,7 @@ SHELL := /bin/bash
 # set default target
 DBT_TARGET ?= dev
 AWS_LAMBDA_ROLE ?= aws_lambda_flow_api_dev
+INVOKE_STREAMS ?= True
 
 dbt-console: 
 	docker-compose run dbt_console
@@ -25,7 +26,7 @@ udfs:
 
 udf_2:
 	dbt run-operation create_udf_bulk_grpc_us_east_2 \
-	--vars '{"UPDATE_UDFS_AND_SPS":False}' \
+	--vars '{"UPDATE_UDFS_AND_SPS":True}' \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt/
@@ -83,9 +84,25 @@ tx_history:
 tx_results_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql \
+	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_18.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+tx_results_batch_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_19.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt
+
+tx_batch_history:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/silver/streamline/core/history/transactions/batch/streamline__get_batch_transactions_mainnet_18.sql \
+	--profile flow \
+	--target dev \
 	--profiles-dir ~/.dbt
 
 lq_overloads:
@@ -95,3 +112,10 @@ lq_overloads:
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt \
 	--vars '{"UPDATE_EPHEMERAL_UDFS":True}'
+
+bronze:
+	dbt run \
+	-s bronze__streamline_transaction_results_history \
+	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	--profiles-dir ~/.dbt \
+	--target $(DBT_TARGET)

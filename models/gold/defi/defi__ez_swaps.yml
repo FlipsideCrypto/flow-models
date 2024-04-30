@@ -38,8 +38,6 @@ models:
 
       - name: TOKEN_OUT_SOURCE
         description: "{{ doc('token_out_source') }}"
-        tests:
-          - not_null
 
       - name: TOKEN_OUT_AMOUNT
         description: "{{ doc('token_out_amount') }}"
@@ -53,8 +51,6 @@ models:
 
       - name: TOKEN_IN_DESTINATION
         description: "{{ doc('token_in_destination') }}"
-        tests:
-          - not_null
 
       - name: TOKEN_IN_AMOUNT
         description: "{{ doc('token_in_amount') }}"

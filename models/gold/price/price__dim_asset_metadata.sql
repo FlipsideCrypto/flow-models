@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tag = ['scheduled']
+    tag = ['scheduled'],
     persist_docs ={ "relation": true,
     "columns": true }
 ) }}

@@ -44,7 +44,13 @@ def model(dbt, session):
 
     # define params for UDF_API
     method = "POST"
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "User-Agent": "Flipside_Flow_metadata/0.1",
+    }
     url = topshot_gql_params[0][0]
 
     # gql query passed with the post request
@@ -52,34 +58,29 @@ def model(dbt, session):
 
     # metadata request requires moment_id, defined in a separate view
     # number of moment_ids to request set by .limit(), timeout experienced at 4000
-
     inputs = (
         dbt.ref("livequery__topshot_moments_metadata_needed")
         .select("EVENT_CONTRACT", "MOMENT_ID")
-        .limit(1000)
+        .limit(600)
     )
+    # Note prior limit of 3500 leads to 429 error / rate limit by system
+    # Per Dapper team, 50 reqs per 10 seconds. If exceeded, blocked for 30s.
 
     # register the udf_construct_data function
     udf_construct_data = register_udf_construct_data()
-
-    try:
-        requests = F.call_udf(
-            "flow.live.udf_api",
-            method,
-            url,
-            headers,
-            udf_construct_data(F.lit(data), F.col("MOMENT_ID")),
-        )
-
-    except:
-        requests = F.lit({"error": F.col("MOMENT_ID")})
 
     # use with_columns to source moment_id from the input_df and call multiple udf_api calls at once
     # columns defined in the array will be appended to the input dataframe
     response = inputs.with_columns(
         ["DATA", "_INSERTED_DATE", "_INSERTED_TIMESTAMP", "_RES_ID"],
         [
-            requests,
+            F.call_udf(
+                "flow.live.udf_api",
+                method,
+                url,
+                headers,
+                udf_construct_data(F.lit(data), F.col("MOMENT_ID")),
+            ),
             F.sysdate().cast(T.DateType()),
             F.sysdate(),
             F.md5(F.concat(F.col("EVENT_CONTRACT"), F.col("MOMENT_ID"))),

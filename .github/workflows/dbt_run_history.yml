@@ -4,8 +4,10 @@ run-name: dbt_run_history
 on:
   workflow_dispatch:
   schedule:
-    # Runs daily at 00:00 UTC (see https://crontab.guru)
-    - cron: '0 0 * * *'
+    # Runs every 2 hours
+    # - cron: "0 */2 * * *"
+    # Runs every hour
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -24,11 +26,30 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
-    with:
-      dbt_command: >
-        dbt run -s 2+models/silver/streamline/core/history/blocks 2+models/silver/streamline/core/history/collections 2+models/silver/streamline/core/history/transactions 2+models/silver/streamline/core/history/transaction_results --vars '{"STREAMLINE_INVOKE_STREAMS": True, "sql_limit": ${{ vars.SQL_LIMIT_HISTORY }}, "producer_batch_size": ${{ vars.PRODUCER_BATCH_SIZE_HISTORY }}, "worker_batch_size": ${{ vars.WORKER_BATCH_SIZE_HISTORY }}, "batch_call_limit": ${{ vars.BATCH_CALL_LIMIT_HISTORY }}}'
-      environment: workflow_prod
-      warehouse: ${{ vars.WAREHOUSE }}
-    secrets: inherit 
+  dbt:
+    runs-on: ubuntu-latest
+    environment:
+      name: workflow_prod
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+
+      - name: Run DBT Jobs
+        run: |
+          dbt run -s \
+          2+streamline__get_transaction_results_history_mainnet_14 \
+          2+streamline__get_transaction_results_history_mainnet_15 \
+          2+streamline__get_transaction_results_history_mainnet_16 \
+          2+streamline__get_batch_transaction_results_history_mainnet_17 \
+          2+streamline__get_batch_transaction_results_history_mainnet_18 \
+          2+streamline__get_batch_transaction_results_history_mainnet_19 \
+          2+streamline__get_batch_transaction_results_history_mainnet_22 \
+          --vars '{"STREAMLINE_INVOKE_STREAMS": True}'

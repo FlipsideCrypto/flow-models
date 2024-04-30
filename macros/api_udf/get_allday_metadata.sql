@@ -168,7 +168,7 @@ CREATE OR REPLACE PROCEDURE {{ target.database }}.bronze_api.allday_metadata()
 
             create_temp_table_command += `
                 SELECT 
-                    {{ target.database }}.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res
+                    {{ target.database }}.live.udf_api('GET', CONCAT('https://nflallday.com/consumer/graphql?query=','${query}' ), {'User-Agent': 'Flipside_Flow_metadata/0.1','Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},{}) AS res
             `;
             
 

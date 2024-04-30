@@ -8,11 +8,11 @@ sources:
       - name: flow_blocks
       - name: flow_txs
 
-  - name: crosschain_core
+  - name: crosschain_silver
     database: crosschain
-    schema: core
+    schema: silver
     tables:
-      - name: dim_labels
+      - name: labels_combined
 
   - name: bronze_streamline
     database: streamline

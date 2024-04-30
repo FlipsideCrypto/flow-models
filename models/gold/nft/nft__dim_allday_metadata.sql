@@ -106,7 +106,7 @@ SELECT
     COALESCE (
         nft_unique_id,
         {{ dbt_utils.generate_surrogate_key(['nft_id']) }}
-    ) AS dim_allday_metadata,
+    ) AS dim_allday_metadata_id,
     COALESCE (
         inserted_timestamp,
         _inserted_timestamp
