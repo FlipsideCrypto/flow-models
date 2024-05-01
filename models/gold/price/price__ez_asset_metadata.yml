@@ -12,6 +12,8 @@ models:
         description: '{{ doc("prices_symbol") }}'
       - name: TOKEN_ADDRESS
         description: '{{ doc("prices_token_address") }}'
+      - name: IS_DEPRECATED
+        description: '{{ doc("prices_is_deprecated") }}'
       - name: BLOCKCHAIN
         description: '{{ doc("prices_blockchain") }}'
       - name: DECIMALS

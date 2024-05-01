@@ -41,7 +41,7 @@ SELECT
     b.unique_from_count,
     b.total_fees_native,
     ROUND(
-        b.total_fees_native * b.imputed_close,
+        b.total_fees_native * ZEROIFNULL(b.imputed_close),
         2
     ) AS total_fees_usd,
     A.core_metrics_block_hourly_id AS ez_core_metrics_hourly_id,
