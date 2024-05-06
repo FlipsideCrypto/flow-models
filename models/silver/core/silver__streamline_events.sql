@@ -104,7 +104,7 @@ attributes AS (
                                 event_values :value :fields :: variant
                             )
                         )
-                    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id, data_key ORDER BY _inserted_timestamp DESC) = 1
+                    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id, data_key, data_value ORDER BY _inserted_timestamp DESC) = 1
                 )
             GROUP BY
                 1
