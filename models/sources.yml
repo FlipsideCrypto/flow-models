@@ -8,12 +8,6 @@ sources:
       - name: flow_blocks
       - name: flow_txs
 
-  - name: crosschain_silver
-    database: crosschain
-    schema: silver
-    tables:
-      - name: labels_combined
-
   - name: bronze_streamline
     database: streamline
     schema: |
@@ -129,9 +123,22 @@ sources:
     database: crosschain
     schema: silver
     tables:
+      - name: labels_combined
       - name: hourly_prices_coin_gecko
       - name: hourly_prices_coin_market_cap
+
+  - name: silver_crosschain
+    database: "{{ 'crosschain' if target.database == 'FLOW' else 'crosschain_dev' }}"
+    schema: silver
+    tables:
+      - name: complete_token_asset_metadata
+      - name: complete_token_prices
+      - name: complete_provider_asset_metadata
+      - name: complete_provider_prices
+      - name: complete_native_asset_metadata
+      - name: complete_native_prices
       - name: number_sequence
+      - name: labels_combined
 
   - name: bronze_api
     database: |

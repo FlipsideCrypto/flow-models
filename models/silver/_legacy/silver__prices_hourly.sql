@@ -12,7 +12,7 @@ WITH token_prices AS (
     SELECT
         *
     FROM
-        {{ ref('bronze__prices_v2') }}
+        {{ ref('silver__complete_provider_prices') }}
 
 {% if is_incremental() %}
 WHERE
@@ -27,7 +27,7 @@ WHERE
 prices AS (
     SELECT
         recorded_hour,
-        id AS asset_id,
+        asset_id,
         INITCAP(SPLIT(asset_id, '-') [0]) AS token,
         OPEN,
         high,
