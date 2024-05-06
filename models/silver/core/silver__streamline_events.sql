@@ -75,6 +75,8 @@ flatten_events AS (
         LATERAL FLATTEN(
             input => events
         ) e
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY _inserted_timestamp DESC) = 1
+
 ),
 attributes AS (
     SELECT
@@ -104,7 +106,6 @@ attributes AS (
                                 event_values :value :fields :: variant
                             )
                         )
-                    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id, data_key, data_value ORDER BY _inserted_timestamp DESC) = 1
                 )
             GROUP BY
                 1
