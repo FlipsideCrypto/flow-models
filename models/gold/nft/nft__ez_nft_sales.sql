@@ -67,6 +67,7 @@ FINAL AS (
         modified_timestamp
     FROM
         streamline
+        
 )
 SELECT
     tx_id,
@@ -75,10 +76,15 @@ SELECT
     marketplace,
     nft_collection,
     nft_id,
-    buyer,
-    seller,
+    buyer, --Will get deprecated
+    buyer as buyer_address,
+    seller, --Will get deprecated
+    seller as seller_address,
     price,
-    currency,
+    price_usd,
+    currency, -- Will get deprecated
+    currency as currency_address,
+    currency_symbol,
     tx_succeeded,
     tokenflow,
     counterparties,

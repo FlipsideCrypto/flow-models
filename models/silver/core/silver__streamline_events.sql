@@ -110,32 +110,32 @@ attributes AS (
             GROUP BY
                 1
         ),
-        FINAL AS (
-            SELECT
-                e.tx_id,
-                e.block_height,
-                e.block_timestamp,
-                e.event_id,
-                e.event_index,
-                e.events_count,
-                e.payload,
-                e.event_contract,
-                e.event_type,
-                A.event_data,
-                e.tx_succeeded,
-                e._inserted_timestamp,
-                e._partition_by_block_id,
-                {{ dbt_utils.generate_surrogate_key(
-                    ['event_id']
-                ) }} AS streamline_event_id,
-                SYSDATE() AS inserted_timestamp,
-                SYSDATE() AS modified_timestamp,
-                '{{ invocation_id }}' AS _invocation_id
-            FROM
-                flatten_events e
-                LEFT JOIN attributes A USING (event_id)
-        )
+FINAL AS (
     SELECT
-        *
+        e.tx_id,
+        e.block_height,
+        e.block_timestamp,
+        e.event_id,
+        e.event_index,
+        e.events_count,
+        e.payload,
+        e.event_contract,
+        e.event_type,
+        A.event_data,
+        e.tx_succeeded,
+        e._inserted_timestamp,
+        e._partition_by_block_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['event_id']
+        ) }} AS streamline_event_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
-        FINAL
+        flatten_events e
+        LEFT JOIN attributes A USING (event_id)
+)
+SELECT
+    *
+FROM
+    FINAL

@@ -28,15 +28,15 @@ WITH swaps_from_aggregator AS (
     FROM
         {{ ref('silver__swaps_aggregator') }}
 
-{% if is_incremental() %}
-WHERE
-    _modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
+    {% if is_incremental() %}
+    WHERE
+        _modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
+    {% endif %}
 ),
 swaps AS (
     SELECT
@@ -65,14 +65,14 @@ swaps AS (
                 swaps_from_aggregator
         )
 
-{% if is_incremental() %}
-AND _modified_timestamp >= (
-    SELECT
-        MAX(modified_timestamp)
-    FROM
-        {{ this }}
-)
-{% endif %}
+    {% if is_incremental() %}
+    AND _modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+    {% endif %}
 ),
 swaps_union AS (
     SELECT
@@ -84,10 +84,49 @@ swaps_union AS (
         *
     FROM
         swaps
-) {# Note - curr prices pipeline does not include token address data, making the join difficult and
-inaccurate.NEW prices models DO have this so will
-ADD
-    price fields WITH may RELEASE.#}
+),
+prices AS (
+    SELECT
+        HOUR,
+        symbol,
+        token_address,
+        decimals,
+        price AS hourly_prices
+    FROM
+        {{ ref('price__ez_prices_hourly') }}
+    WHERE
+        token_address IN (
+            SELECT
+                DISTINCT currency
+            FROM
+                swaps_union
+        )
+        AND HOUR :: DATE IN (
+            SELECT
+                DISTINCT block_timestamp :: DATE
+            FROM
+                {{this}}
+        )
+),
+swaps_final AS (
+    SELECT 
+        *
+    FROM
+        swaps_union
+    LEFT JOIN prices p1
+    ON s.token_in_contract = p1.token_address
+    AND DATE_TRUNC(
+      'hour',
+      block_timestamp
+    ) = p1.hour
+    LEFT JOIN prices p2
+    ON s.token_out_contract = p2.token_address
+    AND DATE_TRUNC(
+      'hour',
+      block_timestamp
+    ) = p2.hour
+)
+
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
