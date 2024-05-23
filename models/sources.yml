@@ -118,7 +118,15 @@ sources:
       - name: TRANSACTION_RESULTS_MAINNET_20
       - name: TRANSACTION_RESULTS_MAINNET_21
       - name: TRANSACTION_RESULTS_MAINNET_22
-
+  - name: bronze_streamline_testnet
+    database: streamline
+    schema: |
+      {{ "FLOW_TESTNET_DEV" if var("STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES", False) else "FLOW_TESTNET" }}
+    tables:
+      - name: blocks
+      - name: collections
+      - name: transactions
+      - name: transaction_results
   - name: crosschain_silver
     database: crosschain
     schema: silver
