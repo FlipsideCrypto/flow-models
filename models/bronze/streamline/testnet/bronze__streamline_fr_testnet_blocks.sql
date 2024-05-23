@@ -10,7 +10,7 @@ WITH meta AS (
     FROM
         TABLE(
             information_schema.external_table_files(
-                table_name => '{{ source( "bronze_streamline_testnet", "blocks") }}'
+                table_name => '{{ source( "bronze_streamline", "testnet_blocks") }}'
             )
         ) A
 )
@@ -26,7 +26,7 @@ SELECT
     s._partition_by_block_id,
     s.value AS VALUE
 FROM
-    {{ source("bronze_streamline_testnet","blocks") }} s
+    {{ source("bronze_streamline","testnet_blocks") }} s
     JOIN meta b
     ON b.file_name = metadata$filename
     AND b._partition_by_block_id = s._partition_by_block_id

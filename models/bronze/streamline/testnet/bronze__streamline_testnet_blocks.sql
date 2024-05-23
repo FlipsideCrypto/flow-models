@@ -11,7 +11,7 @@ WITH meta AS (
             TABLE(
                 information_schema.external_table_file_registration_history(
                     start_time => DATEADD('day', -3, CURRENT_TIMESTAMP()),
-                    table_name => '{{ source( "bronze_streamline_testnet", "blocks") }}')
+                    table_name => '{{ source( "bronze_streamline", "testnet_blocks") }}')
                 ) A
             )
         SELECT
@@ -26,7 +26,7 @@ WITH meta AS (
             s._partition_by_block_id,
             s.value AS VALUE
         FROM
-            {{ source("bronze_streamline_testnet","blocks") }} s
+            {{ source("bronze_streamline","testnet_blocks") }} s
             JOIN meta b
             ON b.file_name = metadata$filename
             AND b._partition_by_block_id = s._partition_by_block_id

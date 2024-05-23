@@ -1,6 +1,5 @@
 {% macro streamline_external_table_query(
         model,
-        source_id = "bronze_streamline",
         partition_function,
         partition_name,
         unique_key
@@ -14,7 +13,7 @@
             TABLE(
                 information_schema.external_table_file_registration_history(
                     start_time => DATEADD('day', -3, CURRENT_TIMESTAMP()),
-                    table_name => '{{ source(source_id, model) }}')
+                    table_name => '{{ source("bronze_streamline", model) }}')
                 ) A
             )
         SELECT
@@ -44,7 +43,6 @@
 
 {% macro streamline_external_table_FR_query(
         model,
-        source_id = "bronze_streamline"
         partition_function,
         partition_name,
         unique_key
@@ -57,7 +55,7 @@
         FROM
             TABLE(
                 information_schema.external_table_files(
-                    table_name => '{{ source(source_id, model) }}'
+                    table_name => '{{ source("bronze_streamline", model) }}'
                 )
             ) A
     )
