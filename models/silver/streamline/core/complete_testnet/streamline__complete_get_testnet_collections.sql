@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_collections') }}
+-- depends_on: {{ ref('bronze__streamline_testnet_collections') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",

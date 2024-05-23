@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__streamline_blocks') }}
--- depends_on: {{ ref('bronze__streamline_fr_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_testnet_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_fr_testnet_blocks') }}
 {{ config (
     materialized = "incremental",
     unique_key = "block_number",
