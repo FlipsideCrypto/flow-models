@@ -1,20 +1,10 @@
 {{ config (
     materialized = "view",
-
-    post_hook = fsc_utils.if_data_call_function_v2(
-        func = 'udf_bulk_grpc_us_east_2',
-        target = "{{this.schema}}.{{this.identifier}}",
-        params = {
-            "node_url":"access-001.mainnet18.nodes.onflow.org:9000",
-            "external_table": "transaction_results_mainnet_18",
-            "sql_limit": "25000",
-            "producer_batch_size": "1000",
-            "worker_batch_size": "200",
-            "sql_source": "{{this.identifier}}"
-        }
+    post_hook = if_data_call_function(
+        func = "{{this.schema}}.udf_bulk_grpc_us_east_2(object_construct('sql_source', '{{this.identifier}}','node_url','access-001.mainnet18.nodes.onflow.org:9000','external_table', 'transaction_results_mainnet_18', 'sql_limit', '6000000', 'producer_batch_size','1000',  'worker_batch_size','2', 'batch_call_limit', {{var('batch_call_limit','1')}}))",
+        target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
-
 WITH collection_transactions AS (
 
     SELECT
