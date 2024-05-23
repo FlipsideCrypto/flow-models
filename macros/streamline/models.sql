@@ -13,7 +13,7 @@
             TABLE(
                 information_schema.external_table_file_registration_history(
                     start_time => DATEADD('day', -3, CURRENT_TIMESTAMP()),
-                    table_name => '{{ source("bronze_streamline", model) }}')
+                    table_name => '{{ source( "bronze_streamline", model) }}')
                 ) A
             )
         SELECT
@@ -30,7 +30,7 @@
             s.value AS VALUE
         FROM
             {{ source(
-                source_id,
+                "bronze_streamline",
                 model
             ) }}
             s
@@ -55,7 +55,7 @@
         FROM
             TABLE(
                 information_schema.external_table_files(
-                    table_name => '{{ source("bronze_streamline", model) }}'
+                    table_name => '{{ source( "bronze_streamline", model) }}'
                 )
             ) A
     )
@@ -73,7 +73,7 @@
         s.value AS VALUE
     FROM
         {{ source(
-            source_id,
+            "bronze_streamline",
             model
         ) }}
         s
