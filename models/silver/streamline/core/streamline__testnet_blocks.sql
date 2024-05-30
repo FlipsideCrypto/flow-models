@@ -4,8 +4,8 @@
 ) }}
 
 {% if execute %}
--- TODO need testnet chainhead, if possible
-{% set height = run_query('SELECT streamline.udf_get_chainhead()') %}
+
+{% set height = run_query('SELECT streamline.udf_get_chainhead_testnet()') %}
 {% set block_height = height.columns[0].values()[0] %}
 {% else %}
 {% set block_height = 0 %}
