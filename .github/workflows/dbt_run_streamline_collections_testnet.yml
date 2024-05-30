@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # 1x/hour schedule = At hour 8, 21, 36, 51 every day (see https://crontab.guru)
-    - cron: "0 8,21,36,51 * * *"
+    - cron: "11,31,51 10,20 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
