@@ -1,5 +1,5 @@
 {{ config (
-    materialized = 'view'
+    materialized = 'ephemeral'
 ) }}
 
 {% set history_model = "COLLECTIONS_" ~ var('LOAD_BACKFILL_VERSION') %}
