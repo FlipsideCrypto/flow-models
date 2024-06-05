@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_transactions_history') }}
+-- depends_on: {{ ref('bronze__streamline_complete_transactions_history') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
@@ -16,7 +16,7 @@ SELECT
     _inserted_timestamp
 FROM
 
-{{ ref('bronze__streamline_transactions_history') }} 
+{{ ref('bronze__streamline_complete_transactions_history') }} 
 WHERE
     TRUE
 {% if is_incremental() %}
