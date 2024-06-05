@@ -1,5 +1,13 @@
 # Backfill
 
+Bronze backfill models have been parametrized to load one network version at a time, as each set of NVs and method responses is a separate bucket and external table.  
+  
+Run either an individual model type (blocks, collections, transactions, transaction_results) or all 4 at once with `tag:streamline_load`.
+
+```shell
+dbt run -s 1+tag:streamline_load --vars '{"LOAD_BACKFILL": True, "LOAD_BACKFILL_VERSION": "<NV>"}'
+```
+
 ## Valid Network Versions
   - CANDIDATE_07
   - CANDIDATE_08

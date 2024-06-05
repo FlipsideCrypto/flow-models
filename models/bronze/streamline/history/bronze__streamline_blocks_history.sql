@@ -2,7 +2,7 @@
     materialized = 'view'
 ) }}
 
-{% set history_model = "BLOCKS_" ~ var('LOAD_BACKFILL_VERSION', Null) %}
+{% set history_model = "BLOCKS_" ~ var('LOAD_BACKFILL_VERSION') %}
 
 WITH meta AS (
     SELECT

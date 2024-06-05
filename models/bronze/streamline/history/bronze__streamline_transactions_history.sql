@@ -1,34 +1,37 @@
 {{ config (
     materialized = 'view'
 ) }}
-{# 
-    Full array to table names, keeping commented for posterity.
-{% set 
-    table_names = 
-    [
-        'TRANSACTIONS_CANDIDATE_07', 'TRANSACTIONS_CANDIDATE_08', 'TRANSACTIONS_CANDIDATE_09', 'TRANSACTIONS_MAINNET_01', 'TRANSACTIONS_MAINNET_02', 'TRANSACTIONS_MAINNET_03', 'TRANSACTIONS_MAINNET_04', 'TRANSACTIONS_MAINNET_05', 'TRANSACTIONS_MAINNET_06', 'TRANSACTIONS_MAINNET_07', 'TRANSACTIONS_MAINNET_08', 'TRANSACTIONS_MAINNET_09', 'TRANSACTIONS_MAINNET_10', 'TRANSACTIONS_MAINNET_11', 'TRANSACTIONS_MAINNET_12', 'TRANSACTIONS_MAINNET_13', 'TRANSACTIONS_MAINNET_14', 'TRANSACTIONS_MAINNET_15', 'TRANSACTIONS_MAINNET_16', 'TRANSACTIONS_MAINNET_17', 'TRANSACTIONS_MAINNET_18', 'TRANSACTIONS_MAINNET_19', 'TRANSACTIONS_MAINNET_20', 'TRANSACTIONS_MAINNET_21', 'TRANSACTIONS_MAINNET_22'
-    ]
-%} #}
-{# 
-    TODO - below array includes NVs with 99.99% coverage. For example Mainnet 5 is missing 532 txs.
-    These are edge cases to be investigated after the final sporks get to near-complete status.
-{% set 
-    table_names = 
-    [
-        'TRANSACTIONS_MAINNET_05', 'TRANSACTIONS_MAINNET_06', 'TRANSACTIONS_MAINNET_09', 'TRANSACTIONS_MAINNET_10', 'TRANSACTIONS_MAINNET_11', 'TRANSACTIONS_MAINNET_12', 'TRANSACTIONS_MAINNET_13', 'TRANSACTIONS_MAINNET_14', 'TRANSACTIONS_MAINNET_15', 'TRANSACTIONS_MAINNET_16', 'TRANSACTIONS_MAINNET_17', 'TRANSACTIONS_MAINNET_18', 'TRANSACTIONS_MAINNET_19'
-    ]
-%} #}
 
-{% set 
-    table_names = 
-    [
-        'TRANSACTIONS_MAINNET_18', 'TRANSACTIONS_MAINNET_19'
-    ]
-%}
+{% set history_model = "TRANSACTIONS_" ~ var('LOAD_BACKFILL_VERSION') %}
 
-{{ streamline_multiple_external_table_query(
-    table_names,
-    partition_function = "CAST(SPLIT_PART(SPLIT_PART(file_name, '/', 3), '_', 1) AS INTEGER)",
-    partition_name = "_partition_by_block_id",
-    unique_key = "id"
-) }}
+WITH meta AS (
+    SELECT
+        registered_on AS _inserted_timestamp,
+        file_name,
+        CAST(SPLIT_PART(SPLIT_PART(file_name, '/', 3), '_', 1) AS INTEGER) AS _partition_by_block_id
+    FROM
+        TABLE(
+            information_schema.external_table_files(
+                table_name => '{{ source( "bronze_streamline", history_model ) }}'
+            )
+        ) A
+)
+SELECT
+    block_number,
+    id,
+    DATA,
+    _inserted_timestamp,
+    MD5(
+        CAST(
+            COALESCE(CAST(block_number AS text), '' :: STRING) AS text
+        )
+    ) AS _fsc_id,
+    s._partition_by_block_id,
+    s.value AS VALUE
+FROM
+    {{ source("bronze_streamline", history_model ) }} s
+    JOIN meta b
+    ON b.file_name = metadata$filename
+    AND b._partition_by_block_id = s._partition_by_block_id
+WHERE
+    b._partition_by_block_id = s._partition_by_block_id

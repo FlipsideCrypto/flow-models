@@ -52,6 +52,7 @@ streamline_blocks AS (
 {% if var('LOAD_BACKFILL', False) %}
         {{ ref('bronze__streamline_blocks_history') }}
         -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
+        -- where inserted timestamp >= max from this where network version = backfill version OR block range between root and end
 {% else %}
 {% if is_incremental() %}
 {{ ref('bronze__streamline_blocks') }}
@@ -95,9 +96,9 @@ collections AS (
 {% if var('LOAD_BACKFILL', False) %}
 WHERE
     block_number between (
-        SELECT root_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION', Null).replace('_', '-') }}')
+        SELECT root_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION').replace('_', '-') }}')
     ) AND (
-        SELECT end_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION', Null).replace('_', '-') }}')
+        SELECT end_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION').replace('_', '-') }}')
     )
 {% else %}
 {% if is_incremental() %}
