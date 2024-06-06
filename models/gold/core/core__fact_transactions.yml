@@ -85,6 +85,9 @@ models:
               column_type_list:
                 - NUMBER
 
+      - name: SCRIPT
+        description: "{{ doc('script') }}"
+
       - name: TRANSACTION_RESULT
         description: "{{ doc('transaction_result') }}"
         tests:
