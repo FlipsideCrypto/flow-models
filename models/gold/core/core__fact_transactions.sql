@@ -17,6 +17,7 @@ WITH chainwalkers AS (
         authorizers,
         count_authorizers,
         gas_limit,
+        NULL AS script,
         transaction_result,
         tx_succeeded,
         error_msg,
@@ -43,6 +44,7 @@ streamline AS (
         authorizers,
         count_authorizers,
         gas_limit,
+        script,
         OBJECT_CONSTRUCT(
             'error',
             error_message,
@@ -86,6 +88,7 @@ SELECT
     authorizers,
     count_authorizers,
     gas_limit,
+    script,
     transaction_result,
     tx_succeeded,
     error_msg,
