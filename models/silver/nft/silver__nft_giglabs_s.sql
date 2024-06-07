@@ -9,15 +9,25 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -36,9 +46,9 @@ mapped_sales AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -54,7 +64,16 @@ duc AS (
 ),
 duc_events AS (
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         events
     WHERE
@@ -132,6 +151,7 @@ missing_contract AS (
         block_height,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         event_contract AS currency,
         event_data :amount :: DOUBLE AS amount,
         event_data :from :: STRING AS forwarded_from,
@@ -149,6 +169,7 @@ purchase_amt AS (
         block_height,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         'A.ead892083b3e2c6c.DapperUtilityCoin' AS currency,
         event_data :amount :: DOUBLE AS amount,
         event_data :from :: STRING AS forwarded_from,
@@ -212,6 +233,7 @@ gl_sales AS (
         p.block_height,
         p.tx_succeeded,
         p._inserted_timestamp,
+        p._partition_by_block_id,
         'Gigantik Primary Market' AS marketplace,
         p.missing,
         p.currency,
@@ -266,7 +288,8 @@ giglabs_final AS (
         withdraw_nft_id AS nft_id,
         m.nfts,
         tx_succeeded,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         gl_sales s
         LEFT JOIN multi m USING (tx_id)
@@ -330,6 +353,7 @@ FINAL AS (
         counterparties,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id

@@ -9,15 +9,25 @@
 WITH silver_events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -42,7 +52,8 @@ sale_trigger AS (
             ),
             TRUE
         ) AS is_purchased,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         silver_events
     WHERE
@@ -389,7 +400,8 @@ nft_sales AS (
         b.nft_collection_deposit,
         b.nft_id_deposit,
         b.buyer_deposit,
-        e._inserted_timestamp
+        e._inserted_timestamp,
+        e._partition_by_block_id
     FROM
         sale_trigger e
         LEFT JOIN token_withdraw_event w USING (tx_id)
@@ -470,7 +482,8 @@ FINAL AS (
         cd.step_data,
         cd.counterparties,
         tx_succeeded,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         nft_sales ns
         LEFT JOIN counterparty_data cd USING (tx_id)

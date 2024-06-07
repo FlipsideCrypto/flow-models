@@ -23,7 +23,7 @@ tx_count_lookback AS (
     WHERE
         block_height >= {{ var(
             'STREAMLINE_START_BLOCK'
-        ) }} -- TODO, remove?
+        ) }} -- TODO, remove AFTER backfill is complete
         -- limit to 3 day lookback for performance
         AND _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
         AND (

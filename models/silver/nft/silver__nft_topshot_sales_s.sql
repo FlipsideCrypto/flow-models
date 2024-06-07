@@ -9,7 +9,17 @@
 WITH silver_events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
         -- WHERE
@@ -17,9 +27,9 @@ WITH silver_events AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -35,7 +45,8 @@ moment_data AS (
         event_data :price :: DOUBLE AS price,
         event_data :seller :: STRING AS seller,
         tx_succeeded,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         silver_events
     WHERE
@@ -86,7 +97,8 @@ combo AS (
         price,
         currency,
         tx_succeeded,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         moment_data
         LEFT JOIN currency_data USING (tx_id)
@@ -143,6 +155,7 @@ FINAL AS (
         currency,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS nft_topshot_sales_id,

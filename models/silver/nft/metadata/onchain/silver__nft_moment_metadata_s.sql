@@ -9,7 +9,17 @@
 WITH play_creation AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
     WHERE
@@ -28,9 +38,9 @@ A.87ca73a41bb50ad5.Golazos
 
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
@@ -39,12 +49,14 @@ AND _inserted_timestamp >= (
 play_metadata AS (
     SELECT
         tx_id,
+        event_id,
         block_timestamp,
         event_contract,
         event_data :id :: NUMBER AS play_id,
         VALUE :key :value :: STRING AS column_header,
         VALUE :value :value :: STRING AS column_value,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         play_creation,
         LATERAL FLATTEN(input => TRY_PARSE_JSON(event_data :metadata))
@@ -52,10 +64,12 @@ play_metadata AS (
 FINAL AS (
     SELECT
         tx_id,
+        event_id,
         block_timestamp,
         event_contract,
         play_id,
         _inserted_timestamp,
+        _partition_by_block_id,
         OBJECT_AGG(
             column_header :: variant,
             column_value :: variant
@@ -67,9 +81,17 @@ FINAL AS (
         2,
         3,
         4,
-        5
+        5,
+        6,
+        7
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['event_id']
+    ) }} AS nft_moment_metadata_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
