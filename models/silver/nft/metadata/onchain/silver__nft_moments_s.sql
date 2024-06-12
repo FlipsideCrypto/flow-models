@@ -6,28 +6,21 @@
     tags = ['nft', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
-WITH events AS (
+WITH moment_events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('silver__streamline_events') }}
-
-{% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
-{% endif %}
-),
-moment_events AS (
-    SELECT
-        *
-    FROM
-        events
     WHERE
         event_type IN (
             'MomentPurchased',
@@ -40,8 +33,23 @@ moment_events AS (
             'MomentMinted',
             'MomentNFTMinted'
         )
+{% if is_incremental() %}
+AND
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['event_id']
+    ) }} AS nft_moments_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     moment_events

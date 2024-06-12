@@ -9,15 +9,24 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -56,7 +65,8 @@ token_withdraws AS (
         block_timestamp,
         event_contract,
         event_index,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         pier_events
     WHERE
@@ -73,7 +83,8 @@ pairs AS (
             ORDER BY
                 event_index
         ) AS token1_contract,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         token_withdraws
 ),
@@ -106,6 +117,7 @@ FINAL AS (
         e.vault_address,
         pa.swap_contract,
         C._inserted_timestamp,
+        C._partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS labels_pools_metapier_id,

@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_blocks_history') }}
+-- depends_on: {{ ref('bronze__streamline_complete_blocks_history') }}
 {{ config (
     materialized = "incremental",
     unique_key = "block_number",
@@ -15,7 +15,7 @@ SELECT
     _inserted_timestamp
 FROM
 
-{{ ref('bronze__streamline_blocks_history') }}
+{{ ref('bronze__streamline_complete_blocks_history') }}
 
 WHERE
     TRUE

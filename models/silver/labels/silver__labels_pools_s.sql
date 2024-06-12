@@ -9,15 +9,24 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -40,7 +49,8 @@ pair_creation AS (
         event_data :pairAddress :: STRING AS account_address,
         event_data :token0Key :: STRING AS token0_contract,
         event_data :token1Key :: STRING AS token1_contract,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         events
     WHERE
@@ -61,7 +71,8 @@ FINAL AS (
         SYSDATE() AS inserted_timestamp,
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         pair_creation p
         LEFT JOIN pair_labels l USING (account_address)

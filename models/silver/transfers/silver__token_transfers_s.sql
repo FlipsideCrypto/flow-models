@@ -9,7 +9,17 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
         -- WHERE
@@ -17,9 +27,9 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -144,6 +154,7 @@ FINAL AS (
 )
 SELECT
     *,
+    round(block_height, -5) AS _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_id','sender', 'recipient','token_contract', 'amount']
     ) }} AS token_transfers_id,

@@ -66,6 +66,7 @@ vars:
   REST_API_PREFIX_PROD: quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/
   REST_API_PREFIX_DEV: ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/
   STREAMLINE_START_BLOCK: 55114467
+  LOAD_BACKFILL_VERSION: CANDIDATE_07
 
 dispatch:
   - macro_namespace: dbt

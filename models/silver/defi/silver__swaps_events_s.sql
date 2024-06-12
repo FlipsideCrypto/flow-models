@@ -9,16 +9,20 @@
 WITH swaps_txs AS (
 
   SELECT
-    *
+    block_height,
+    tx_id,
+    _inserted_timestamp,
+    _partition_by_block_id,
+    modified_timestamp
   FROM
     {{ ref('silver__streamline_events') }}
   WHERE
     event_contract LIKE '%SwapPair%'
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
   SELECT
-    MAX(_inserted_timestamp)
+    MAX(modified_timestamp)
   FROM
     {{ this }}
 )
@@ -26,7 +30,19 @@ AND _inserted_timestamp >= (
 ),
 swap_events AS (
   SELECT
-    *
+    tx_id,
+    block_height,
+    block_timestamp,
+    event_id,
+    event_index,
+    events_count,
+    payload,
+    event_contract,
+    event_type,
+    event_data,
+    tx_succeeded,
+    _inserted_timestamp,
+    _partition_by_block_id
   FROM
     {{ ref('silver__streamline_events') }}
   WHERE
@@ -40,9 +56,9 @@ swap_events AS (
     AND event_index < events_count - 3
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
   SELECT
-    MAX(_inserted_timestamp)
+    MAX(modified_timestamp)
   FROM
     {{ this }}
 )

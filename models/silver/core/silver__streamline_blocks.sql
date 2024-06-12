@@ -1,4 +1,6 @@
 -- depends_on: {{ ref('bronze__streamline_blocks') }}
+-- depends_on: {{ ref('bronze__streamline_blocks_history') }}
+
 {{ config(
     materialized = 'incremental',
     unique_key = "block_number",
@@ -10,7 +12,7 @@
 
 WITH
 
-{% if is_incremental() %}
+{% if is_incremental() and not var('LOAD_BACKFILL', False) %}
 tx_count_lookback AS (
     -- lookback to ensure tx count is correct
 
@@ -21,7 +23,7 @@ tx_count_lookback AS (
     WHERE
         block_height >= {{ var(
             'STREAMLINE_START_BLOCK'
-        ) }}
+        ) }} -- TODO, remove AFTER backfill is complete
         -- limit to 3 day lookback for performance
         AND _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
         AND (
@@ -47,7 +49,11 @@ streamline_blocks AS (
         _partition_by_block_id,
         _inserted_timestamp
     FROM
-
+{% if var('LOAD_BACKFILL', False) %}
+        {{ ref('bronze__streamline_blocks_history') }}
+        -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
+        -- where inserted timestamp >= max from this where network version = backfill version OR block range between root and end
+{% else %}
 {% if is_incremental() %}
 {{ ref('bronze__streamline_blocks') }}
 WHERE
@@ -65,6 +71,7 @@ WHERE
     )
 {% else %}
     {{ ref('bronze__streamline_fr_blocks') }}
+{% endif %}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
@@ -86,7 +93,14 @@ collections AS (
         *
     FROM
         {{ ref('silver__streamline_collections') }}
-
+{% if var('LOAD_BACKFILL', False) %}
+WHERE
+    block_number between (
+        SELECT root_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION').replace('_', '-') }}')
+    ) AND (
+        SELECT end_height FROM network_version WHERE lower(network_version) = lower('{{ var('LOAD_BACKFILL_VERSION').replace('_', '-') }}')
+    )
+{% else %}
 {% if is_incremental() %}
 WHERE
     _inserted_timestamp >= (
@@ -101,6 +115,7 @@ WHERE
         FROM
             tx_count_lookback
     )
+{% endif %}
 {% endif %}
 ),
 tx_count AS (

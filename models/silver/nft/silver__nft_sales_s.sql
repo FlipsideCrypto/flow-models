@@ -15,9 +15,9 @@ WITH topshot AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -31,9 +31,9 @@ secondary_mkts AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -47,9 +47,9 @@ giglabs AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -69,6 +69,7 @@ combo AS (
         currency,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id','seller', 'buyer', 'nft_collection', 'nft_id']
         ) }} AS nft_sales_id,
@@ -79,7 +80,7 @@ combo AS (
         counterparties
     FROM
         topshot
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_height,
@@ -93,6 +94,7 @@ combo AS (
         currency,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id','seller', 'buyer', 'nft_collection', 'nft_id']
         ) }} AS nft_sales_id,
@@ -103,7 +105,7 @@ combo AS (
         counterparties
     FROM
         secondary_mkts
-    UNION
+    UNION ALL
     SELECT
         tx_id,
         block_height,
@@ -117,6 +119,7 @@ combo AS (
         currency,
         tx_succeeded,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id','seller', 'buyer', 'nft_collection', 'nft_id']
         ) }} AS nft_sales_id,
