@@ -124,8 +124,6 @@ sources:
     schema: silver
     tables:
       - name: labels_combined
-      - name: hourly_prices_coin_gecko
-      - name: hourly_prices_coin_market_cap
 
   - name: silver_crosschain
     database: "{{ 'crosschain' if target.database == 'FLOW' else 'crosschain_dev' }}"
