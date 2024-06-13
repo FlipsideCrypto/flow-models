@@ -21,6 +21,17 @@ WITH collection_transactions AS (
         block_height BETWEEN 35858811
         AND 40171633
 ),
+epoch_payments AS (
+    SELECT
+        block_number AS block_height,
+        id AS transaction_id
+    FROM
+        {{ ref ('streamline__complete_get_transactions_history') }} t
+    WHERE 
+        (block_number BETWEEN 35858811 AND 40171633)
+        AND
+        data:script::string like '%import FlowEpoch%' and array_size(data:arguments::array) = 6
+),
 -- CTE to identify transactions that haven't been ingested yet
 transactions_to_ingest AS (
     SELECT
@@ -31,8 +42,11 @@ transactions_to_ingest AS (
         LEFT JOIN {{ ref("streamline__complete_get_transaction_results_history") }}
         t
         ON ct.transaction_id = t.id
+        LEFT JOIN epoch_payments ep
+        ON ct.transaction_id = ep.transaction_id
     WHERE
         t.id IS NULL
+        AND ep.transaction_id IS NULL
 ) -- Generate the requests based on the missing transactions
 SELECT
     OBJECT_CONSTRUCT(
