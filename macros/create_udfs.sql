@@ -1,6 +1,5 @@
 {% macro create_udfs() %}
     {% if var("UPDATE_UDFS_AND_SPS") %}
-        {% if target.database != "FLOW_COMMUNITY_DEV" %}
             {% set sql %}
 
             {{ create_udtf_get_base_table(
@@ -16,6 +15,5 @@
             {% endset %}
             {% do run_query(sql) %}
             {{- fsc_utils.create_udfs() -}}
-        {% endif %}
     {% endif %}
 {% endmacro %}
