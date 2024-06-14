@@ -9,7 +9,17 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
         -- WHERE
@@ -17,9 +27,9 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -35,7 +45,8 @@ cbridge_txs AS (
         event_contract,
         event_type,
         event_data,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         events
     WHERE
@@ -54,7 +65,8 @@ inbound AS (
         event_data :refChId :: NUMBER AS chain_id,
         'inbound' AS direction,
         'cbridge' AS bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         events
     WHERE
@@ -82,7 +94,8 @@ outbound AS (
         event_data :toChain :: NUMBER AS chain_id,
         'outbound' AS direction,
         'cbridge' AS bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         events
     WHERE
@@ -107,7 +120,8 @@ tbl_union AS (
         chain_id,
         direction,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         inbound
     UNION
@@ -123,7 +137,8 @@ tbl_union AS (
         chain_id,
         direction,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         outbound
 ),
@@ -149,6 +164,7 @@ FINAL AS (
         direction,
         bridge,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS bridge_celer_id,

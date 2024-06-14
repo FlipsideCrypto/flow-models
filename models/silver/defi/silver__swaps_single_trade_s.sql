@@ -9,15 +9,23 @@
 WITH swaps_events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_contract,
+        event_type,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('silver__swaps_events_s') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -97,7 +105,8 @@ token_out_data AS (
         LOWER(
             event_data :from :: STRING
         ) AS trader_token_out,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         index_id ii
         LEFT JOIN swaps_single_trade sst USING (
@@ -160,6 +169,7 @@ combo AS (
         td.token_1_amount,
         td.token_2_amount,
         tod._inserted_timestamp,
+        tod._partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS swaps_single_trade_id,

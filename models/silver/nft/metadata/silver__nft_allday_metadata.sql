@@ -6,6 +6,7 @@
 ) }}
 {# Note - removed schedule tag as the legacy lambda workflow is inactive.
 No need to query external table #}
+{# Not updating incremental to modts logic due to above comment JMF 6/7/2024 #}
 WITH metadata AS (
 
     SELECT

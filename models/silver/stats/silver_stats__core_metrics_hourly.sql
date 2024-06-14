@@ -74,7 +74,10 @@ transactions AS (
             END
         ) AS transaction_count_failed,
         COUNT(
-            DISTINCT proposer
+        DISTINCT COALESCE(
+            authorizers [1],
+            authorizers [0]
+        ) :: STRING
         ) AS unique_from_count,
         COUNT(
             payer
