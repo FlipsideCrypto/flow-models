@@ -1,5 +1,5 @@
 {{ config (
-materialized = 'view'
+    materialized = 'view'
 ) }}
 
 WITH meta AS (
@@ -26,7 +26,7 @@ SELECT
     s._partition_by_block_id,
     s.value AS VALUE
 FROM
-    {{ source("bronze_streamline","testnet_blocks") }} s
+    {{ source("bronze_streamline", "testnet_blocks") }} s
     JOIN meta b
     ON b.file_name = metadata$filename
     AND b._partition_by_block_id = s._partition_by_block_id

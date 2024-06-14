@@ -1,4 +1,5 @@
 -- depends_on: {{ ref('bronze__streamline_testnet_transactions') }}
+-- depends_on: {{ ref('bronze__streamline_fr_testnet_transactions') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
@@ -17,7 +18,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_transactions') }} 
+{{ ref('bronze__streamline_testnet_transactions') }} 
 WHERE
     _inserted_timestamp >= COALESCE(
         (
@@ -29,7 +30,7 @@ WHERE
         '1900-01-01'::timestamp_ntz
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_transactions') }} 
+    {{ ref('bronze__streamline_fr_testnet_transactions') }} 
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY id

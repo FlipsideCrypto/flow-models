@@ -43,4 +43,4 @@ jobs:
 
       - name: Run DBT Realtime
         run: |
-          dbt run -s 1+streamline__get_testnet_collections_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+          dbt run -s 2+streamline__get_testnet_collections_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
