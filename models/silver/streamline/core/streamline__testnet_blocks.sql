@@ -16,7 +16,4 @@ SELECT
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
 WHERE
-    block_height > 185000000 -- Root Height for Candidate node 7 
-                           -- the earliest available block we can ingest since earlier candidate nodes
-                           -- do not have the get_block_by_height grpc method
-                           -- https://developers.flow.com/concepts/nodes/node-operation/past-sporks#candidate-4
+    block_height > 185000000

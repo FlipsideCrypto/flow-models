@@ -19,7 +19,7 @@
     CREATE
     OR REPLACE EXTERNAL FUNCTION streamline.udf_get_chainhead_testnet() returns variant api_integration = 
     {% if target.name == "prod" %} 
-        aws_flow_api_dev_2 AS 'https://ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/get_chainhead_testnet' -- prod and dev are same - ONLY FOR TESTING
+        aws_flow_api_prod AS 'https://quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/get_chainhead_testnet'
     {% elif target.name == "dev" %}
         aws_flow_api_dev_2 AS 'https://ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/get_chainhead_testnet'
     {% elif  target.name == "sbx" %}
@@ -27,6 +27,7 @@
         aws_flow_api_sbx AS 'https://bc5ejedoq8.execute-api.us-east-1.amazonaws.com/sbx/get_chainhead_testnet'
     {%- endif %};
 {% endmacro %}
+
 {% macro create_udf_bulk_grpc() %}    
     {{ log("Creating udf udf_bulk_grpc for target:" ~ target.name ~ ", schema: " ~ target.schema, info=True) }}
     {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
