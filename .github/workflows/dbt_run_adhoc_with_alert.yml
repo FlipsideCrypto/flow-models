@@ -71,7 +71,7 @@ jobs:
         id: dbt_run_command
         run: |
           start_time=$(date +%s)
-          ${{ inputs.dbt_command || 'dbt debug' }} || echo "DBT_RUN_STATUS=$?" >> $GITHUB_ENV
+          ${{ inputs.dbt_command || 'dbt debug' }}; echo "DBT_RUN_STATUS=$?" >> $GITHUB_ENV
           end_time=$(date +%s)
           elapsed_time=$(expr $end_time - $start_time)
           echo "ELAPSED_TIME=$elapsed_time" >> $GITHUB_ENV
