@@ -48,12 +48,7 @@ def send_alert(webhook_url, data):
     """Sends a message to a slack channel"""
 
     send_message = create_message(
-        environment=data["environment"],
-        database=data["database"],
-        warehouse=data["warehouse"],
-        dbt_command=data["dbt_command"],
-        elapsed_time=data["elapsed_time"],
-        dbt_run_status=data["dbt_run_status"],
+        **data,
         color="#008080" if data["dbt_run_status"] == "success" else "#FF0000"
     )
 
