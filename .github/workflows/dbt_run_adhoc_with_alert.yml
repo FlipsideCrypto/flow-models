@@ -52,7 +52,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment:
-      name: workflow_${{ inputs.environment }}
+      name: workflow_${{ inputs.environment || 'dev'}}
 
     steps:
       - uses: actions/checkout@v3
@@ -71,7 +71,7 @@ jobs:
         id: dbt_run_command
         run: |
           start_time=$(date +%s)
-          ${{ inputs.dbt_command }} || echo "DBT_RUN_STATUS=$?" >> $GITHUB_ENV
+          ${{ inputs.dbt_command || 'dbt debug' }} || echo "DBT_RUN_STATUS=$?" >> $GITHUB_ENV
           end_time=$(date +%s)
           elapsed_time=$(expr $end_time - $start_time)
           echo "ELAPSED_TIME=$elapsed_time" >> $GITHUB_ENV
