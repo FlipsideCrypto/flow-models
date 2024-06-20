@@ -43,7 +43,7 @@ env:
     SCHEMA: "${{ vars.SCHEMA }}"
     WAREHOUSE: "${{ inputs.warehouse || 'DBT' }}"
     ENVIRONMENT: "${{ inputs.environment || 'dev' }}"
-    DBT_COMMAND: "${{ inputs.dbt_command || 'dbt debug' }}"
+    DBT_COMMAND: "${{ inputs.dbt_command || 'dbt debur' }}"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -71,7 +71,7 @@ jobs:
         id: dbt_run_command
         run: |
           start_time=$(date +%s)
-          ${{ inputs.dbt_command || 'dbt debug' }}
+          ${{ inputs.dbt_command || 'dbt debur' }}
           end_time=$(date +%s)
           elapsed_time=$(expr $end_time - $start_time)
           echo "ELAPSED_TIME=$elapsed_time" >> $GITHUB_ENV
