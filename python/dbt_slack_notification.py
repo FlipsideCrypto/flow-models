@@ -53,6 +53,7 @@ def send_alert(webhook_url, data):
         warehouse=data["warehouse"],
         dbt_command=data["dbt_command"],
         elapsed_time=data["elapsed_time"],
+        dbt_run_status=data["dbt_run_status"],
         color="#008080" if data["dbt_run_status"] == "success" else "#FF0000"
     )
 
