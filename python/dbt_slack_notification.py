@@ -69,5 +69,7 @@ if __name__ == '__main__':
         "dbt_run_status": os.environ.get("DBT_RUN_STATUS")
     }
 
+    print(data)
+
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     send_alert(webhook_url, data)
