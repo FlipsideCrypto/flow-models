@@ -25,9 +25,6 @@ on:
         type: string
         description: 'DBT Run Command'
         required: true
-  push:
-    branches:
-      - "adhoc-with-alert"
 
 env:
     SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
@@ -41,9 +38,9 @@ env:
     REGION: "${{ vars.REGION }}"
     DATABASE: "${{ vars.DATABASE }}"
     SCHEMA: "${{ vars.SCHEMA }}"
-    WAREHOUSE: "${{ inputs.warehouse || 'DBT' }}"
-    ENVIRONMENT: "${{ inputs.environment || 'dev' }}"
-    DBT_COMMAND: "${{ inputs.dbt_command || 'dbt debur' }}"
+    WAREHOUSE: "${{ inputs.warehouse }}"
+    ENVIRONMENT: "${{ inputs.environment }}"
+    DBT_COMMAND: "${{ inputs.dbt_command }}"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -52,7 +49,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment:
-      name: workflow_${{ inputs.environment || 'dev'}}
+      name: workflow_${{ inputs.environment }}
 
     steps:
       - uses: actions/checkout@v3
@@ -71,7 +68,7 @@ jobs:
         id: dbt_run_command
         run: |
           start_time=$(date +%s)
-          ${{ inputs.dbt_command || 'dbt debur' }}
+          ${{ inputs.dbt_command }}
           end_time=$(date +%s)
           elapsed_time=$(expr $end_time - $start_time)
           echo "ELAPSED_TIME=$elapsed_time" >> $GITHUB_ENV
