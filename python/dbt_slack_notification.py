@@ -1,7 +1,5 @@
-import datetime
 import requests
 import json
-import sys
 import os
 
 def create_message(**kwargs):
