@@ -25,6 +25,14 @@ on:
         type: string
         description: 'DBT Run Command'
         required: true
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/dbt_run_adhoc_with_alert.yml"
+  push:
+    branches:
+      - "adhoc-with-alert"
 
 env:
     SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
