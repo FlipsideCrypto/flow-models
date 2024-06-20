@@ -3,40 +3,8 @@
     tag = ['scheduled']
 ) }}
 
-WITH pairs_cw AS (
+WITH pairs_s AS (
 
-    SELECT
-        tx_id,
-        NULL AS labels_pools_metapier_id,
-        swap_contract,
-        deployment_timestamp,
-        token0_contract,
-        token1_contract,
-        pool_id,
-        vault_address,
-        NULL AS inserted_timestamp,
-        _inserted_timestamp,
-        NULL AS modified_timestamp
-    FROM
-        {{ ref('silver__labels_pools') }}
-),
-metapier_cw AS (
-    SELECT
-        tx_id,
-        NULL AS labels_pools_metapier_id,
-        swap_contract,
-        deployment_timestamp,
-        token0_contract,
-        token1_contract,
-        pool_id,
-        vault_address,
-        NULL AS inserted_timestamp,
-        _inserted_timestamp,
-        NULL AS modified_timestamp
-    FROM
-        {{ ref('silver__labels_pools_metapier') }}
-),
-pairs_s AS (
     SELECT
         tx_id,
         labels_pools_id AS labels_pools_metapier_id,
@@ -72,18 +40,8 @@ FINAL AS (
     SELECT
         *
     FROM
-        pairs_cw
-    UNION
-    SELECT
-        *
-    FROM
-        metapier_cw
-    UNION
-    SELECT
-        *
-    FROM
         pairs_s
-    UNION
+    UNION ALL
     SELECT
         *
     FROM
