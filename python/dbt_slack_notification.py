@@ -28,7 +28,7 @@ def create_message(**kwargs):
                     },
                     {
                         "title": "Run status",
-                        "value": kwargs["dbt_run_status"],
+                        "value": f"{':check:' if kwargs["dbt_run_status"] == 'success' else ':x:'} {kwargs['dbt_run_status'].capitalize()}",
                         "short": True
                     },
                     {
