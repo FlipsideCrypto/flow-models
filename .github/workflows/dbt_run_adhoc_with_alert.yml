@@ -25,11 +25,6 @@ on:
         type: string
         description: 'DBT Run Command'
         required: true
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/dbt_run_adhoc_with_alert.yml"
   push:
     branches:
       - "adhoc-with-alert"
@@ -45,10 +40,10 @@ env:
     PASSWORD: "${{ secrets.PASSWORD }}"
     REGION: "${{ vars.REGION }}"
     DATABASE: "${{ vars.DATABASE }}"
-    WAREHOUSE: "${{ inputs.warehouse }}"
     SCHEMA: "${{ vars.SCHEMA }}"
-    ENVIRONMENT: "${{ inputs.environment }}"
-    DBT_COMMAND: "${{ inputs.dbt_command }}"
+    WAREHOUSE: "${{ inputs.warehouse || 'DBT' }}"
+    ENVIRONMENT: "${{ inputs.environment || 'dev' }}"
+    DBT_COMMAND: "${{ inputs.dbt_command || 'dbt debug' }}"
 
 concurrency:
   group: ${{ github.workflow }}
