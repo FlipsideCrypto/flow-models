@@ -6,7 +6,7 @@ import os
 
 def create_message(**kwargs):
     messageBody = {
-        "text": f"Ad hoc job run completed for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
+        "text": f"Ad hoc :dbt: job run completed for :{os.environ.get('DATABASE').split('_DEV')[0]}: {os.environ.get('DATABASE')}",
         "attachments": [
             {
                 "color": kwargs["color"],
@@ -24,6 +24,11 @@ def create_message(**kwargs):
                     {
                         "title": "Elapsed Time",
                         "value": kwargs["elapsed_time"],
+                        "short": True
+                    },
+                    {
+                        "title": "Run status",
+                        "value": kwargs["dbt_run_status"],
                         "short": True
                     },
                     {
@@ -63,8 +68,6 @@ if __name__ == '__main__':
         "elapsed_time": os.environ.get("ELAPSED_TIME"),
         "dbt_run_status": os.environ.get("DBT_RUN_STATUS")
     }
-
-    print(data)
 
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     send_alert(webhook_url, data)
