@@ -77,9 +77,12 @@ jobs:
           echo "ELAPSED_TIME=$elapsed_time" >> $GITHUB_ENV
         continue-on-error: true
 
+
+      - name: Log run status
+        run: echo "DBT_RUN_STATUS=${{ steps.dbt_run_command.outcome }}" >> $GITHUB_ENV
+
       - name: Send Notification
         run: |
-          echo "DBT_RUN_STATUS=${{ steps.dbt_run_command.outcome }}" >> $GITHUB_ENV
           python python/dbt_slack_notification.py
   
       - name: Store logs
