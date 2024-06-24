@@ -4,12 +4,10 @@
 ) }}
 
 SELECT
-    streamline_transaction_id,
     tx_id,
     block_timestamp,
     block_height,
     'flow' AS chain_id,
-    NULL AS tx_index,
     proposer,
     payer,
     authorizers,
@@ -31,9 +29,8 @@ SELECT
         streamline_transaction_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
     ) AS fact_transactions_id,
-    _inserted_timestamp,
-    NULL AS inserted_timestamp,
-    NULL AS modified_timestamp
+    inserted_timestamp,
+    modified_timestamp
 FROM
     {{ ref('silver__streamline_transactions_final') }}
 WHERE

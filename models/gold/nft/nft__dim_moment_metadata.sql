@@ -5,7 +5,6 @@
 ) }}
 
 SELECT
-    nft_moment_metadata_id,
     event_contract AS nft_collection,
     nft_id,
     serial_number,
@@ -24,7 +23,6 @@ SELECT
             ['nft_collection','edition_id','nft_id']
         ) }}
     ) AS dim_moment_metadata_id,
-    _inserted_timestamp,
     inserted_timestamp,
     modified_timestamp
 FROM
@@ -42,5 +40,5 @@ WHERE
 qualify ROW_NUMBER() over (
     PARTITION BY dim_moment_metadata_id
     ORDER BY
-        _inserted_timestamp DESC
+        inserted_timestamp DESC
 ) = 1

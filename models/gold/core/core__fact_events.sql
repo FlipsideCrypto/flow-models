@@ -4,7 +4,6 @@
 ) }}
 
 SELECT
-    streamline_event_id,
     tx_id,
     block_timestamp,
     block_height,

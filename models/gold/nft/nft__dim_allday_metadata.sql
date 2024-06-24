@@ -26,7 +26,6 @@ WITH allday AS (
         set_name,
         video_urls,
         moment_stats_full,
-        _inserted_timestamp,
         inserted_timestamp,
         modified_timestamp
     FROM
@@ -52,7 +51,6 @@ WITH allday AS (
         set_name,
         video_urls,
         moment_stats_full,
-        _inserted_timestamp,
         _inserted_timestamp AS inserted_timestamp,
         _inserted_timestamp AS modified_timestamp
     FROM
@@ -81,13 +79,7 @@ SELECT
         nft_unique_id,
         {{ dbt_utils.generate_surrogate_key(['nft_id']) }}
     ) AS dim_allday_metadata_id,
-    COALESCE (
-        inserted_timestamp,
-        _inserted_timestamp
-    ) AS inserted_timestamp,
-    COALESCE (
-        modified_timestamp,
-        _inserted_timestamp
-    ) AS modified_timestamp
+    inserted_timestamp,
+    modified_timestamp
 FROM
     allday

@@ -4,7 +4,6 @@
 ) }}
 
 SELECT
-    blocks_id,
     block_height,
     block_timestamp,
     'mainnet' AS network,

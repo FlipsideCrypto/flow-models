@@ -8,7 +8,6 @@ SELECT
     event_contract,
     contract_name,
     account_address,
-    _inserted_timestamp,
     inserted_timestamp,
     modified_timestamp,
     COALESCE (

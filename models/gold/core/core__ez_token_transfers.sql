@@ -4,7 +4,6 @@
 ) }}
 
 SELECT
-    token_transfers_id,
     block_height,
     block_timestamp,
     tx_id,
@@ -19,7 +18,6 @@ SELECT
             ['tx_id','sender', 'recipient','token_contract', 'amount']
         ) }}
     ) AS ez_token_transfers_id,
-    _inserted_timestamp,
     inserted_timestamp,
     modified_timestamp
 FROM

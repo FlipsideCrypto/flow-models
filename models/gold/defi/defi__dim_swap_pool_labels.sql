@@ -15,7 +15,6 @@ WITH pairs_s AS (
         pool_id,
         vault_address,
         inserted_timestamp,
-        _inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('silver__labels_pools_s') }}
@@ -31,7 +30,6 @@ metapier_s AS (
         pool_id,
         vault_address,
         inserted_timestamp,
-        _inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('silver__labels_pools_metapier_s') }}
@@ -58,13 +56,7 @@ SELECT
         labels_pools_metapier_id,
         {{ dbt_utils.generate_surrogate_key(['tx_id']) }}
     ) AS dim_swap_pool_labels_id,
-    COALESCE (
-        inserted_timestamp,
-        _inserted_timestamp
-    ) AS inserted_timestamp,
-    COALESCE (
-        modified_timestamp,
-        _inserted_timestamp
-    ) AS modified_timestamp
+    inserted_timestamp,
+    modified_timestamp
 FROM
     FINAL
