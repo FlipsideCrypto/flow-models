@@ -19,7 +19,7 @@
     CREATE
     OR REPLACE EXTERNAL FUNCTION streamline.udf_get_chainhead_testnet() returns variant api_integration = 
     {% if target.name == "prod" %} 
-        aws_flow_api_prod AS 'https://quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/get_chainhead_testnet'
+        aws_flow_api_prod_us_east_2 AS 'https://78rpbojpue.execute-api.us-east-2.amazonaws.com/prod/get_chainhead_testnet'
     {% elif target.name == "dev" %}
         aws_flow_api_dev_2 AS 'https://sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/get_chainhead_testnet'
     {% elif  target.name == "sbx" %}
