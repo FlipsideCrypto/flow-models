@@ -64,7 +64,7 @@ vars:
   STREAMLINE_RUN_HISTORY: False
   DROP_UDFS_AND_SPS: False
   REST_API_PREFIX_PROD: quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/
-  REST_API_PREFIX_DEV: ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/
+  REST_API_PREFIX_DEV: sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/
   STREAMLINE_START_BLOCK: 55114467
   LOAD_BACKFILL_VERSION: CANDIDATE_07
 

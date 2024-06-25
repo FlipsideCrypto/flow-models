@@ -27,8 +27,8 @@
     {% elif target.name == "dev" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}
-        CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-1IP9GV997U5RM' api_allowed_prefixes = (
-            'https://ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/'
+        CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-i1JsMNTpSzX0' api_allowed_prefixes = (
+            'https://sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/'
         ) enabled = TRUE;    
         {% endset %}
         {% do run_query(sql) %}
