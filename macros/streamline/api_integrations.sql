@@ -23,6 +23,7 @@
     
         {% endset %}
         {% do run_query(sql) %}
+
     {% elif target.name == "dev" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}
@@ -45,6 +46,7 @@
         ) enabled = TRUE;
         {% endset %}
         {% do run_query(sql) %}
+
     {% elif target.name == "sbx" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}

@@ -118,7 +118,10 @@ sources:
       - name: TRANSACTION_RESULTS_MAINNET_20
       - name: TRANSACTION_RESULTS_MAINNET_21
       - name: TRANSACTION_RESULTS_MAINNET_22
-
+      - name: testnet_blocks
+      - name: testnet_collections
+      - name: testnet_transactions
+      - name: testnet_transaction_results
   - name: crosschain_silver
     database: crosschain
     schema: silver
