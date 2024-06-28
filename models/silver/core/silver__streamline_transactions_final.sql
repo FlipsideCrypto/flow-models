@@ -33,7 +33,7 @@
         {% if var('LOAD_NV_MANUAL', False) %}
 
         {% set incr = 
-        """ WHERE block_number between 27341470 and 35858810 """ 
+        """ WHERE block_number between 40171634 and 44950206 """ 
         
         %}
 
