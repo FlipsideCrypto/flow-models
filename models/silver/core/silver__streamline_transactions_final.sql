@@ -30,7 +30,16 @@
     %}
     {% set incr = "" %}
     {% if is_incremental() %}
+        {% if var('LOAD_NV_MANUAL', False) %}
+
+        {% set incr = 
+        """ WHERE block_number between 18587478 and 23830812"""
+        
+        %}
+
+        {% else %}
         {% set incr = """
+
             WHERE
                 modified_timestamp >= (
                     SELECT
@@ -50,6 +59,7 @@
                     )
                 )
         """ %}
+        {% endif %}
     {% endif %}
 
     {% set run = run_query(query ~ incr) %}
@@ -75,6 +85,13 @@ tx_results AS (
         *
     FROM
         {{ ref('silver__streamline_transaction_results') }}
+    {% if var('LOAD_NV_MANUAL', False) %}
+    
+        WHERE
+            block_number between {{ var('LOAD_NV_MANUAL_START') }} and
+            {{ var('LOAD_NV_MANUAL_END') }}
+
+    {% else %}
 
 {% if is_incremental() %}
 WHERE
@@ -86,12 +103,22 @@ WHERE
             silver.streamline_transactions_final_intermediate_tmp
     )
 {% endif %}
+
+{% endif %}
 ),
 blocks AS (
     SELECT
         *
     FROM
         {{ ref('silver__streamline_blocks') }}
+
+    {% if var('LOAD_NV_MANUAL', False) %}
+    
+        WHERE
+            block_number between {{ var('LOAD_NV_MANUAL_START') }} and
+            {{ var('LOAD_NV_MANUAL_END') }}
+
+    {% else %}
 
 {% if is_incremental() %}
 WHERE
@@ -102,6 +129,7 @@ WHERE
         FROM
             silver.streamline_transactions_final_intermediate_tmp
     )
+{% endif %}
 {% endif %}
 ),
 FINAL AS (
