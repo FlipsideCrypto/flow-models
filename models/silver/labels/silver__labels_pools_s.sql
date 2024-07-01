@@ -36,7 +36,7 @@ pair_labels AS (
     SELECT
         *
     FROM
-        {{ ref('silver__contract_labels') }}
+        {{ ref('silver__contract_labels_s') }}
     WHERE
         contract_name ILIKE '%swappair%'
 ),

@@ -2,7 +2,7 @@ WITH mint_events AS (
     SELECT
         MAX(block_timestamp) :: DATE AS last_mint_date
     FROM
-        {{ ref('silver__nft_moments') }}
+        {{ ref('silver__nft_moments_s') }}
     WHERE
         event_contract = 'A.e4cf4bdc1751c65d.AllDay'
         AND event_type = 'MomentNFTMinted'

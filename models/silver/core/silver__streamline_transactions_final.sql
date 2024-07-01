@@ -30,7 +30,9 @@
     %}
     {% set incr = "" %}
     {% if is_incremental() %}
+
         {% set incr = """
+
             WHERE
                 modified_timestamp >= (
                     SELECT
@@ -50,7 +52,7 @@
                     )
                 )
         """ %}
-    {% endif %}
+        {% endif %}
 
     {% set run = run_query(query ~ incr) %}
 {% endif %}
@@ -86,12 +88,14 @@ WHERE
             silver.streamline_transactions_final_intermediate_tmp
     )
 {% endif %}
+
 ),
 blocks AS (
     SELECT
         *
     FROM
         {{ ref('silver__streamline_blocks') }}
+
 
 {% if is_incremental() %}
 WHERE
@@ -103,6 +107,7 @@ WHERE
             silver.streamline_transactions_final_intermediate_tmp
     )
 {% endif %}
+
 ),
 FINAL AS (
     SELECT

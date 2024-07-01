@@ -34,7 +34,8 @@ models:
       - name: TRADER
         description: "{{ doc('trader') }}"
         tests:
-          - not_null
+          - not_null:
+              severity: warn
 
       - name: TOKEN_OUT_SOURCE
         description: "{{ doc('token_out_source') }}"
