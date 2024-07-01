@@ -6,7 +6,7 @@
 SELECT
     tx_id,
     block_timestamp,
-    block_height,
+    block_height :: INT AS block_height,
     tx_succeeded,
     event_index,
     event_contract,

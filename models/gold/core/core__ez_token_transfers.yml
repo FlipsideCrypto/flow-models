@@ -15,7 +15,6 @@ models:
             - amount
           config:
             severity: warn
-            error_if: ">10"
 
     columns:
       - name: TX_ID

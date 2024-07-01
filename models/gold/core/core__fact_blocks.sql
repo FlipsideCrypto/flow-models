@@ -4,7 +4,7 @@
 ) }}
 
 SELECT
-    block_height,
+    block_height :: INT AS block_height,
     block_timestamp,
     'mainnet' AS network,
     network_version,
