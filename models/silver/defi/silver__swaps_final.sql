@@ -4,6 +4,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'swaps_final_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,trader);",
     tags = ['scheduled_non_core']
 ) }}
 

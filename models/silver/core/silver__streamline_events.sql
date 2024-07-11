@@ -3,7 +3,8 @@
     unique_key = 'event_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = "_inserted_timestamp::date",
+    cluster_by = "block_timestamp::date",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,event_id,event_contract,event_type);",
     tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
 
