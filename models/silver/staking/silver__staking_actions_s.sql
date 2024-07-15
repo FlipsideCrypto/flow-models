@@ -1,8 +1,9 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_inserted_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE'],
     unique_key = 'tx_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,delegator);",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 

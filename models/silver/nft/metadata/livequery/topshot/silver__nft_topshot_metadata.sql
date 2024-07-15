@@ -4,6 +4,7 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id',
     tags = ['livequery'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nbatopshot_id);",
     full_refresh = False
 ) }}
 {# NFT Metadata from legacy process lives in external table, deleted CTE and set FR=False 
