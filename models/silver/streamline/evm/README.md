@@ -1,7 +1,11 @@
 # Flow EVM Models
 
-Separating out Flow EVM models from flow core, for now. TBD
+Separating out Flow EVM models from flow core, for now. TBD  
+Dir named `previewnet` as testnet is not yet live, but using `testnet` naming convention to not have to update later.  
 
+```shell
+dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}'
+```
 
 ## TODO
 
@@ -58,4 +62,29 @@ select
             )
         ):data:result
     ) as block_number
+```
+
+## Deploying dev UDFs
+```sql
+use database flow_dev;
+use role dbt_cloud_flow;
+
+CREATE api integration IF NOT EXISTS aws_flow_evm_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/flow-api-stg-rolesnowflakeudfsAF733095-tPEdygwPC6IV' api_allowed_prefixes = (
+    'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/'
+) enabled = TRUE;
+
+CREATE
+OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_rest_api_v2(
+    json OBJECT
+) returns ARRAY api_integration = 
+aws_flow_evm_api_dev AS 'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_rest_api';
+
+CREATE
+OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_decode_logs(
+    json OBJECT
+) returns ARRAY api_integration =
+    aws_flow_evm_api_dev AS'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/bulk_decode_logs';
+
+grant usage on integration AWS_FLOW_EVM_API_DEV to role internal_dev;
+
 ```

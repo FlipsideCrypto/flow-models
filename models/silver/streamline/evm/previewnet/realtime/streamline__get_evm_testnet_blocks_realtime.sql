@@ -43,7 +43,7 @@ SELECT
             'eth_getBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                block_number :: STRING
+                block_height :: STRING
             )
         )
     ) AS request
