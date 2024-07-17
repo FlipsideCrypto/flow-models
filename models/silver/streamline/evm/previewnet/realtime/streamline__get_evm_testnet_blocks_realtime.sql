@@ -10,18 +10,19 @@
         "sql_source" :"{{this.identifier}}" }
     )
 ) }}
-WITH 
-    tbl AS (
-        SELECT
-            block_height
-        FROM
-            {{ ref('streamline__evm_testnet_blocks') }}
-        EXCEPT
-        SELECT
-            block_number AS block_height
-        FROM
-            {{ ref('streamline__complete_get_evm_testnet_blocks') }}
-    )
+
+WITH tbl AS (
+
+    SELECT
+        block_height
+    FROM
+        {{ ref('streamline__evm_testnet_blocks') }}
+    EXCEPT
+    SELECT
+        block_number AS block_height
+    FROM
+        {{ ref('streamline__complete_get_evm_testnet_blocks') }}
+)
 SELECT
     ROUND(
         block_height,
@@ -43,7 +44,8 @@ SELECT
             'eth_getBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                block_height :: STRING
+                CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX'))),
+                TRUE
             )
         )
     ) AS request
