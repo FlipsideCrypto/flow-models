@@ -54,4 +54,3 @@ FROM
     tbl
 ORDER BY
     block_height DESC
-LIMIT 10

@@ -11,7 +11,8 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
 
  - deploy external tables to streamline-snowflake
   - https://github.com/FlipsideCrypto/streamline-snowflake/blob/AN-5203-FLOW-EVM-TESTNET/models/flow.yml
-   - `select * from streamline.flow_dev.evm_testnet_blocks;`
+   - `select * from streamline.flow_dev.evm_testnet_blocks_STG;`
+   - NOTE - only deployed to staging env for now so using separate external table
  - deploy streamline models
   1. update source
    - requires deployment of external tables to streamline db
