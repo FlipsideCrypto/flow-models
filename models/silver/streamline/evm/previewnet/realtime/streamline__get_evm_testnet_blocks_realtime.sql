@@ -24,6 +24,7 @@ WITH tbl AS (
         {{ ref('streamline__complete_get_evm_testnet_blocks') }}
 )
 SELECT
+    block_height,
     ROUND(
         block_height,
         -3
@@ -53,3 +54,4 @@ FROM
     tbl
 ORDER BY
     block_height DESC
+LIMIT 10
