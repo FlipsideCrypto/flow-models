@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id',
-    tags = ['livequery'],
+    tags = ['livequery', 'topshot'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nbatopshot_id);",
     full_refresh = False
 ) }}
