@@ -90,3 +90,13 @@ OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_decode_logs(
 grant usage on integration AWS_FLOW_EVM_API_DEV to role internal_dev;
 
 ```
+
+## Schema Design
+### Transactions
+Can query transactions within blocks for which we already have data:
+```sql
+select * from streamline.flow_dev.evm_testnet_blocks_stg
+where data:error:code is null
+and array_size(data:result:transactions) > 0
+limit 5;
+```
