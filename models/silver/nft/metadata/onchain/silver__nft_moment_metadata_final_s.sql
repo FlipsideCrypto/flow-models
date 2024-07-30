@@ -50,7 +50,8 @@ FINAL AS (
         ) AS play_id,
         COALESCE(
             m.series_id,
-            e.series_id
+            e.series_id,
+            sn.series_id
         ) AS series_id,
         s.series_name,
         COALESCE(
@@ -77,15 +78,23 @@ FINAL AS (
         LEFT JOIN metadata pl
         ON m.event_contract = pl.event_contract
         AND COALESCE(
-            e.play_id,
-            m.play_id
+            m.play_id,
+            e.play_id
         ) = pl.play_id
-        LEFT JOIN series s
-        ON m.event_contract = s.event_contract
-        AND e.series_id = s.series_id
         LEFT JOIN nft_sets sn
         ON m.event_contract = sn.event_contract
-        AND e.set_id = sn.set_id
+        AND COALESCE(
+            m.set_id,
+            e.set_id
+        ) = sn.set_id
+        LEFT JOIN series s
+        ON m.event_contract = s.event_contract
+        AND COALESCE(
+            m.series_id,
+            e.series_id,
+            sn.series_id
+        ) = s.series_id
+
 )
 SELECT
     *,
