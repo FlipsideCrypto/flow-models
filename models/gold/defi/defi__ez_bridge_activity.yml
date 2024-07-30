@@ -1,14 +1,9 @@
 version: 2
 
 models:
-  - name: defi__ez_bridge_transactions
+  - name: defi__ez_bridge_activity
     description: |-
-      Deprecating Soon! This table will be deprecated on September 1st, please migrate work `defi__ez_bridge_activity` instead.
-      
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_id
+      This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
 
     columns:
       - name: TX_ID
@@ -37,7 +32,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: BRIDGE_CONTRACT
+      - name: BRIDGE_ADDRESS
         description: "{{ doc('bridge_contract') }}"
         tests:
           - not_null
@@ -46,7 +41,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TOKEN_CONTRACT
+      - name: TOKEN_ADDRESS
         description: "{{ doc('token_contract') }}"
         tests:
           - not_null
@@ -55,8 +50,11 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: AMOUNT
-        description: "{{ doc('amount') }}"
+      - name: TOKEN_SYMBOL
+        description: "{{ doc('token_symbol') }}"
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -65,16 +63,39 @@ models:
                 - DOUBLE
                 - FLOAT
 
-      - name: FLOW_WALLET_ADDRESS
+      - name: AMOUNT_FEE
+        description: "{{ doc('amount_fee') }}"
+        tests:
+          - not_null:
+              where: platform = 'blocto'
+
+      - name: AMOUNT_USD
+        description: "{{ doc('amount_usd') }}"
+      
+      - name: AMOUNT_FEE_USD
+        description: "{{ doc('amount_fee_usd') }}"
+
+      - name: SOURCE_ADDRESS
         description: "{{ doc('flow_wallet_address') }}"
         tests:
-          - not_null
+          - not_null:
+              where: source_chain = 'flow'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-      - name: BLOCKCHAIN
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
+        tests:
+          - not_null:
+              where: destination_chain = 'flow'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SOURCE_CHAIN
         description: "{{ doc('blockchain') }}"
         tests:
           - not_null
@@ -83,8 +104,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: DIRECTION
-        description: "{{ doc('direction') }}"
+      - name: DESTINATION_CHAIN
+        description: "{{ doc('blockchain') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -92,7 +113,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: BRIDGE
+      - name: PLATFORM
         description: "{{ doc('bridge') }}"
         tests:
           - not_null
@@ -101,7 +122,7 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: EZ_BRIDGE_TRANSACTIONS_ID
+      - name: FACT_BRIDGE_TRANSACTIONS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

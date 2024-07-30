@@ -10,7 +10,7 @@ SELECT
     block_height,
     bridge_address,
     token_address,
-    gross_amount,
+    gross_amount AS amount_adj,
     amount_fee,
     net_amount,
     source_address,

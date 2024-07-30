@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: defi__fact_bridge_transactions
+  - name: defi__fact_bridge_activity
     description: |-
       This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
 
@@ -50,8 +50,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: GROSS_AMOUNT
-        description: "{{ doc('gross_amount') }}"
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
