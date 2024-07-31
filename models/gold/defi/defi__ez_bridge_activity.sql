@@ -39,7 +39,7 @@ SELECT
     source_chain,
     destination_chain,
     platform,
-    bridge_complete_id AS fact_bridge_transactions_id,
+    bridge_complete_id AS ez_bridge_activity_id,
     inserted_timestamp,
     modified_timestamp
 FROM

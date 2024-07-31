@@ -37,6 +37,9 @@ models:
           - not_null:
               severity: warn
 
+      - name: PLATFORM
+        description: "{{ doc('platform') }}"
+
       - name: ORIGIN_FROM_ADDRESS
         description: "{{ doc('token_out_source') }}"
 
@@ -75,7 +78,7 @@ models:
       - name: AMOUNT_IN_USD
         description: "{{ doc('amount_usd') }}"
 
-      - name: EZ_SWAPS_ID
+      - name: EZ_DEX_SWAPS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

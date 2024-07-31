@@ -28,6 +28,7 @@ SELECT
     swap_contract AS contract_address,
     swap_index,
     trader,
+    platform,
     token_out_source AS origin_from_address,
     token_out_contract AS token_out,
     po.symbol AS token_out_symbol,
@@ -38,7 +39,7 @@ SELECT
     pi.symbol AS token_in_symbol,
     token_in_amount AS amount_in_adj,
     token_in_amount * pi.price AS amount_in_usd,
-    swaps_final_id AS ez_swaps_id,
+    swaps_final_id AS ez_dex_swaps_id,
     inserted_timestamp,
     modified_timestamp
 FROM
