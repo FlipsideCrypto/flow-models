@@ -50,8 +50,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: AMOUNT_ADJ
-        description: "{{ doc('amount_adj') }}"
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -65,16 +65,6 @@ models:
         tests:
           - not_null:
               where: platform = 'blocto'
-
-      - name: NET_AMOUNT
-        description: "{{ doc('net_amount') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER
-                - DOUBLE
-                - FLOAT
 
       - name: SOURCE_ADDRESS
         description: "{{ doc('flow_wallet_address') }}"

@@ -14,10 +14,10 @@ SELECT
     platform,
     token_out_source AS origin_from_address,
     token_out_contract AS token_out,
-    token_out_amount AS amount_out_adj,
+    token_out_amount AS amount_out,
     token_in_destination AS origin_to_address,
     token_in_contract AS token_in,
-    token_in_amount AS amount_in_adj,
+    token_in_amount AS amount_in,
     swaps_final_id AS fact_dex_swaps_id,
     inserted_timestamp,
     modified_timestamp

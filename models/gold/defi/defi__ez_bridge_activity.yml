@@ -53,7 +53,7 @@ models:
       - name: TOKEN_SYMBOL
         description: "{{ doc('token_symbol') }}"
 
-      - name: AMOUNT_ADJ
+      - name: AMOUNT
         description: "{{ doc('amount_adj') }}"
         tests:
           - not_null

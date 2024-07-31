@@ -51,7 +51,7 @@ models:
       - name: TOKEN_OUT_SYMBOL
         description: "{{ doc('symbol') }}"
 
-      - name: AMOUNT_OUT_ADJ
+      - name: AMOUNT_OUT
         description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
@@ -70,7 +70,7 @@ models:
       - name: TOKEN_IN_SYMBOL
         description: "{{ doc('symbol') }}"
 
-      - name: AMOUNT_IN_ADJ
+      - name: AMOUNT_IN
         description: "{{ doc('token_in_amount') }}"
         tests:
           - not_null

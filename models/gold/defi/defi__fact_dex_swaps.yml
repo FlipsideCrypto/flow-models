@@ -43,7 +43,7 @@ models:
       - name: ORIGIN_FROM_ADDRESS
         description: "{{ doc('token_out_source') }}"
 
-      - name: AMOUNT_OUT_ADJ
+      - name: AMOUNT_OUT
         description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
@@ -56,7 +56,7 @@ models:
       - name: ORIGIN_TO_ADDRESS
         description: "{{ doc('token_in_destination') }}"
 
-      - name: AMOUNT_IN_ADJ
+      - name: AMOUNT_IN
         description: "{{ doc('token_in_amount') }}"
         tests:
           - not_null
