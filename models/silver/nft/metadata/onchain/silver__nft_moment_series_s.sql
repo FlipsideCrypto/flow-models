@@ -24,7 +24,6 @@ WITH events AS (
         {{ ref('silver__streamline_events') }}
     WHERE
         event_type = 'SeriesCreated'
-        AND ARRAY_CONTAINS('name' :: variant, object_keys(event_data))
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
@@ -34,22 +33,17 @@ AND modified_timestamp >= (
         {{ this }}
 )
 {% endif %}
-),
-org AS (
-    SELECT
-        tx_id,
-        event_id,
-        block_timestamp,
-        event_contract,
-        event_data :id :: STRING AS series_id,
-        event_data :name :: STRING AS series_name,
-        _inserted_timestamp,
-        _partition_by_block_id
-    FROM
-        events
 )
 SELECT
-    *,
+    tx_id,
+    event_id,
+    block_timestamp,
+    event_contract,
+    event_data AS series_data,
+    event_data :id :: STRING AS series_id,
+    event_data :name :: STRING AS series_name,
+    _inserted_timestamp,
+    _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['event_id']
     ) }} AS nft_moment_series_id,
@@ -57,4 +51,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    org
+    events
