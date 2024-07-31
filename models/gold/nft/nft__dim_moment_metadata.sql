@@ -36,6 +36,7 @@ WHERE
         nft_collection = 'A.e4cf4bdc1751c65d.AllDay'
         AND edition_id = 1486
     )
+    AND metadata IS NOT NULL
 
 qualify ROW_NUMBER() over (
     PARTITION BY dim_moment_metadata_id

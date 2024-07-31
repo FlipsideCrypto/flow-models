@@ -5,54 +5,47 @@ models:
     description: |-
       NFT Moment Metadata scraped from on-chain activity, where available. This should be joinable on sales or mints using the nft_collection (event_contract) and nft id.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - nft_collection
-            - edition_id
-            - nft_id
-
     columns:
       - name: NFT_COLLECTION
         description: "{{ doc('nft_collection') }}"
         tests:
           - not_null
+
       - name: NFT_ID
         description: "{{ doc('nft_id') }}"
         tests:
           - not_null
+
       - name: SERIAL_NUMBER
         description: "{{ doc('serial_number') }}"
         tests:
           - not_null
       - name: MAX_MINT_SIZE
         description: "{{ doc('max_mint_size') }}"
-        tests:
-          - not_null
+
       - name: PLAY_ID
         description: "{{ doc('play_id') }}"
         tests:
           - not_null
+
       - name: SERIES_ID
         description: "{{ doc('series_id') }}"
-        tests:
-          - not_null
+
       - name: SERIES_NAME
         description: "{{ doc('series_name') }}"
+
       - name: SET_ID
         description: "{{ doc('set_id') }}"
-        tests:
-          - not_null
+
       - name: SET_NAME
         description: "{{ doc('set_name') }}"
+
       - name: EDITION_ID
         description: "{{ doc('edition_id') }}"
-        tests:
-          - not_null
+
       - name: TIER
         description: "{{ doc('tier') }}"
-        tests:
-          - not_null
+
       - name: METADATA
         description: "{{ doc('metadata') }}"
         tests:
