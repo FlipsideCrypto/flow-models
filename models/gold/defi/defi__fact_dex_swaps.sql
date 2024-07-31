@@ -5,23 +5,19 @@
 ) }}
 
 SELECT
-    swaps_final_id AS swaps_id,
     tx_id,
     block_timestamp,
     block_height,
-    swap_contract,
+    swap_contract AS contract_address,
     swap_index,
     trader,
-    token_out_source,
-    token_out_contract,
-    token_out_amount,
-    token_in_destination,
-    token_in_contract,
-    token_in_amount,
-    COALESCE (
-        swaps_id,
-        {{ dbt_utils.generate_surrogate_key(['tx_id', 'swap_index']) }}
-    ) AS ez_swaps_id,
+    token_out_source AS origin_from_address,
+    token_out_contract AS token_out,
+    token_out_amount AS amount_out_adj,
+    token_in_destination AS origin_to_address,
+    token_in_contract AS token_in,
+    token_in_amount AS amount_in_adj,
+    swaps_final_id AS ez_swaps_id,
     inserted_timestamp,
     modified_timestamp
 FROM

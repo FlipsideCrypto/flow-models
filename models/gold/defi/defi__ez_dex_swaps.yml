@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: defi__fact_dex_swaps
+  - name: defi__ez_dex_swaps
     description: |-
-      This table records asset swaps on the Flow blockchain.
+      This table records asset swaps on the Flow blockchain, with price and label information.
 
     columns:
       - name: TX_ID
@@ -40,28 +40,40 @@ models:
       - name: ORIGIN_FROM_ADDRESS
         description: "{{ doc('token_out_source') }}"
 
-      - name: AMOUNT_OUT_ADJ
-        description: "{{ doc('token_out_amount') }}"
-        tests:
-          - not_null
-
       - name: TOKEN_OUT
         description: "{{ doc('token_out_contract') }}"
         tests:
           - not_null
 
+      - name: TOKEN_OUT_SYMBOL
+        description: "{{ doc('symbol') }}"
+
+      - name: AMOUNT_OUT_ADJ
+        description: "{{ doc('token_out_amount') }}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_OUT_USD
+        description: "{{ doc('amount_usd') }}"
+
       - name: ORIGIN_TO_ADDRESS
         description: "{{ doc('token_in_destination') }}"
+
+      - name: TOKEN_IN
+        description: "{{ doc('token_in_contract') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_IN_SYMBOL
+        description: "{{ doc('symbol') }}"
 
       - name: AMOUNT_IN_ADJ
         description: "{{ doc('token_in_amount') }}"
         tests:
           - not_null
 
-      - name: TOKEN_IN
-        description: "{{ doc('token_in_contract') }}"
-        tests:
-          - not_null
+      - name: AMOUNT_IN_USD
+        description: "{{ doc('amount_usd') }}"
 
       - name: EZ_SWAPS_ID
         description: "{{ doc('pk_id') }}"

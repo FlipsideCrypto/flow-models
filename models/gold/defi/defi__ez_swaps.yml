@@ -3,7 +3,7 @@ version: 2
 models:
   - name: defi__ez_swaps
     description: |-
-      This table records asset swaps on the Flow blockchain.
+      Deprecating Soon! Please migrate work to the new `defi.ez_dex_swaps` table by September 1st.
 
     columns:
       - name: TX_ID
