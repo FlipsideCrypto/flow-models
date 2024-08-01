@@ -54,7 +54,7 @@ models:
         description: "{{ doc('token_symbol') }}"
 
       - name: AMOUNT
-        description: "{{ doc('amount_adj') }}"
+        description: "{{ doc('amount') }}"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
