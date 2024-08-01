@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: defi__ez_swaps
+  - name: defi__ez_dex_swaps
     description: |-
-      Deprecating Soon! Please migrate work to the new `defi.ez_dex_swaps` table by September 1st.
+      This table records asset swaps on the Flow blockchain, with price and label information.
 
     columns:
       - name: TX_ID
@@ -21,7 +21,7 @@ models:
         tests:
           - not_null
 
-      - name: SWAP_CONTRACT
+      - name: CONTRACT_ADDRESS
         description: "{{ doc('swap_contract') }}"
         tests:
           - not_null
@@ -37,33 +37,48 @@ models:
           - not_null:
               severity: warn
 
-      - name: TOKEN_OUT_SOURCE
+      - name: PLATFORM
+        description: "{{ doc('platform') }}"
+
+      - name: ORIGIN_FROM_ADDRESS
         description: "{{ doc('token_out_source') }}"
 
-      - name: TOKEN_OUT_AMOUNT
-        description: "{{ doc('token_out_amount') }}"
-        tests:
-          - not_null
-
-      - name: TOKEN_OUT_CONTRACT
+      - name: TOKEN_OUT
         description: "{{ doc('token_out_contract') }}"
         tests:
           - not_null
 
-      - name: TOKEN_IN_DESTINATION
-        description: "{{ doc('token_in_destination') }}"
+      - name: TOKEN_OUT_SYMBOL
+        description: "{{ doc('symbol') }}"
 
-      - name: TOKEN_IN_AMOUNT
-        description: "{{ doc('token_in_amount') }}"
+      - name: AMOUNT_OUT
+        description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
 
-      - name: TOKEN_IN_CONTRACT
+      - name: AMOUNT_OUT_USD
+        description: "{{ doc('amount_usd') }}"
+
+      - name: ORIGIN_TO_ADDRESS
+        description: "{{ doc('token_in_destination') }}"
+
+      - name: TOKEN_IN
         description: "{{ doc('token_in_contract') }}"
         tests:
           - not_null
 
-      - name: EZ_SWAPS_ID
+      - name: TOKEN_IN_SYMBOL
+        description: "{{ doc('symbol') }}"
+
+      - name: AMOUNT_IN
+        description: "{{ doc('token_in_amount') }}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_IN_USD
+        description: "{{ doc('amount_usd') }}"
+
+      - name: EZ_DEX_SWAPS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

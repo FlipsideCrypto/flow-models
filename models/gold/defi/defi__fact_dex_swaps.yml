@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: defi__ez_swaps
+  - name: defi__fact_dex_swaps
     description: |-
-      Deprecating Soon! Please migrate work to the new `defi.ez_dex_swaps` table by September 1st.
+      This table records asset swaps on the Flow blockchain.
 
     columns:
       - name: TX_ID
@@ -21,7 +21,7 @@ models:
         tests:
           - not_null
 
-      - name: SWAP_CONTRACT
+      - name: CONTRACT_ADDRESS
         description: "{{ doc('swap_contract') }}"
         tests:
           - not_null
@@ -37,33 +37,36 @@ models:
           - not_null:
               severity: warn
 
-      - name: TOKEN_OUT_SOURCE
+      - name: PLATFORM
+        description: "{{ doc('platform') }}"
+
+      - name: ORIGIN_FROM_ADDRESS
         description: "{{ doc('token_out_source') }}"
 
-      - name: TOKEN_OUT_AMOUNT
+      - name: AMOUNT_OUT
         description: "{{ doc('token_out_amount') }}"
         tests:
           - not_null
 
-      - name: TOKEN_OUT_CONTRACT
+      - name: TOKEN_OUT
         description: "{{ doc('token_out_contract') }}"
         tests:
           - not_null
 
-      - name: TOKEN_IN_DESTINATION
+      - name: ORIGIN_TO_ADDRESS
         description: "{{ doc('token_in_destination') }}"
 
-      - name: TOKEN_IN_AMOUNT
+      - name: AMOUNT_IN
         description: "{{ doc('token_in_amount') }}"
         tests:
           - not_null
 
-      - name: TOKEN_IN_CONTRACT
+      - name: TOKEN_IN
         description: "{{ doc('token_in_contract') }}"
         tests:
           - not_null
 
-      - name: EZ_SWAPS_ID
+      - name: FACT_DEX_SWAPS_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP
