@@ -18,4 +18,4 @@ jobs:
     with:
       warehouse: DBT_CLOUD
       environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'stg' }}
-      command: dbt test -s livequery_models.deploy.core.test___utils_udf_introspect
+      command: dbt test -s 'livequery_models.deploy.core.*'
