@@ -12,8 +12,6 @@ jobs:
     name: livequery_integration_test
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
-    strategy:
-      fail-fast: false
   
     with:
       warehouse: DBT_CLOUD
