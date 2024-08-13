@@ -1,0 +1,21 @@
+name: integration test
+run-name: ${{ github.event.inputs.branch }}
+
+on:
+  workflow_dispatch:
+  
+
+concurrency: ${{ github.workflow }}
+
+jobs:
+  test:
+    name: livequery_integration_test
+    uses: ./.github/workflows/dbt.yml
+    secrets: inherit
+    strategy:
+      fail-fast: false
+  
+    with:
+      warehouse: DBT_CLOUD
+      environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'stg' }}
+      command: dbt test -s livequery_models.deploy.core.test___utils_udf_introspect

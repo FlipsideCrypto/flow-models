@@ -1,0 +1,59 @@
+name: dbt
+on:
+  workflow_call:
+    inputs:
+      warehouse:
+        required: false
+        type: string
+      environment:
+        required: true
+        type: string
+      command:
+          required: true
+          type: string
+      python_version:
+          required: false
+          type: string
+          default: "3.10"
+
+env:
+  DBT_PROFILES_DIR: ./
+
+  ACCOUNT: ${{ vars.ACCOUNT }}
+  ROLE: ${{ vars.ROLE }}
+  USER: ${{ vars.USER }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+  REGION: ${{ vars.REGION }}
+  DATABASE: ${{ vars.DATABASE }}
+  WAREHOUSE: ${{ inputs.warehouse }}
+  SCHEMA: ${{ vars.SCHEMA }}
+  TARGET: ${{ vars.TARGET }}
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    env:
+      WAREHOUSE: ${{ inputs.warehouse || vars.WAREHOUSE }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+          cache: "pip"
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+      - name: Run DBT Jobs
+        run: |
+          ${{ inputs.command }}
+      - name: Store logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs-${{ inputs.environment }}-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            logs
+            target
