@@ -33,7 +33,7 @@ SELECT
     ) :: INT AS partition_key,
     {{ target.database }}.live.udf_api(
         'POST',
-        'https://previewnet.evm.nodes.onflow.org',
+        'https://testnet.evm.nodes.onflow.org',
         OBJECT_CONSTRUCT(
             'Content-Type',
             'application/json'
@@ -55,4 +55,4 @@ SELECT
 FROM
     tbl
 ORDER BY
-    block_height DESC
+    block_height ASC

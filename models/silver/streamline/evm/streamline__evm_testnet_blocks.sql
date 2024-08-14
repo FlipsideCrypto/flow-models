@@ -10,7 +10,7 @@
     livequery.utils.udf_hex_to_int(
         flow.live.udf_api(
             'POST',
-            'https://previewnet.evm.nodes.onflow.org',
+            'https://testnet.evm.nodes.onflow.org',
             {},
             object_construct(
                 'method', 'eth_blockNumber',

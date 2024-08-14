@@ -26,6 +26,7 @@ WITH meta AS (
             s._partition_by_block_id,
             s.value AS VALUE
         FROM
+            {# TODO - rm _stg before merge! #}
             {{ source("bronze_streamline","evm_testnet_blocks_stg") }} s
             JOIN meta b
             ON b.file_name = metadata$filename

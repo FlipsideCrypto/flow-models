@@ -22,6 +22,9 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
   1. complete model
   1. streamline_get model
    - may require a get chainhead function
+ - check everywhere for evm_testnet_blocks_stg vs evm_testnet_blocks !
+ - UDF GET EVM CHAINHEAD
+ - check dbt models tags
 
 ## Tooling
  - UDFs
@@ -32,7 +35,9 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
 ## External Resources
 
  - https://developers.flow.com/evm/networks
-  - https://previewnet.evm.nodes.onflow.org
+  - RPC Endpoints:
+    - https://previewnet.evm.nodes.onflow.org
+    - https://testnet.evm.nodes.onflow.org
  - https://ethereum.org/en/developers/docs/apis/json-rpc/
  - https://developers.flow.com/networks/flow-networks/accessing-testnet
  - https://github.com/onflow/flow-evm-gateway
