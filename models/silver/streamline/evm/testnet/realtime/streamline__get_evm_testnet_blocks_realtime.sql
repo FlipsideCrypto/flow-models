@@ -3,10 +3,10 @@
     post_hook = fsc_utils.if_data_call_function_v2(
         func = 'streamline.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
-        params ={ "external_table" :"evm_testnet_blocks",
-        "sql_limit" :"100000",
-        "producer_batch_size" :"2000",
-        "worker_batch_size" :"500",
+        params ={ "external_table" :"evm_testnet_blocks_stg",
+        "sql_limit" :"1000",
+        "producer_batch_size" :"200",
+        "worker_batch_size" :"50",
         "sql_source" :"{{this.identifier}}" }
     )
 ) }}
@@ -25,6 +25,8 @@ WITH tbl AS (
 )
 SELECT
     block_height,
+    DATE_PART(epoch_second, SYSDATE())::STRING AS request_timestamp,
+    '{{ invocation_id }}' AS _invocation_id,
     ROUND(
         block_height,
         -3
