@@ -24,7 +24,8 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
    - may require a get chainhead function
  - check everywhere for evm_testnet_blocks_stg vs evm_testnet_blocks !
  - UDF GET EVM CHAINHEAD
- - check dbt models tags
+ - check dbt models tags (evm, evm_testnet, testnet, crescendo)
+ - ALIGN column names both internally and externally
 
 ## Tooling
  - UDFs
