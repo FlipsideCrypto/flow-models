@@ -11,7 +11,7 @@
 
 SELECT
     block_number,
-    VALUE :id :: STRING AS transaction_id,
+    VALUE :id :: STRING AS tx_id,
     DATA :error_message :: STRING AS error_message,
     DATA :events :: ARRAY AS events,
     DATA :status :: INT AS status,

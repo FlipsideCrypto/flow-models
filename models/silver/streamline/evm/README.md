@@ -42,6 +42,9 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
  - https://ethereum.org/en/developers/docs/apis/json-rpc/
  - https://developers.flow.com/networks/flow-networks/accessing-testnet
  - https://github.com/onflow/flow-evm-gateway
+ - https://evm-testnet.flowscan.io/
+ - https://contractbrowser.com/
+
 
 ### Querying Previewnet
 ```shell
@@ -105,4 +108,56 @@ select * from streamline.flow_dev.evm_testnet_blocks_stg
 where data:error:code is null
 and array_size(data:result:transactions) > 0
 limit 5;
+```
+
+## New Utils
+### UDFs
+
+### Decode Transaction Hash
+An EVM Executed Transaction is encoded in the event data when the method `TransactionExecuted` is executed on the contract `A.8c5303eaa26202d6.EVM` (note - testnet address). The EVM block height is logged in `event_data:blockHeight` and the EVM transaction hash is encoded as a byte array. SQL can be used to decode, or more simply:
+
+```python
+CREATE OR REPLACE FUNCTION decode_hash_array(raw_array ARRAY)
+RETURNS STRING
+LANGUAGE PYTHON
+RUNTIME_VERSION = '3.8'
+HANDLER = 'decode_hash_array'
+AS
+$$
+def decode_hash_array(raw_array):
+    try:
+        # Parse the JSON array
+        data = raw_array
+        
+        # Extract and convert values
+        hex_values = [format(int(item['value']), '02x') for item in data]
+        
+        # Concatenate and add prefix
+        result = '0x' + ''.join(hex_values)
+        
+        return result.lower()
+    except Exception as e:
+        return f"Error: {str(e)}"
+$$
+;
+```
+
+### Get EVM Chainhead
+EVM Chainhead can be retried with a simple LiveQuery call to eth_getBlock.
+
+```sql
+    select
+    livequery.utils.udf_hex_to_int(
+        flow.live.udf_api(
+            'POST',
+            'https://testnet.evm.nodes.onflow.org',
+            {},
+            object_construct(
+                'method', 'eth_blockNumber',
+                'id', 1,
+                'jsonrpc', '2.0',
+                'params', []
+            )
+        ):data:result
+    ) as block_number
 ```

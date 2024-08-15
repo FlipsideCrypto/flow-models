@@ -11,7 +11,7 @@
 
 SELECT
     block_number,
-    VALUE :id :: STRING AS transaction_id,
+    VALUE :id :: STRING AS tx_id,
     DATA :arguments :: ARRAY AS arguments,
     DATA :authorizers :: ARRAY AS authorizers,
     DATA :envelope_signatures :: ARRAY AS envelope_signatures,
