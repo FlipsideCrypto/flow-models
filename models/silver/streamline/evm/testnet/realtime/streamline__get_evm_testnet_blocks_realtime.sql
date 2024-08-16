@@ -4,9 +4,9 @@
         func = 'streamline.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table" :"evm_testnet_blocks_stg",
-        "sql_limit" :"1000",
-        "producer_batch_size" :"200",
-        "worker_batch_size" :"50",
+        "sql_limit" :"50000",
+        "producer_batch_size" :"10000",
+        "worker_batch_size" :"1000",
         "sql_source" :"{{this.identifier}}" }
     )
 ) }}

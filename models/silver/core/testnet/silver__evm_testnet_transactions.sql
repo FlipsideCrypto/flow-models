@@ -60,6 +60,9 @@ SELECT
     tx_response :v :: STRING as v_hex,
     tx_response :value :: STRING as value_hex,
     _partition_by_block_id,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_response :hash :: STRING']
+    ) }} AS evm_testnet_txs_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
