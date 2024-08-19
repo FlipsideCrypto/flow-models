@@ -9,11 +9,11 @@ concurrency: ${{ github.workflow }}
 
 jobs:
   test:
-    name: livequery_integration_test
+    name: integration_test
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
   
     with:
       warehouse: DBT_CLOUD
-      environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'stg' }}
+      environment: ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
       command: dbt test -s 'livequery_models.deploy.core.*'
