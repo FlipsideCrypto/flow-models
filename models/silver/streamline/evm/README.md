@@ -42,8 +42,10 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
  - https://ethereum.org/en/developers/docs/apis/json-rpc/
  - https://developers.flow.com/networks/flow-networks/accessing-testnet
  - https://github.com/onflow/flow-evm-gateway
+    - https://flowfoundation.notion.site/EVM-Gateway-Deployment-3c41da6710af40acbaf971e22ce0a9fd
  - https://evm-testnet.flowscan.io/
  - https://contractbrowser.com/
+
 
 
 ### Querying Previewnet
