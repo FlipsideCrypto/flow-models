@@ -17,7 +17,7 @@ on:
           default: "3.10"
 
 env:
-  DBT_PROFILES_DIR: ./
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
 
   ACCOUNT: ${{ vars.ACCOUNT }}
   ROLE: ${{ vars.ROLE }}
