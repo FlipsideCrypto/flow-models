@@ -16,4 +16,4 @@ jobs:
     with:
       warehouse: DBT_CLOUD
       environment: ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
-      command: dbt test -s 'livequery_models.deploy.core.*'
+      command: dbt test -s tag:integration_test
