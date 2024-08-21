@@ -9,15 +9,23 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_contract,
+        event_type,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('silver__swaps_events_s') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -112,7 +120,8 @@ token_withdraws AS (
         ) - 1 AS unique_order,
         event_contract,
         event_data,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         swap_events
     WHERE
@@ -166,6 +175,7 @@ link_token_movement AS (
         w.block_timestamp,
         w.block_height,
         w._inserted_timestamp,
+        w._partition_by_block_id,
         -- set transfer index based on execution via deposit, not withdraw, event
         RANK() over (
             PARTITION BY w.tx_id
@@ -283,6 +293,7 @@ boilerplate AS (
         block_timestamp,
         block_height,
         _inserted_timestamp,
+        _partition_by_block_id,
         withdraw_from AS trader
     FROM
         link_token_movement
@@ -310,6 +321,7 @@ FINAL AS (
         tokens :token1 :: STRING AS token_in_contract,
         amounts :amount1 :: DOUBLE AS token_in_amount,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id', 'swap_index']
         ) }} AS swaps_id,

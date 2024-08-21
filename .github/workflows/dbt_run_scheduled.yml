@@ -7,7 +7,9 @@ on:
     # 4x/hour schedule = Every 15 minutes (see https://crontab.guru)
     # - cron: "*/15 * * * *"
     # 3x/hour schedule = Every 20 minutes (see https://crontab.guru)
-    - cron: "*/20 * * * *"
+    # - cron: "*/20 * * * *"
+    # 2x/hour schedule = Every 30 minutes (see https://crontab.guru)
+    - cron: "*/30 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -46,7 +48,7 @@ jobs:
         run: >
           dbt run-operation stage_external_sources --vars "ext_full_refresh: true"; 
           dbt seed; 
-          dbt run -s tag:scheduled_core tag:streamline_complete "flow_models,models/gold" --vars '{"STREAMLINE_START_BLOCK": ${{ vars.STREAMLINE_START_BLOCK }}}'
+          dbt run -s tag:scheduled_core tag:streamline_complete "flow_models,models/gold"
 
       - name: Store logs
         uses: actions/upload-artifact@v3

@@ -13,9 +13,8 @@ models:
             - buyer
             - nft_collection
             - nft_id
-          severity: error
-          error_if: ">10"
-          warn_if: "<10"
+          severity: warn
+          error_if: ">5000"
 
     columns:
       - name: TX_ID

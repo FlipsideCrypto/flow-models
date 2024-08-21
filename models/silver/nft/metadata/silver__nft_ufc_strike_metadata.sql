@@ -3,6 +3,7 @@
     incremental_strategy = 'merge',
     unique_key = ['nft_id'],
     merge_exclude_columns = ["inserted_timestamp"],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id);",
     tags = ['scheduled_non_core']
 ) }}
 

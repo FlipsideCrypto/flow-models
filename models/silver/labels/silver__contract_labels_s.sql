@@ -14,15 +14,17 @@ WITH splt AS (
             event_contract,
             '.'
         ) AS ec_s,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp AS _modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -36,7 +38,9 @@ FINAL AS (
             '0x',
             ec_s [array_size(ec_s)-2] :: STRING
         ) AS account_address,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id,
+        _modified_timestamp
     FROM
         splt
     WHERE
@@ -54,5 +58,5 @@ FROM
     FINAL qualify ROW_NUMBER() over (
         PARTITION BY event_contract
         ORDER BY
-            _inserted_timestamp DESC
+            _modified_timestamp DESC
     ) = 1

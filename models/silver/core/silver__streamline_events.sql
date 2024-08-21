@@ -3,7 +3,8 @@
     unique_key = 'event_id',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = "_inserted_timestamp::date",
+    cluster_by = "block_timestamp::date",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,event_id,event_contract,event_type);",
     tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
 
@@ -14,12 +15,12 @@ WITH transactions AS (
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
-        NOT pending_result_response -- inserted timestamp will update w TR ingestion, so should flow thru to events and curated
+        NOT pending_result_response
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
@@ -75,6 +76,8 @@ flatten_events AS (
         LATERAL FLATTEN(
             input => events
         ) e
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY _inserted_timestamp DESC) = 1
+
 ),
 attributes AS (
     SELECT

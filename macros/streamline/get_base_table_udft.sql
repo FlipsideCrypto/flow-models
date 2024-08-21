@@ -10,7 +10,7 @@ $$
                     seq4()
             ) as id
         from
-            table(generator(rowcount => 100000000)) -- July 2023 Flow Chain head is at  57M
+            table(generator(rowcount => 1000000000))
     )
 select
     id as height 

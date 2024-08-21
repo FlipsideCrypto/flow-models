@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: defi__fact_bridge_activity
+    description: |-
+      This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
+
+    columns:
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 3
+              where: block_height >= 55114467
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: BRIDGE_ADDRESS
+        description: "{{ doc('bridge_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TOKEN_ADDRESS
+        description: "{{ doc('token_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: AMOUNT
+        description: "{{ doc('amount') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
+
+      - name: AMOUNT_FEE
+        description: "{{ doc('amount_fee') }}"
+        tests:
+          - not_null:
+              where: platform = 'blocto'
+
+      - name: SOURCE_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
+        tests:
+          - not_null:
+              where: source_chain = 'flow'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: DESTINATION_ADDRESS
+        description: "{{ doc('flow_wallet_address') }}"
+        tests:
+          - not_null:
+              where: destination_chain = 'flow'
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SOURCE_CHAIN
+        description: "{{ doc('blockchain') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: DESTINATION_CHAIN
+        description: "{{ doc('blockchain') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PLATFORM
+        description: "{{ doc('bridge') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: FACT_BRIDGE_TRANSACTIONS_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

@@ -9,36 +9,52 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
     WHERE
         event_type = 'SetCreated'
-        AND ARRAY_CONTAINS('name' :: variant, object_keys(event_data))
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp)
+        MAX(modified_timestamp)
     FROM
         {{ this }}
 )
 {% endif %}
-),
-org AS (
-    SELECT
-        tx_id,
-        block_timestamp,
-        event_contract,
-        event_data :id :: STRING AS set_id,
-        event_data :name :: STRING AS set_name,
-        _inserted_timestamp
-    FROM
-        events
-    WHERE
-        set_id IS NOT NULL
 )
 SELECT
-    *
+    tx_id,
+    event_id,
+    block_timestamp,
+    event_contract,
+    event_data AS set_data,
+    COALESCE(
+        event_data :id :: STRING,
+        event_data :setID :: STRING
+    ) AS set_id,
+    event_data :name :: STRING AS set_name,
+    event_data :series :: STRING AS series_id,
+    _inserted_timestamp,
+    _partition_by_block_id,
+    {{ dbt_utils.generate_surrogate_key(
+        ['event_id']
+    ) }} AS nft_moment_set_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    org
+    events
+WHERE
+    set_id IS NOT NULL

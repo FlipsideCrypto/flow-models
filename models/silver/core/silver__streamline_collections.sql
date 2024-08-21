@@ -25,6 +25,12 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
 
+{% if var('LOAD_BACKFILL', False) %}
+        {{ ref('bronze__streamline_collections_history') }}
+        -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
+        -- where inserted timestamp >= max from this where network version = backfill version OR block range between root and end
+{% else %}
+
 {% if is_incremental() %}
 {{ ref('bronze__streamline_collections') }}
 WHERE
@@ -36,6 +42,8 @@ WHERE
     )
 {% else %}
     {{ ref('bronze__streamline_fr_collections') }}
+{% endif %}
+
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY collection_id

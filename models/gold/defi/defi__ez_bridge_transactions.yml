@@ -3,8 +3,8 @@ version: 2
 models:
   - name: defi__ez_bridge_transactions
     description: |-
-      This table parses transactions where tokens are bridged to or from the Flow network using Blocto teleport or the Celer bridge.
-
+      Deprecating Soon! This table will be deprecated on September 1st, please migrate work `defi__ez_bridge_activity` instead.
+      
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

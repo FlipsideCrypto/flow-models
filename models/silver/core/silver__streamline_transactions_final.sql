@@ -4,7 +4,8 @@
     unique_key = "tx_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = "_inserted_timestamp::date",
+    cluster_by = "block_timestamp::date",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,proposer,payer,authorizers);",
     tags = ['core', 'streamline_scheduled', 'scheduled', 'scheduled_core']
 ) }}
 
@@ -17,7 +18,7 @@
                     block_height
                 FROM """ ~ this ~ """
                 WHERE
-                    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
                     AND (
                         block_timestamp IS NULL
                         OR pending_result_response
@@ -30,17 +31,19 @@
     %}
     {% set incr = "" %}
     {% if is_incremental() %}
+
         {% set incr = """
+
             WHERE
-                _inserted_timestamp >= (
+                modified_timestamp >= (
                     SELECT
-                        MAX(_inserted_timestamp) _inserted_timestamp
+                        MAX(modified_timestamp) modified_timestamp
                     FROM
                         """ ~ this ~ """
                 )
                 OR -- re-run record if block comes in later than tx records
                 (
-                    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
                     AND
                     tx_id IN (
                         SELECT
@@ -50,7 +53,7 @@
                     )
                 )
         """ %}
-    {% endif %}
+        {% endif %}
 
     {% set run = run_query(query ~ incr) %}
 {% endif %}
@@ -60,7 +63,7 @@
    Coalesce in case there are 0 txs returned by the temp table
 */
 {% if execute %}
-    {% set min_time = run_query("select coalesce(min(_inserted_timestamp),current_timestamp()) from silver.streamline_transactions_final_intermediate_tmp").columns [0].values() [0] %}
+    {% set min_time = run_query("select coalesce(min(modified_timestamp),sysdate()) from silver.streamline_transactions_final_intermediate_tmp").columns [0].values() [0] %}
 {% endif %}
 
 WITH txs AS (
@@ -78,7 +81,7 @@ tx_results AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
     AND tx_id IN (
         SELECT
             DISTINCT tx_id
@@ -86,6 +89,7 @@ WHERE
             silver.streamline_transactions_final_intermediate_tmp
     )
 {% endif %}
+
 ),
 blocks AS (
     SELECT
@@ -93,9 +97,10 @@ blocks AS (
     FROM
         {{ ref('silver__streamline_blocks') }}
 
+
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
     AND block_number IN (
         SELECT
             DISTINCT block_number
@@ -103,6 +108,7 @@ WHERE
             silver.streamline_transactions_final_intermediate_tmp
     )
 {% endif %}
+
 ),
 FINAL AS (
     SELECT

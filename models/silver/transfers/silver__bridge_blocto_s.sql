@@ -9,7 +9,16 @@
 WITH events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
         -- WHERE
@@ -17,9 +26,9 @@ WITH events AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -33,7 +42,8 @@ teleport_events AS (
         event_contract AS teleport_contract_fee,
         event_data :amount :: DOUBLE AS amount_fee,
         event_data :type :: NUMBER AS teleport_direction,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         events
     WHERE
@@ -113,7 +123,8 @@ blocto_inbound AS (
         d.to_deposits AS flow_wallet_address,
         f.teleport_direction,
         'blocto' AS bridge,
-        f._inserted_timestamp
+        f._inserted_timestamp,
+        f._partition_by_block_id
     FROM
         teleports_in t
         LEFT JOIN deposits d USING (tx_id)
@@ -217,7 +228,8 @@ blocto_outbound AS (
         w.from_withdraw AS flow_wallet_address,
         f.teleport_direction,
         'blocto' AS bridge,
-        f._inserted_timestamp
+        f._inserted_timestamp,
+        f._partition_by_block_id
     FROM
         teleports_out t
         LEFT JOIN teleports_out_withdraw w USING (tx_id)
@@ -236,7 +248,8 @@ tbl_union AS (
         flow_wallet_address,
         teleport_direction,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         blocto_inbound
     UNION
@@ -252,7 +265,8 @@ tbl_union AS (
         flow_wallet_address,
         teleport_direction,
         bridge,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         blocto_outbound
 ),
@@ -281,6 +295,7 @@ FINAL AS (
         l.blockchain,
         bridge,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id']
         ) }} AS bridge_blocto_id,

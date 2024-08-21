@@ -4,6 +4,7 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'nft_allday_metadata_s_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nflallday_id);",
     tags = ['nft']
 ) }}
 

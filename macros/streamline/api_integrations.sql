@@ -12,14 +12,23 @@
         CREATE api integration IF NOT EXISTS aws_flow_api_prod_us_east_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-prod-rolesnowflakeudfsAF733095-F6SPYWFGQX9Z' api_allowed_prefixes = (
             'https://78rpbojpue.execute-api.us-east-2.amazonaws.com/prod/'
         ) enabled = TRUE;
+    
         {% endset %}
         {% do run_query(sql) %}
         
+        {% set sql %}
+        CREATE api integration IF NOT EXISTS aws_flow_evm_api_prod api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::924682671219:role/flow-api-prod-rolesnowflakeudfsAF733095-RmrgKIWbzoFL' api_allowed_prefixes = (
+            'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/'
+        ) enabled = TRUE;
+    
+        {% endset %}
+        {% do run_query(sql) %}
+
     {% elif target.name == "dev" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}
-        CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-1IP9GV997U5RM' api_allowed_prefixes = (
-            'https://ul6x832e8l.execute-api.us-east-1.amazonaws.com/dev/'
+        CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-i1JsMNTpSzX0' api_allowed_prefixes = (
+            'https://sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/'
         ) enabled = TRUE;    
         {% endset %}
         {% do run_query(sql) %}
@@ -30,6 +39,14 @@
         ) enabled = TRUE;
         {% endset %}
         {% do run_query(sql) %}
+
+        {% set sql %}
+        CREATE api integration IF NOT EXISTS aws_flow_evm_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/flow-api-stg-rolesnowflakeudfsAF733095-tPEdygwPC6IV' api_allowed_prefixes = (
+            'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/'
+        ) enabled = TRUE;
+        {% endset %}
+        {% do run_query(sql) %}
+
     {% elif target.name == "sbx" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
         {% set sql %}

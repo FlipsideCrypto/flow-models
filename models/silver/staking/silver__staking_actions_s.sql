@@ -1,23 +1,34 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['_inserted_timestamp::DATE'],
+    cluster_by = ['block_timestamp::DATE'],
     unique_key = 'tx_id',
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,delegator);",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
 WITH silver_events AS (
 
     SELECT
-        *
+        block_height,
+        block_timestamp,
+        tx_id,
+        tx_succeeded,
+        event_index,
+        event_type,
+        event_contract,
+        event_data,
+        _inserted_timestamp,
+        _partition_by_block_id,
+        modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -27,7 +38,7 @@ WHERE
         FROM
             {{ this }}
         WHERE
-            _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+            modified_timestamp >= SYSDATE() - INTERVAL '3 days'
             AND delegator IS NULL
     )
 {% endif %}
@@ -44,7 +55,8 @@ flow_staking AS (
         event_data :amount :: FLOAT AS amount,
         event_data :delegatorID :: STRING AS delegator_id,
         event_data :nodeID :: STRING AS node_id,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         silver_events
     WHERE
@@ -77,9 +89,9 @@ add_auth AS (
 
 {% if is_incremental() %}
 AND (
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp)
+            MAX(modified_timestamp)
         FROM
             {{ this }}
     )
@@ -89,7 +101,7 @@ AND (
         FROM
             {{ this }}
         WHERE
-            _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+            modified_timestamp >= SYSDATE() - INTERVAL '3 days'
             AND delegator IS NULL
     )
 )
@@ -107,6 +119,7 @@ FINAL AS (
         amount,
         node_id,
         _inserted_timestamp,
+        _partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(
             ['tx_id', 'event_index', 'action']
         ) }} AS staking_actions_id,
