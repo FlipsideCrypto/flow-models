@@ -6,7 +6,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['testnet']
+    tags = ['testnet', 'crescendo']
 ) }}
 
 SELECT
@@ -14,7 +14,8 @@ SELECT
     DATA :id :: STRING AS collection_id,
     ARRAY_SIZE(
         DATA :transaction_ids :: ARRAY
-    ) AS transaction_count,
+    ) AS tx_count,
+    DATA: transaction_ids :: ARRAY AS transaction_ids,
     DATA,
     _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(

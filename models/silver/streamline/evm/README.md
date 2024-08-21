@@ -26,16 +26,20 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
  - UDF GET EVM CHAINHEAD
  - check dbt models tags (evm, evm_testnet, testnet, crescendo)
  - ALIGN column names both internally and externally
+ - factor bronze evm models into macros
 
 ## Tooling
  - UDFs
   - https://github.com/FlipsideCrypto/flow-models/pull/337/
   - streamline.udf_bulk_rest_api_v2
   - streamline.udf_bulk_decode_logs
+  - streamine.udf_get_evm_chainhead(STRING optional) (new!)
+  - streamline.udf_udf_decode_hash_array(ARRAY) (new!)
 
 ## External Resources
 
  - https://developers.flow.com/evm/networks
+   - https://developers.flow.com/evm/using#json-rpc-methods
   - RPC Endpoints:
     - https://previewnet.evm.nodes.onflow.org
     - https://testnet.evm.nodes.onflow.org
@@ -46,7 +50,20 @@ dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_IN
  - https://evm-testnet.flowscan.io/
  - https://contractbrowser.com/
 
+## RPC Methods
+ 1. [eth_blockNumber](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_blocknumber) for chainhead
+ 1. [eth_getBlockByNumber](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblockbynumber) with param 2 = TRUE for blocks and txs
+ 1. [eth_getBlockReceipts](https://www.quicknode.com/docs/ethereum/eth_getBlockReceipts)
+ 1. [eth_getLogs](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs) --- maybe not needed
+ 1. [debug_traceBlockByNumber](https://www.quicknode.com/docs/ethereum/debug_traceBlockByNumber)
+ 1. [eth_getTransactionCount](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) --- maybe not needed
+  - maybe for get receipt and trace pipelines
 
+
+ - Note, for methods that accept a block height, that height must be hex encoded using:
+ ```sql
+CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX')))
+```
 
 ### Querying Previewnet
 ```shell
@@ -65,7 +82,7 @@ select
     livequery.utils.udf_hex_to_int(
         flow.live.udf_api(
             'POST',
-            'https://previewnet.evm.nodes.onflow.org',
+            'https://testnet.evm.nodes.onflow.org',
             {},
             object_construct(
                 'method', 'eth_blockNumber',

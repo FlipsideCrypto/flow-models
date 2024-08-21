@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_number'],
-    tags = ['evm_testnet']
+    tags = ['evm_testnet', 'crescendo']
 ) }}
 
 WITH tx_array AS (
@@ -45,6 +45,7 @@ SELECT
     block_number,
     block_hash,
     block_timestamp,
+    -- streamline.utils.udf_hex_to_int() for decoding hex strings
     tx_response :chainId :: STRING as chain_id_hex,
     tx_response :from :: STRING as from_address,
     tx_response :gas :: STRING as gas_hex,

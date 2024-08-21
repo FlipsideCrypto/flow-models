@@ -6,11 +6,12 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['testnet']
+    tags = ['testnet', 'crescendo']
 ) }}
 
 SELECT
     block_number,
+    DATA: reference_block_id :: STRING AS block_id,
     VALUE :id :: STRING AS tx_id,
     DATA :arguments :: ARRAY AS arguments,
     DATA :authorizers :: ARRAY AS authorizers,

@@ -6,7 +6,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['testnet']
+    tags = ['testnet', 'crescendo']
 ) }}
 
 SELECT

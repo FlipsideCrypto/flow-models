@@ -124,6 +124,7 @@ sources:
       - name: testnet_transaction_results
       - name: evm_testnet_blocks
       - name: evm_testnet_blocks_stg
+      - name: evm_testnet_receipts_stg
 
   - name: crosschain_silver
     database: crosschain

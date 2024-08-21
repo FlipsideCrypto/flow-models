@@ -2,8 +2,8 @@
     {% set sql %}
 
         CREATE 
-            OR REPLACE FUNCTION flow_dev.streamline.udf_get_evm_chainhead(
-            network STRING
+            OR REPLACE FUNCTION {{ target.database }}.streamline.udf_get_evm_chainhead(
+            network STRING DEFAULT 'testnet'
         )
         RETURNS INTEGER
         AS
