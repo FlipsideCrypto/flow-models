@@ -27,5 +27,6 @@ jobs:
         dbt test --selector 'integration_tests'
       environment:  ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
       warehouse: ${{ vars.WAREHOUSE }}
+      python_version: '3.8.x'
     secrets: inherit
 
