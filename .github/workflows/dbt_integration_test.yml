@@ -21,7 +21,7 @@ concurrency: ${{ github.workflow }}
 
 jobs:
   called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@STREAM-860/reusable-integration-test-gha
     with:
       dbt_command: >
         dbt test --selector 'integration_tests'
