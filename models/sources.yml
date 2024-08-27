@@ -125,6 +125,7 @@ sources:
       - name: evm_testnet_blocks
       - name: evm_testnet_blocks_stg
       - name: evm_testnet_receipts_stg
+      - name: evm_testnet_traces_stg
 
   - name: crosschain_silver
     database: crosschain
