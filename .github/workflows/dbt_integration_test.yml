@@ -23,10 +23,9 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt.yml@main
     with:
-      dbt_command: >
+      command: >
         dbt test --selector 'integration_tests'
       environment:  ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
       warehouse: ${{ vars.WAREHOUSE }}
-      python_version: '3.8.x'
     secrets: inherit
 
