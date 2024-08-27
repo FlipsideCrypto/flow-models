@@ -1,4 +1,4 @@
-name: integration test
+name: dbt_run_integration_test
 run-name: ${{ github.event.inputs.branch }}
 
 on:
