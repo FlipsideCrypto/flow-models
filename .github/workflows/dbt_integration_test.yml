@@ -3,17 +3,29 @@ run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
-  
+
+env:
+  USE_VARS: "${{ vars.USE_VARS }}"
+  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
+  DBT_VERSION: "${{ vars.DBT_VERSION }}"
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
 
 concurrency: ${{ github.workflow }}
 
 jobs:
-  test:
-    name: integration_test
-    uses: ./.github/workflows/dbt.yml
-    secrets: inherit
-  
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt_run_template.yml@main
     with:
-      warehouse: DBT_CLOUD
-      environment: ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
-      command: dbt test --selector 'integration_tests'
+      dbt_command: >
+        dbt test --selector 'integration_tests'
+      environment:  ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
+      warehouse: ${{ vars.WAREHOUSE }}
+    secrets: inherit
+
