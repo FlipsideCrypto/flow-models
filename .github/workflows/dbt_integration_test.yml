@@ -4,19 +4,6 @@ run-name: ${{ github.event.inputs.branch }}
 on:
   workflow_dispatch:
 
-env:
-  USE_VARS: "${{ vars.USE_VARS }}"
-  DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
-  DBT_VERSION: "${{ vars.DBT_VERSION }}"
-  ACCOUNT: "${{ vars.ACCOUNT }}"
-  ROLE: "${{ vars.ROLE }}"
-  USER: "${{ vars.USER }}"
-  PASSWORD: "${{ secrets.PASSWORD }}"
-  REGION: "${{ vars.REGION }}"
-  DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
-  SCHEMA: "${{ vars.SCHEMA }}"
-
 concurrency: ${{ github.workflow }}
 
 jobs:
