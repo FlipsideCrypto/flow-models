@@ -1,19 +1,18 @@
-name: integration test
+name: dbt_run_integration_test
 run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
-  
 
 concurrency: ${{ github.workflow }}
 
 jobs:
-  test:
-    name: livequery_integration_test
-    uses: ./.github/workflows/dbt.yml
-    secrets: inherit
-  
+  called_workflow_template:
+    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt.yml@main
     with:
-      warehouse: DBT_CLOUD
-      environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'stg' }}
-      command: dbt test -s 'livequery_models.deploy.core.*'
+      command: >
+        dbt test --selector 'integration_tests'
+      environment:  ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
+      warehouse: ${{ vars.WAREHOUSE }}
+    secrets: inherit
+
