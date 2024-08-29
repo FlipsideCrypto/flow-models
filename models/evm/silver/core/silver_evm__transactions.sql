@@ -13,7 +13,6 @@ WITH tx_array AS (
         block_number,
         block_hash,
         block_timestamp,
-        {# block_response, #}
         block_response :transactions :: ARRAY AS transactions,
         _partition_by_block_id
     FROM
@@ -30,11 +29,12 @@ AND modified_timestamp >= (
 )
 {% endif %}
 ),
-flattened_txs AS (
+flatten_txs AS (
     SELECT
         block_number,
         block_hash,
         block_timestamp,
+        INDEX AS array_index,
         VALUE :: VARIANT AS tx_response,
         _partition_by_block_id
     FROM
@@ -68,4 +68,4 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    flattened_txs
+    flatten_txs

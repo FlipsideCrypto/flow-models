@@ -30,30 +30,38 @@ WHERE
 {% else %}
     {{ ref('bronze__fr_evm_traces') }}
 {% endif %}
-)
+qualify(ROW_NUMBER() over (PARTITION BY block_number
+ORDER BY
+    _inserted_timestamp DESC)) = 1
+),
+flatten_traces AS (
 SELECT
     block_number,
-    INDEX AS trace_index,
-    VALUE,
-    VALUE :from :: STRING AS from_address,
-    VALUE :gas :: STRING AS gas_hex,
-    VALUE :gasUsed :: STRING AS gas_used_hex,
-    VALUE :input :: STRING AS input,
-    VALUE :to :: STRING AS to_address,
-    VALUE :type :: STRING AS trace_type,
-    VALUE :value :: STRING AS value_hex,
+    INDEX AS array_index,
+    VALUE :: VARIANT AS trace_response,
     _partition_by_block_id,
-    _inserted_timestamp,
-    {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'INDEX']
-    ) }} AS evm_traces_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
+    _inserted_timestamp
 FROM
     traces,
     LATERAL FLATTEN (DATA :result :: variant) 
 
-qualify(ROW_NUMBER() over (PARTITION BY evm_traces_id
-ORDER BY
-    _inserted_timestamp DESC)) = 1
+)
+SELECT
+    block_number,
+    array_index,
+    trace_response :from :: STRING AS from_address,
+    trace_response :gas :: STRING AS gas_hex,
+    trace_response :gasUsed :: STRING AS gas_used_hex,
+    trace_response :input :: STRING AS input,
+    trace_response :to :: STRING AS to_address,
+    trace_response :type :: STRING AS trace_type,
+    trace_response :value :: STRING AS value_hex,
+    {{ dbt_utils.generate_surrogate_key(
+        ['block_number', 'array_index']
+    ) }} AS evm_traces_id,
+    _inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
+FROM
+    flatten_traces

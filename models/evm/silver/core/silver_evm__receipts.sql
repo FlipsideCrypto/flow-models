@@ -30,6 +30,9 @@ WHERE
 {% else %}
     {{ ref('bronze__fr_evm_receipts') }}
 {% endif %}
+qualify(ROW_NUMBER() over (PARTITION BY block_number
+ORDER BY
+    _inserted_timestamp DESC)) = 1
 
 )
 SELECT
@@ -57,7 +60,3 @@ SELECT
 FROM
     receipts,
     LATERAL FLATTEN (DATA :result :: variant)
-
-qualify(ROW_NUMBER() over (PARTITION BY evm_receipts_id
-ORDER BY
-    _inserted_timestamp DESC)) = 1
