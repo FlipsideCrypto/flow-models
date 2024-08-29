@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__streamline_evm_receipts') }}
--- depends_on: {{ ref('bronze__streamline_fr_evm_receipts') }}
+-- depends_on: {{ ref('bronze__evm_receipts') }}
+-- depends_on: {{ ref('bronze__fr_evm_receipts') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_receipts_id",
@@ -19,7 +19,7 @@ WITH receipts AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_evm_receipts') }}
+{{ ref('bronze__evm_receipts') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_evm_receipts') }}
+    {{ ref('bronze__fr_evm_receipts') }}
 {% endif %}
 
 )

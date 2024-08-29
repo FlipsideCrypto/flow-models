@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__streamline_evm_traces') }}
--- depends_on: {{ ref('bronze__streamline_fr_evm_traces') }}
+-- depends_on: {{ ref('bronze__evm_traces') }}
+-- depends_on: {{ ref('bronze__fr_evm_traces') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_traces_id",
@@ -19,7 +19,7 @@ WITH traces AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_evm_traces') }}
+{{ ref('bronze__evm_traces') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_evm_traces') }}
+    {{ ref('bronze__fr_evm_traces') }}
 {% endif %}
 )
 SELECT

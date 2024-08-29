@@ -17,7 +17,7 @@ WITH tx_array AS (
         block_response :transactions :: ARRAY AS transactions,
         _partition_by_block_id
     FROM
-        {{ ref('silver__evm_blocks') }}
+        {{ ref('silver_evm__blocks') }}
     WHERE
         transaction_count > 0
 

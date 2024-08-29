@@ -1,8 +1,8 @@
--- depends_on: {{ ref('bronze__streamline_evm_blocks') }}
--- depends_on: {{ ref('bronze__streamline_fr_evm_blocks') }}
+-- depends_on: {{ ref('bronze__evm_blocks') }}
+-- depends_on: {{ ref('bronze__fr_evm_blocks') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "evm_testnet_blocks_id",
+    unique_key = "evm_blocks_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
@@ -33,7 +33,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_evm_blocks') }}
+{{ ref('bronze__evm_blocks') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -42,7 +42,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_evm_blocks') }}
+    {{ ref('bronze__fr_evm_blocks') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY evm_blocks_id
