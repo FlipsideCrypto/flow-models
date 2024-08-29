@@ -34,7 +34,7 @@ SELECT
     ) :: INT AS partition_key,
     {{ target.database }}.live.udf_api(
         'POST',
-        'https://testnet.evm.nodes.onflow.org',
+        '{Service}',
         OBJECT_CONSTRUCT(
             'Content-Type',
             'application/json'
@@ -48,9 +48,14 @@ SELECT
             'debug_traceBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX')))
+                CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX'))),
+                OBJECT_CONSTRUCT(
+                    'tracer', 'callTracer', 
+                    'timeout', '30s'
+                )
             )
-        )
+        ),
+        'Vault/{{ target.name }}/flow/testnet'
     ) AS request
 FROM
     tbl

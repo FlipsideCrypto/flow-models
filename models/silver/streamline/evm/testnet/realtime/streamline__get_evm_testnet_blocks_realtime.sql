@@ -33,7 +33,7 @@ SELECT
     ) :: INT AS partition_key,
     {{ target.database }}.live.udf_api(
         'POST',
-        'https://testnet.evm.nodes.onflow.org',
+        '{Service}',
         OBJECT_CONSTRUCT(
             'Content-Type',
             'application/json'
@@ -50,7 +50,8 @@ SELECT
                 CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX'))),
                 TRUE -- Include transactions
             )
-        )
+        ),
+        'Vault/{{ target.name }}/flow/testnet'
     ) AS request
 FROM
     tbl
