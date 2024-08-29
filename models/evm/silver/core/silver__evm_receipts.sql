@@ -1,12 +1,12 @@
--- depends_on: {{ ref('bronze__streamline_evm_testnet_receipts') }}
--- depends_on: {{ ref('bronze__streamline_fr_evm_testnet_receipts') }}
+-- depends_on: {{ ref('bronze__streamline_evm_receipts') }}
+-- depends_on: {{ ref('bronze__streamline_fr_evm_receipts') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "evm_testnet_receipts_id",
+    unique_key = "evm_receipts_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['evm_testnet', 'crescendo']
+    tags = ['evm']
 ) }}
 
 WITH receipts AS (
@@ -19,7 +19,7 @@ WITH receipts AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_evm_testnet_receipts') }}
+{{ ref('bronze__streamline_evm_receipts') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_evm_testnet_receipts') }}
+    {{ ref('bronze__streamline_fr_evm_receipts') }}
 {% endif %}
 
 )
@@ -50,7 +50,7 @@ SELECT
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_number', 'VALUE:transactionHash::STRING']
-    ) }} AS evm_testnet_receipts_id,
+    ) }} AS evm_receipts_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
@@ -58,6 +58,6 @@ FROM
     receipts,
     LATERAL FLATTEN (DATA :result :: variant)
 
-qualify(ROW_NUMBER() over (PARTITION BY evm_testnet_receipts_id
+qualify(ROW_NUMBER() over (PARTITION BY evm_receipts_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

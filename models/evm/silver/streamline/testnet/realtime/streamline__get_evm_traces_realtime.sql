@@ -8,21 +8,21 @@
         "producer_batch_size" :"50000",
         "worker_batch_size" :"10000",
         "sql_source" :"{{this.identifier}}" }
-    )
+    ),
+    tags = ['streamline_realtime_evm']
 ) }}
--- TODO refactor this to only request for blocks w a confirmed tx
 
 WITH tbl AS (
 
     SELECT
         block_height
     FROM
-        {{ ref('streamline__evm_testnet_blocks') }}
+        {{ ref('streamline__evm_blocks') }}
     EXCEPT
     SELECT
         block_number AS block_height
     FROM
-        {{ ref('streamline__complete_get_evm_testnet_traces') }}
+        {{ ref('streamline__complete_get_evm_traces') }}
 )
 SELECT
     block_height,
@@ -55,7 +55,7 @@ SELECT
                 )
             )
         ),
-        'Vault/{{ target.name }}/flow/testnet'
+        'Vault/{{ target.name }}/flow/evm'
     ) AS request
 FROM
     tbl

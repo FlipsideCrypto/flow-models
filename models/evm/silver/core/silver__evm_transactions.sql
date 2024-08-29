@@ -1,10 +1,10 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = "evm_testnet_txs_id",
+    unique_key = "evm_txs_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['block_number'],
-    tags = ['evm_testnet', 'crescendo']
+    tags = ['evm']
 ) }}
 
 WITH tx_array AS (
@@ -17,7 +17,7 @@ WITH tx_array AS (
         block_response :transactions :: ARRAY AS transactions,
         _partition_by_block_id
     FROM
-        {{ ref('silver__evm_testnet_blocks') }}
+        {{ ref('silver__evm_blocks') }}
     WHERE
         transaction_count > 0
 
@@ -63,7 +63,7 @@ SELECT
     _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_response :hash :: STRING']
-    ) }} AS evm_testnet_txs_id,
+    ) }} AS evm_txs_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id

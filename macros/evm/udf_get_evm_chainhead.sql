@@ -3,8 +3,8 @@
 
         CREATE 
             OR REPLACE FUNCTION {{ target.database }}.streamline.udf_get_evm_chainhead(
-            network STRING DEFAULT 'testnet'
-        )
+                network STRING DEFAULT 'testnet'
+            )
         RETURNS INTEGER
         AS
         $$
@@ -12,18 +12,15 @@
             livequery.utils.udf_hex_to_int(
                 flow.live.udf_api(
                     'POST',
-                    CASE 
-                        WHEN UPPER(network) = 'MAINNET' THEN 'https://mainnet.evm.nodes.onflow.org'
-                        WHEN UPPER(network) = 'TESTNET' THEN 'https://testnet.evm.nodes.onflow.org'
-                        ELSE NULL
-                    END,
+                    '{Service}',
                     {},
                     OBJECT_CONSTRUCT(
                         'method', 'eth_blockNumber',
                         'id', 1,
                         'jsonrpc', '2.0',
                         'params', []
-                    )
+                    ),
+                    'Vault/{{ target.name }}/flow/evm/' || lower(network)
                 ):data:result
             ) :: INTEGER AS block_number
         $$

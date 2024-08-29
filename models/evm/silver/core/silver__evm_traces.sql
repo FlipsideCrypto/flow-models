@@ -1,12 +1,12 @@
--- depends_on: {{ ref('bronze__streamline_evm_testnet_traces') }}
--- depends_on: {{ ref('bronze__streamline_fr_evm_testnet_traces') }}
+-- depends_on: {{ ref('bronze__streamline_evm_traces') }}
+-- depends_on: {{ ref('bronze__streamline_fr_evm_traces') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "evm_testnet_traces_id",
+    unique_key = "evm_traces_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
-    tags = ['evm_testnet', 'crescendo']
+    tags = ['evm']
 ) }}
 
 WITH traces AS (
@@ -19,7 +19,7 @@ WITH traces AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_evm_testnet_traces') }}
+{{ ref('bronze__streamline_evm_traces') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_fr_evm_testnet_traces') }}
+    {{ ref('bronze__streamline_fr_evm_traces') }}
 {% endif %}
 )
 SELECT
@@ -46,7 +46,7 @@ SELECT
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_number', 'INDEX']
-    ) }} AS evm_testnet_traces_id,
+    ) }} AS evm_traces_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
@@ -54,6 +54,6 @@ FROM
     traces,
     LATERAL FLATTEN (DATA :result :: variant) 
 
-qualify(ROW_NUMBER() over (PARTITION BY evm_testnet_traces_id
+qualify(ROW_NUMBER() over (PARTITION BY evm_traces_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

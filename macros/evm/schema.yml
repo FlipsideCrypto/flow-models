@@ -1,0 +1,20 @@
+version: 2
+
+macros:
+  - name: run_create_udf_decode_hash_array
+    description: |
+      This macro  creates a UDF that takes in a bytearray, parses out the value, and returns a decoded hash.
+    arguments:
+      - name: raw_array
+        description: The bytearray to be decoded.
+        type: array
+    return_type: string
+
+  - name: run_create_udf_get_evm_chainhead
+    description: |
+      This macro creates a UDF that returns chainhead for the Flow EVM execution environment. This takes an optional argument NETWORK and accepts either "testnet" or "mainnet".
+    arguments:
+      - name: network
+        description: The network to query for chainhead.
+        type: string
+    return_type: string

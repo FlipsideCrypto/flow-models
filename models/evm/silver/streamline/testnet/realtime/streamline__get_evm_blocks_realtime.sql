@@ -3,26 +3,26 @@
     post_hook = fsc_utils.if_data_call_function_v2(
         func = 'streamline.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
-        params ={ "external_table" :"evm_testnet_receipts_stg",
+        params ={ "external_table" :"evm_testnet_blocks_stg",
         "sql_limit" :"250000",
         "producer_batch_size" :"50000",
         "worker_batch_size" :"10000",
         "sql_source" :"{{this.identifier}}" }
-    )
+    ),
+    tags = ['streamline_realtime_evm']
 ) }}
--- TODO refactor this to only request for blocks w a confirmed tx
 
 WITH tbl AS (
 
     SELECT
         block_height
     FROM
-        {{ ref('streamline__evm_testnet_blocks') }}
+        {{ ref('streamline__evm_blocks') }}
     EXCEPT
     SELECT
         block_number AS block_height
     FROM
-        {{ ref('streamline__complete_get_evm_testnet_receipts') }}
+        {{ ref('streamline__complete_get_evm_blocks') }}
 )
 SELECT
     block_height,
@@ -45,13 +45,14 @@ SELECT
             'jsonrpc',
             '2.0',
             'method',
-            'eth_getBlockReceipts',
+            'eth_getBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX')))
+                CONCAT('0x', TRIM(to_char(block_height, 'XXXXXXXX'))),
+                TRUE -- Include transactions
             )
         ),
-        'Vault/{{ target.name }}/flow/testnet'
+        'Vault/{{ target.name }}/flow/evm'
     ) AS request
 FROM
     tbl

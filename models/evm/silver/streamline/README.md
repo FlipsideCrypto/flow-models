@@ -4,7 +4,7 @@ Separating out Flow EVM models from flow core, for now. TBD
 Dir named `previewnet` as testnet is not yet live, but using `testnet` naming convention to not have to update later.  
 
 ```shell
-dbt run -s 2+streamline__get_evm_testnet_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}'
+dbt run -s 2+tag:streamline_realtime_evm --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}'
 ```
 
 ## TODO
