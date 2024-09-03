@@ -84,7 +84,31 @@ FROM
     )
 )
 SELECT
-    *,
+    block_number,
+    precompiled_calls,
+    blob_gas_price,
+    block_hash,
+    blockNumber,
+    contract_address,
+    cumulative_gas_used,
+    effective_gas_price_unadj,
+    effective_gas_price_adj,
+    from_address,
+    gas_used,
+    logs,
+    logs_bloom,
+    revert_reason,
+    root,
+    status,
+    tx_succeeded,
+    tx_status,
+    tx_hash,
+    tx_index,
+    POSITION,
+    receipt_type,
+    to_address,
+    _partition_by_block_id,
+    _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_number', 'tx_hash']
     ) }} AS evm_receipts_id,

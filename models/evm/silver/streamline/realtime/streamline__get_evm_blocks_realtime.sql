@@ -81,7 +81,7 @@ SELECT
                 TRUE -- Include transactions
             )
         ),
-        'Vault/{{ target.name }}/flow/evm/'
+        'Vault/{{ target.name }}/flow/evm'
     ) AS request
 FROM
     tbl
