@@ -122,12 +122,9 @@ sources:
       - name: testnet_collections
       - name: testnet_transactions
       - name: testnet_transaction_results
-      # - name: evm_blocks
-      # - name: evm_receipts
-      # - name: evm_traces
-      - name: evm_testnet_blocks_stg
-      - name: evm_testnet_receipts_stg
-      - name: evm_testnet_traces_stg
+      - name: evm_blocks
+      - name: evm_receipts
+      - name: evm_traces
 
   - name: crosschain_silver
     database: crosschain
