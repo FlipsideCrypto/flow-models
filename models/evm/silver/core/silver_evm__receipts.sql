@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__evm_receipts') }}
--- depends_on: {{ ref('bronze__fr_evm_receipts') }}
+-- depends_on: {{ ref('bronze_evm__receipts') }}
+-- depends_on: {{ ref('bronze_evm__FR_receipts') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_receipts_id",
@@ -14,12 +14,12 @@ WITH receipts AS (
     SELECT
         block_number,
         DATA,
-        _partition_by_block_id,
+        partition_key AS _partition_by_block_id,
         _inserted_timestamp
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__evm_receipts') }}
+{{ ref('bronze_evm__receipts') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__fr_evm_receipts') }}
+    {{ ref('bronze_evm__FR_receipts') }}
 {% endif %}
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY

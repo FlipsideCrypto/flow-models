@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__evm_traces') }}
--- depends_on: {{ ref('bronze__fr_evm_traces') }}
+-- depends_on: {{ ref('bronze_evm__traces') }}
+-- depends_on: {{ ref('bronze_evm__FR_traces') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_traces_id",
@@ -14,12 +14,12 @@ WITH traces AS (
     SELECT
         block_number,
         DATA,
-        _partition_by_block_id,
+        partition_key AS _partition_by_block_id,
         _inserted_timestamp
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__evm_traces') }}
+{{ ref('bronze_evm__traces') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -28,7 +28,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__fr_evm_traces') }}
+    {{ ref('bronze_evm__FR_traces') }}
 {% endif %}
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY

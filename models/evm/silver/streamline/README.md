@@ -8,25 +8,13 @@ dbt run -s 2+tag:streamline_realtime_evm --vars '{"STREAMLINE_INVOKE_STREAMS": T
 ```
 
 ## TODO
-
- - deploy external tables to streamline-snowflake
-  - https://github.com/FlipsideCrypto/streamline-snowflake/blob/AN-5203-FLOW-EVM-TESTNET/models/flow.yml
-   - `select * from streamline.flow_dev.evm_testnet_blocks_STG;`
-   - NOTE - only deployed to staging env for now so using separate external table
- - deploy streamline models
-  1. update source
-   - requires deployment of external tables to streamline db
-  1. bronze views
-    - bronze__streamline_evm_testnet_blocks
-    - bronze__streamline_fr_evm_testnet_blocks
-  1. complete model
-  1. streamline_get model
-   - may require a get chainhead function
- - check everywhere for evm_testnet_blocks_stg vs evm_testnet_blocks !
- - UDF GET EVM CHAINHEAD
  - check dbt models tags (evm, evm_testnet, testnet, crescendo)
  - ALIGN column names both internally and externally
- - factor bronze evm models into macros
+ - update GHA workflows
+   1. deprecate flow testnet
+   1. add flowEVM on hourly (?) schedule
+ - gold views
+ - roadmap in README (?) 
 
 ## Tooling
  - UDFs

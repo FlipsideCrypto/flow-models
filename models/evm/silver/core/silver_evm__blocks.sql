@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__evm_blocks') }}
--- depends_on: {{ ref('bronze__fr_evm_blocks') }}
+-- depends_on: {{ ref('bronze_evm__blocks') }}
+-- depends_on: {{ ref('bronze_evm__FR_blocks') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_blocks_id",
@@ -22,7 +22,7 @@ SELECT
     ) AS transaction_count,
     DATA :result :: variant AS block_response,
     VALUE,
-    _partition_by_block_id,
+    partition_key AS _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['data:result:hash::STRING']
     ) }} AS evm_blocks_id,
@@ -33,7 +33,7 @@ SELECT
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__evm_blocks') }}
+{{ ref('bronze_evm__blocks') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -42,7 +42,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__fr_evm_blocks') }}
+    {{ ref('bronze_evm__FR_blocks') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY evm_blocks_id

@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__evm_blocks') }}
--- depends_on: {{ ref('bronze__fr_evm_blocks') }}
+-- depends_on: {{ ref('bronze_evm__blocks') }}
+-- depends_on: {{ ref('bronze_evm__FR_blocks') }}
 {{ config (
     materialized = "incremental",
     unique_key = "block_number",
@@ -12,12 +12,12 @@
 SELECT
     DATA,
     block_number,
-    _partition_by_block_id,
+    partition_key AS _partition_by_block_id,
     _inserted_timestamp
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__evm_blocks') }}
+{{ ref('bronze_evm__blocks') }}
 WHERE
     _inserted_timestamp >= COALESCE(
         (
@@ -29,7 +29,7 @@ WHERE
         '1900-01-01' :: timestamp_ntz
     )
 {% else %}
-    {{ ref('bronze__fr_evm_blocks') }}
+    {{ ref('bronze_evm__FR_blocks') }}
 WHERE
     TRUE
 {% endif %}
