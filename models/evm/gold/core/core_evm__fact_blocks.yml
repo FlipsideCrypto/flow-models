@@ -1,0 +1,46 @@
+version: 2
+models:
+  - name: core_evm__fact_blocks
+    description: '{{ doc("flowevm_blocks_table_doc") }}'   
+
+    columns:
+      - name: BLOCK_NUMBER
+        description: '{{ doc("flowevm_block_number") }}'   
+      - name: BLOCK_TIMESTAMP
+        description: '{{ doc("flowevm_block_timestamp") }}'
+      - name: NETWORK
+        description: '{{ doc("flowevm_network") }}'
+      - name: BLOCKCHAIN
+        description: '{{ doc("flowevm_blockchain") }}'
+      - name: TX_COUNT
+        description: '{{ doc("flowevm_tx_count") }}'
+      - name: DIFFICULTY
+        description: '{{ doc("flowevm_difficulty") }}'
+      - name: TOTAL_DIFFICULTY
+        description: '{{ doc("flowevm_total_difficulty") }}'
+      - name: EXTRA_DATA
+        description: '{{ doc("flowevm_extra_data") }}'
+      - name: GAS_LIMIT
+        description: '{{ doc("flowevm_gas_limit") }}'
+      - name: GAS_USED
+        description: '{{ doc("flowevm_gas_used") }}'
+      - name: HASH
+        description: '{{ doc("flowevm_blocks_hash") }}'
+      - name: PARENT_HASH
+        description: '{{ doc("flowevm_parent_hash") }}'
+      - name: RECEIPTS_ROOT
+        description: '{{ doc("flowevm_receipts_root") }}'
+      - name: SHA3_UNCLES
+        description: '{{ doc("flowevm_sha3_uncles") }}'
+      - name: SIZE
+        description: '{{ doc("flowevm_size") }}' 
+      - name: UNCLE_BLOCKS
+        description: '{{ doc("flowevm_uncle_blocks") }}' 
+      - name: BLOCK_HEADER_JSON
+        description: '{{ doc("flowevm_block_header_json") }}'
+      - name: FACT_BLOCKS_ID
+        description: '{{ doc("pk_id") }}'   
+      - name: INSERTED_TIMESTAMP
+        description: '{{ doc("inserted_timestamp") }}'   
+      - name: MODIFIED_TIMESTAMP
+        description: '{{ doc("modified_timestamp") }}'
