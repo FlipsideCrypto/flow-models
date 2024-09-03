@@ -20,8 +20,40 @@ SELECT
     ARRAY_SIZE(
         DATA :result :transactions :: ARRAY
     ) AS transaction_count,
-    DATA :result :: variant AS block_response,
-    VALUE,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :baseFeePerGas :: STRING
+    ) AS base_fee_per_gas,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :difficulty :: STRING
+    ) AS difficulty,
+    DATA :result :extraData :: STRING AS extra_data,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :gasLimit :: STRING
+    ) AS gas_limit,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :gasUsed :: STRING
+    ) AS gas_used,
+    DATA :result :logsBloom :: STRING AS logs_bloom,
+    DATA :result :miner :: STRING AS miner,
+    DATA :result :mixHash :: STRING AS mix_hash,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :nonce :: STRING
+    ) AS nonce,
+    DATA :result :parentHash :: STRING AS parent_hash,
+    DATA :result :receiptsRoot :: STRING AS receipts_root,
+    DATA :result :sha3Uncles :: STRING AS sha3_uncles,
+    livequery.utils.udf_hex_to_int(
+        DATA :result :size :: STRING
+    ) AS SIZE,
+    DATA :result :stateRoot :: STRING AS state_root,
+    ZEROIFNULL(
+        livequery.utils.udf_hex_to_int(
+            DATA :result :totalDifficulty :: STRING
+        )
+    ) AS total_difficulty,
+    DATA :result :transactions :: ARRAY AS transactions,
+    DATA :result :transactionsRoot :: STRING AS transactions_root,
+    DATA :result :uncles :: ARRAY AS uncles,
     partition_key AS _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['data:result:hash::STRING']

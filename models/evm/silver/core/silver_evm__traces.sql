@@ -50,12 +50,12 @@ SELECT
     block_number,
     array_index,
     trace_response :from :: STRING AS from_address,
-    trace_response :gas :: STRING AS gas_hex,
-    trace_response :gasUsed :: STRING AS gas_used_hex,
+    livequery.utils.udf_hex_to_int(trace_response :gas :: STRING) AS gas,
+    livequery.utils.udf_hex_to_int(trace_response :gasUsed :: STRING) AS gas_used,
     trace_response :input :: STRING AS input,
     trace_response :to :: STRING AS to_address,
     trace_response :type :: STRING AS trace_type,
-    trace_response :value :: STRING AS value_hex,
+    livequery.utils.udf_hex_to_int(trace_response :value :: STRING) AS value,
     {{ dbt_utils.generate_surrogate_key(
         ['block_number', 'array_index']
     ) }} AS evm_traces_id,

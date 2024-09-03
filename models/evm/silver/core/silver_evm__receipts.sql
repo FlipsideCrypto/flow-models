@@ -30,33 +30,69 @@ WHERE
 {% else %}
     {{ ref('bronze_evm__FR_receipts') }}
 {% endif %}
+
 qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1
-
-)
+),
+FINAL AS (
 SELECT
     block_number,
+    COALESCE(
+        VALUE :PrecompiledCalls :: STRING,
+        VALUE :precompiledCalls :: STRING
+    ) AS precompiled_calls,
     VALUE :blobGasPrice :: INT AS blob_gas_price,
     VALUE :blockHash :: STRING AS block_hash,
+    VALUE :blockNumber :: INT AS blockNumber,
     VALUE :contractAddress :: STRING AS contract_address,
     VALUE :cumulativeGasUsed :: INT AS cumulative_gas_used,
-    VALUE :effectiveGasPrice :: INT AS effective_gas_price,
+    VALUE :effectiveGasPrice :: INT AS effective_gas_price_unadj,
+    VALUE :from :: STRING AS from_address,
+    VALUE :effectiveGasPrice :: INT / pow(
+        10,
+        9
+    ) AS effective_gas_price_adj,
+    ZEROIFNULL(
+        VALUE :gasUsed :: INT
+    ) AS gas_used,
     VALUE :logs :: ARRAY AS logs,
     VALUE :logsBloom :: STRING AS logs_bloom,
     VALUE :revertReason :: STRING AS revert_reason,
-    VALUE :status :: INT AS tx_status,
+    VALUE :root :: STRING AS root,
+    VALUE :status :: INT AS status,
+    VALUE :status :: INT = 1 AS tx_succeeded,
+    IFF(
+        VALUE :status :: INT = 1,
+        'SUCCESS',
+        'FAIL'
+    ) AS tx_status,
     VALUE :transactionHash :: STRING AS tx_hash,
     VALUE :transactionIndex :: INT AS tx_index,
-    VALUE :type :: STRING AS tx_type,
+    CASE
+        WHEN block_number <> blockNumber THEN NULL
+        ELSE VALUE :transactionIndex :: INT
+    END AS POSITION,
+    VALUE :type :: STRING AS receipt_type,
+    VALUE :to :: STRING AS to_address,
     _partition_by_block_id,
-    _inserted_timestamp,
+    _inserted_timestamp
+FROM
+    receipts,
+    LATERAL FLATTEN (
+        DATA :result :: variant
+    )
+)
+SELECT
+    *,
     {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'VALUE:transactionHash::STRING']
+        ['block_number', 'tx_hash']
     ) }} AS evm_receipts_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    receipts,
-    LATERAL FLATTEN (DATA :result :: variant)
+    FINAL
+WHERE
+    tx_hash IS NOT NULL
+    AND POSITION IS NOT NULL 
