@@ -3,7 +3,7 @@
 
         CREATE 
             OR REPLACE FUNCTION {{ target.database }}.streamline.udf_get_evm_chainhead(
-                network STRING DEFAULT 'testnet'
+                network STRING DEFAULT 'mainnet'
             )
         RETURNS INTEGER
         AS
