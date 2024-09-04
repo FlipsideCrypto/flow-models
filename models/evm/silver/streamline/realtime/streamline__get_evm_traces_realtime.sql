@@ -89,7 +89,7 @@ SELECT
             'debug_traceBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                CONCAT('0x', TRIM(to_char(block_number, 'XXXXXXXX'))),
+                utils.udf_int_to_hex(block_number),
                 OBJECT_CONSTRUCT(
                     'tracer', 'callTracer', 
                     'timeout', '30s'

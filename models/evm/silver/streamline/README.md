@@ -10,10 +10,7 @@ dbt run -s 2+tag:streamline_realtime_evm --vars '{"STREAMLINE_INVOKE_STREAMS": T
  - check dbt models tags (evm, evm_testnet, testnet, crescendo)
  - ALIGN column names both internally and externally
  - update GHA workflows
-   1. deprecate flow testnet
    1. add flowEVM on hourly (?) schedule
- - gold views
- - roadmap in README (?) 
 
 ## Tooling
  - UDFs

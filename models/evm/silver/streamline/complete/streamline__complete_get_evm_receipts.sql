@@ -4,16 +4,21 @@
     materialized = "incremental",
     unique_key = "block_number",
     cluster_by = "ROUND(block_number, -3)",
-    merge_update_columns = ["block_number"],
+    merge_exclude_columns = ["inserted_timestamp"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
     tags = ['streamline_complete_evm']
 ) }}
 
 SELECT
-    DATA,
     block_number,
-    partition_key AS _partition_by_block_id,
-    _inserted_timestamp
+    partition_key,
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['block_number::STRING']
+    ) }} AS complete_evm_receipts_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS invocation_id
 FROM
 
 {% if is_incremental() %}

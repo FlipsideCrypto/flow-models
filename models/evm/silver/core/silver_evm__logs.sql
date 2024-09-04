@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = "evm_logs_id",
-    cluster_by = "block_timestamp::date, _inserted_timestamp::date",
+    cluster_by = ['_inserted_timestamp :: DATE', '_partition_by_block_id'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['evm']
 ) }}
@@ -16,7 +16,8 @@ WITH base AS (
         to_address AS origin_to_address,
         tx_status,
         logs,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('silver_evm__receipts') }}
     WHERE
@@ -46,7 +47,8 @@ flat_logs AS (
         ) :: INT AS event_index,
         VALUE :removed :: BOOLEAN AS event_removed,
         VALUE :topics AS topics,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         base,
         LATERAL FLATTEN(
@@ -78,7 +80,8 @@ new_records AS (
             l.tx_hash :: STRING,
             '-',
             l.event_index :: STRING
-        ) AS _log_id
+        ) AS _log_id,
+        l._partition_by_block_id
     FROM
         flat_logs l
         LEFT OUTER JOIN {{ ref('silver_evm__transactions') }}
@@ -117,7 +120,8 @@ missing_data AS (
             txs._inserted_timestamp
         ) AS _inserted_timestamp,
         _log_id,
-        FALSE AS is_pending
+        FALSE AS is_pending,
+        t._partition_by_block_id
     FROM
         {{ this }}
         t
@@ -147,7 +151,8 @@ FINAL AS (
         topics,
         _inserted_timestamp,
         _log_id,
-        is_pending
+        is_pending,
+        _partition_by_block_id
     FROM
         new_records
 
@@ -169,7 +174,8 @@ SELECT
     topics,
     _inserted_timestamp,
     _log_id,
-    is_pending
+    is_pending,
+    _partition_by_block_id
 FROM
     missing_data
 {% endif %}

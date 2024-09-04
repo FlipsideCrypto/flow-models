@@ -5,7 +5,7 @@
     unique_key = "evm_traces_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
+    cluster_by = ['_inserted_timestamp :: DATE', '_partition_by_block_id'],
     tags = ['evm']
 ) }}
 
@@ -67,6 +67,7 @@ SELECT
     {{ dbt_utils.generate_surrogate_key(
         ['block_number', 'array_index']
     ) }} AS evm_traces_id,
+    _partition_by_block_id,
     _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

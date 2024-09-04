@@ -4,14 +4,18 @@
 ) }}
 
 {% if execute %}
-
-{% set height = run_query("SELECT streamline.udf_get_evm_chainhead()") %}
-{% set block_height = height.columns[0].values()[0] %}
+    {% set height = run_query("SELECT streamline.udf_get_evm_chainhead()") %}
+    {% set block_number = height.columns [0].values() [0] %}
 {% else %}
-{% set block_height = 0 %}
+    {% set block_number = 0 %}
 {% endif %}
 
 SELECT
-    height as block_number
+    _id AS block_number
 FROM
-    TABLE(streamline.udtf_get_base_table({{block_height}}))
+    {{ source(
+        'silver_crosschain',
+        'number_sequence'
+    ) }}
+WHERE
+    _id <= {{ block_number }}

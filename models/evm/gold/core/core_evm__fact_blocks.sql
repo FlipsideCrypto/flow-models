@@ -1,7 +1,12 @@
 {{ config(
-    materialized = 'view',
+    materialized = 'incremental',
+    unique_key = "fact_blocks_id",
+    incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
+    cluster_by = ['inserted_timestamp :: DATE', 'ROUND(block_number, -3)'],
     persist_docs ={ "relation": true,
-    "columns": true }
+    "columns": true },
+    tags = ['evm']
 ) }}
 
 SELECT

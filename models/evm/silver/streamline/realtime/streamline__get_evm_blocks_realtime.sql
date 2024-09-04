@@ -77,7 +77,7 @@ SELECT
             'eth_getBlockByNumber',
             'params',
             ARRAY_CONSTRUCT(
-                CONCAT('0x', TRIM(to_char(block_number, 'XXXXXXXX'))),
+                utils.udf_int_to_hex(block_number),
                 TRUE -- Include transactions
             )
         ),

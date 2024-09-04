@@ -1,8 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "evm_txs_id",
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    incremental_strategy = 'delete+insert',
     cluster_by = ['block_number'],
     tags = ['evm']
 ) }}
@@ -141,7 +140,8 @@ new_records AS (
         r.cumulative_gas_used,
         r.effective_gas_price_adj AS effective_gas_price,
         r.receipt_type,
-        t._inserted_timestamp
+        t._inserted_timestamp,
+        t._partition_by_block_id
     FROM
         base_tx t
         LEFT OUTER JOIN {{ ref('silver_evm__receipts') }}
@@ -200,7 +200,8 @@ missing_data AS (
         GREATEST(
             t._inserted_timestamp,
             r._inserted_timestamp
-        ) AS _inserted_timestamp
+        ) AS _inserted_timestamp,
+        t._partition_by_block_id
     FROM
         {{ this }}
         t
@@ -245,7 +246,8 @@ FINAL AS (
         tx_fee,
         tx_fee_precise,
         receipt_type,
-        _inserted_timestamp
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         new_records
 
@@ -282,7 +284,8 @@ SELECT
     tx_fee,
     tx_fee_precise_heal AS tx_fee_precise,
     receipt_type,
-    _inserted_timestamp
+    _inserted_timestamp,
+    _partition_by_block_id
 FROM
     missing_data
 {% endif %}
@@ -319,6 +322,7 @@ SELECT
     tx_fee_precise,
     receipt_type AS tx_type,
     _inserted_timestamp,
+    _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash']
     ) }} AS evm_txs_id,
