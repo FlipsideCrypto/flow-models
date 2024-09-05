@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = ['tx_id','nft_id'],
     tags = ['nft', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
