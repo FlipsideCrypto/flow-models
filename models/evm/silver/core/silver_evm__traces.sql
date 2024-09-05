@@ -52,16 +52,16 @@ SELECT
     block_number,
     array_index,
     trace_response :from :: STRING AS from_address,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         trace_response :gas :: STRING
     ) AS gas,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         trace_response :gasUsed :: STRING
     ) AS gas_used,
     trace_response :input :: STRING AS input,
     trace_response :to :: STRING AS to_address,
     trace_response :type :: STRING AS trace_type,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         trace_response :value :: STRING
     ) AS VALUE,
     {{ dbt_utils.generate_surrogate_key(

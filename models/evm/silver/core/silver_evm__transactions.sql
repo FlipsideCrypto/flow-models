@@ -47,17 +47,17 @@ base_tx AS (
         block_number,
         block_hash,
         block_timestamp,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :blockNumber :: STRING
         ) AS blockNumber,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :chainId :: STRING
         ) AS chain_id,
         tx_response :from :: STRING AS from_address,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :gas :: STRING
         ) AS gas,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :gasPrice :: STRING
         ) AS gas_price_unadj,
         ZEROIFNULL(gas_price_unadj / pow(10, 9)) AS gas_price_adj,
@@ -69,27 +69,27 @@ base_tx AS (
             10
         ) AS origin_function_signature,
         -- note, no maxFeePerGas or maxPriorityFeePerGas
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :nonce :: STRING
         ) AS nonce,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :r :: STRING
         ) AS r,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :s :: STRING
         ) AS s,
         -- note, no sourceHash
         tx_response :to :: STRING AS to_address,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :transactionIndex :: STRING
         ) AS POSITION,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :type :: STRING
         ) AS tx_type,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :v :: STRING
         ) AS v,
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             tx_response :value :: STRING
         ) AS value_precise_unadj,
         value_precise_unadj / pow(

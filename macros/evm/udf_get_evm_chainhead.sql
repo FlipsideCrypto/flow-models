@@ -9,8 +9,8 @@
         AS
         $$
             SELECT
-            livequery.utils.udf_hex_to_int(
-                flow.live.udf_api(
+            utils.udf_hex_to_int(
+                live.udf_api(
                     'POST',
                     '{Service}',
                     {},

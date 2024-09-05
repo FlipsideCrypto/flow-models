@@ -13,41 +13,41 @@ SELECT
     block_number,
     DATA :result :hash :: STRING AS block_hash,
     TO_TIMESTAMP(
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             DATA :result :timestamp :: STRING
         )
     ) AS block_timestamp,
     ARRAY_SIZE(
         DATA :result :transactions :: ARRAY
     ) AS transaction_count,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :baseFeePerGas :: STRING
     ) AS base_fee_per_gas,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :difficulty :: STRING
     ) AS difficulty,
     DATA :result :extraData :: STRING AS extra_data,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :gasLimit :: STRING
     ) AS gas_limit,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :gasUsed :: STRING
     ) AS gas_used,
     DATA :result :logsBloom :: STRING AS logs_bloom,
     DATA :result :miner :: STRING AS miner,
     DATA :result :mixHash :: STRING AS mix_hash,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :nonce :: STRING
     ) AS nonce,
     DATA :result :parentHash :: STRING AS parent_hash,
     DATA :result :receiptsRoot :: STRING AS receipts_root,
     DATA :result :sha3Uncles :: STRING AS sha3_uncles,
-    livequery.utils.udf_hex_to_int(
+    utils.udf_hex_to_int(
         DATA :result :size :: STRING
     ) AS SIZE,
     DATA :result :stateRoot :: STRING AS state_root,
     ZEROIFNULL(
-        livequery.utils.udf_hex_to_int(
+        utils.udf_hex_to_int(
             DATA :result :totalDifficulty :: STRING
         )
     ) AS total_difficulty,

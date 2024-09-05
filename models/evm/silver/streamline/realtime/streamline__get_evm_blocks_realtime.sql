@@ -20,7 +20,6 @@ WITH last_3_days AS (
         {{ ref("_evm_block_lookback") }}
 ),
 tbl AS (
-
     SELECT
         block_number
     FROM
@@ -52,10 +51,11 @@ tbl AS (
             -4,
             SYSDATE()
         )
+        AND blockNumber IS NOT NULL
 )
 SELECT
     block_number,
-    DATE_PART(epoch_second, SYSDATE())::STRING AS request_timestamp,
+    DATE_PART(epoch_second, SYSDATE()) :: STRING AS request_timestamp,
     '{{ invocation_id }}' AS _invocation_id,
     ROUND(
         block_number,

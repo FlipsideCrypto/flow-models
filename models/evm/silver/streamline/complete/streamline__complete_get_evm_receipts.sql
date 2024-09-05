@@ -11,6 +11,7 @@
 
 SELECT
     block_number,
+    utils.udf_hex_to_int(DATA :result :number :: STRING) as blockNumber,
     partition_key,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
@@ -35,8 +36,6 @@ WHERE
     )
 {% else %}
     {{ ref('bronze_evm__FR_receipts') }}
-WHERE
-    TRUE
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
