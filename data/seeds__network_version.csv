@@ -28,4 +28,5 @@ root_height,network_version,node_url,end_height
 44950207,mainnet-21,access-001.mainnet21.nodes.onflow.org:9000,47169686
 47169687,mainnet-22,access-001.mainnet22.nodes.onflow.org:9000,55114466
 55114467,mainnet-23,access-001.mainnet23.nodes.onflow.org:9000,65264618
-65264619,mainnet-24,access-001.mainnet24.nodes.onflow.org:9000,100000000
+65264619,mainnet-24,access-001.mainnet24.nodes.onflow.org:9000,85981134
+85981135,mainnet-25,access-001.mainnet25.nodes.onflow.org:9000,1000000000
