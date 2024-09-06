@@ -1,5 +1,5 @@
 flow:
-  target: dev
+  target: prod
   outputs:
     dev:
       type: snowflake
