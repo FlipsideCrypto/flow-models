@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = "fact_transactions_id",
-    incremental_strategy = 'delete+instert',
+    incremental_strategy = 'delete+insert',
     cluster_by = ['inserted_timestamp :: DATE', 'ROUND(block_number, -3)'],
     persist_docs ={ "relation": true,
     "columns": true },
