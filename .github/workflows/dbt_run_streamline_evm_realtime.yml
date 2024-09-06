@@ -1,11 +1,11 @@
-name: dbt_run_streamline_blocks_testnet
-run-name: dbt_run_streamline_blocks_testnet
+name: dbt_run_streamline_evm_realtime
+run-name: dbt_run_streamline_evm_realtime
 
 on:
   workflow_dispatch:
   schedule:
-    # 1x/hour schedule = At hour 8, 21, 36, 51 every day (see https://crontab.guru)
-    - cron: "7,27,47 10,20 * * *"
+    # Every hour (see https://crontab.guru)
+    - cron: "0 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -41,6 +41,6 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
-      - name: Run DBT Realtime
+      - name: Run DBT Jobs
         run: |
-          dbt run -s 2+streamline__get_testnet_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
+          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -s 2+tag:streamline_realtime_evm tag:evm

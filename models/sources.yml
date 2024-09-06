@@ -122,6 +122,10 @@ sources:
       - name: testnet_collections
       - name: testnet_transactions
       - name: testnet_transaction_results
+      - name: evm_blocks
+      - name: evm_receipts
+      - name: evm_traces
+
   - name: crosschain_silver
     database: crosschain
     schema: silver
