@@ -30,7 +30,6 @@ FROM
     {{ ref('silver_evm__logs') }}
 
 {% if is_incremental() %}
-{{ ref('bronze_evm__blocks') }}
 WHERE
     modified_timestamp >= (
         SELECT
