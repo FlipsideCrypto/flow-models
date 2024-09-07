@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::DATE'],
     unique_key = 'swaps_final_id',
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,trader);",
