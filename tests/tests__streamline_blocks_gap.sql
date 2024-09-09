@@ -1,54 +1,64 @@
 {{ config(
-    severity = 'error',
+    error_if = '>1',
     tags = ['streamline_test']
 ) }}
 
 WITH streamline_blocks AS (
 
     SELECT
-        *
+        block_number,
+        id,
+        parent_id,
+        _inserted_timestamp
     FROM
         {{ ref('silver__streamline_blocks') }}
 
-        {% if var(
-                'TEST_RANGE',
+        {% if not var(
+                'DBT_TEST_FULL',
                 False
             ) %}
         WHERE
-            block_height BETWEEN {{ var('START_HEIGHT', Null) }}
-            AND {{ var('END_HEIGHT', Null) }}
+            _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
         {% endif %}
 ),
-determine_prior_block AS (
+check_orphan AS (
     SELECT
-        block_height,
+        child.block_number,
+        child.id,
+        child.parent_id,
+        child._inserted_timestamp,
+        PARENT.block_number AS parent_block_number,
+        PARENT.id AS confirmed_parent_id
+    FROM
+        streamline_blocks child
+        LEFT JOIN streamline_blocks PARENT
+        ON child.parent_id = PARENT.id
+    ORDER BY
+        block_number
+),
+determine_previous_block AS (
+    SELECT
+        block_number,
         id,
         parent_id,
-        LAG(id) over (
+        confirmed_parent_id,
+        _inserted_timestamp,
+        LAG(block_number) over (
             ORDER BY
-                block_height
-        ) AS prev_block_id,
-        LAG(block_height) over (
-            ORDER BY
-                block_height
-        ) AS prev_block_height,
-        _inserted_timestamp
+                block_number
+        ) AS prev_block_number
     FROM
-        streamline_blocks
+        check_orphan
 )
 SELECT
-    *,
-    block_height - prev_block_height AS gap
+    block_number,
+    id,
+    parent_id,
+    prev_block_number,
+    block_number - prev_block_number AS gap_size,
+    _inserted_timestamp
 FROM
-    determine_prior_block
+    determine_previous_block
 WHERE
-    (
-        prev_block_id != parent_id
-        OR (
-            prev_block_id IS NULL
-            AND block_height != {{ var('START_HEIGHT', 0) }}
-        )
-    )
-    AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 day'
-ORDER BY
-    1
+    confirmed_parent_id IS NULL
+    AND block_number > 4132134 -- mainnet genesis
