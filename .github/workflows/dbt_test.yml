@@ -45,7 +45,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt test -s "flow_models,models/gold" tag:observability --vars '{"TEST_RANGE": True, "START_HEIGHT": ${{ vars.STREAMLINE_START_BLOCK }}, "END_HEIGHT": 100000000}'
+          dbt test -s "flow_models,models/gold" tag:observability tag:evm --vars '{"TEST_RANGE": True, "START_HEIGHT": ${{ vars.STREAMLINE_START_BLOCK }}, "END_HEIGHT": 100000000}'
         continue-on-error: true
 
       - name: Log test results

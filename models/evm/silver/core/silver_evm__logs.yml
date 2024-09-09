@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: core_evm__fact_event_logs
+  - name: silver_evm__logs
     description: '{{ doc("flowevm_logs_table_doc") }}'
     tests:
       - dbt_utils.recency:
@@ -11,32 +11,63 @@ models:
     columns:
       - name: BLOCK_NUMBER
         description: '{{ doc("flowevm_block_number") }}'   
+        tests:
+          - not_null
+      - name: BLOCK_HASH
+        description: '{{ doc("flowevm_block_hash") }}'
+        tests:
+          - not_null
       - name: BLOCK_TIMESTAMP
         description: '{{ doc("flowevm_block_timestamp") }}'
+        tests:
+          - not_null
       - name: TX_HASH
         description: '{{ doc("flowevm_logs_tx_hash") }}'
+        tests:
+          - not_null
       - name: EVENT_INDEX
         description: '{{ doc("flowevm_event_index") }}'
+        tests:
+          - not_null
       - name: CONTRACT_ADDRESS
         description: '{{ doc("flowevm_logs_contract_address") }}'
+        tests:
+          - not_null
       - name: TOPICS
         description: '{{ doc("flowevm_topics") }}'
+        tests:
+          - not_null
       - name: DATA
         description: '{{ doc("flowevm_logs_data") }}'
+        tests:
+          - not_null
       - name: EVENT_REMOVED
         description: '{{ doc("flowevm_event_removed") }}'  
+        tests:
+          - not_null
       - name: _LOG_ID
         description: '{{ doc("internal_column") }}'
+        tests:
+          - not_null
       - name: TX_STATUS
         description: '{{ doc("flowevm_tx_status") }}' 
+        tests:
+          - not_null
       - name: ORIGIN_FUNCTION_SIGNATURE
         description: '{{ doc("flowevm_origin_sig") }}'
+        tests:
+          - not_null
       - name: ORIGIN_FROM_ADDRESS
         description: '{{ doc("flowevm_origin_from") }}'
       - name: ORIGIN_TO_ADDRESS
         description: '{{ doc("flowevm_origin_to") }}'
-      - name: FACT_EVENT_LOGS_ID
+      - name: IS_PENDING
+        description: '{{ doc("is_pending") }}'
+      - name: EVM_LOGS_ID
         description: '{{ doc("pk_id") }}'   
+        tests:
+          - not_null
+          - unique
       - name: INSERTED_TIMESTAMP
         description: '{{ doc("inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP

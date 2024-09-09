@@ -14,7 +14,7 @@ models:
       - name: BLOCK_TIMESTAMP
         description: '{{ doc("flowevm_block_timestamp") }}'
       - name: BLOCK_HASH
-        description: '{{ doc("flowevm_tx_block_hash") }}' 
+        description: '{{ doc("flowevm_block_hash") }}' 
       - name: TX_HASH
         description: '{{ doc("flowevm_tx_hash") }}' 
       - name: NONCE
