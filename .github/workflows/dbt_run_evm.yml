@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_evm_realtime
 on:
   workflow_dispatch:
   schedule:
-    # Every hour (see https://crontab.guru)
-    - cron: "0 * * * *"
+    # Every hour on minute 30(see https://crontab.guru)
+    - cron: "30 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -41,6 +41,6 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
-      - name: Run DBT Jobs
+      - name: Update evm tables
         run: |
-          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -s 2+tag:streamline_realtime_evm tag:evm
+          dbt run -s tag:evm
