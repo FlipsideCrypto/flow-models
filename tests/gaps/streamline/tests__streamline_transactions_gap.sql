@@ -1,6 +1,6 @@
 {{ config(
     severity = 'error',
-    tags = ['streamline_test']
+    tags = ['flow_gap_test']
 ) }}
 
 WITH transactions_expected AS (

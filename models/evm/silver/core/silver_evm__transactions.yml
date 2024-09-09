@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: core_evm__fact_transactions
+  - name: silver_evm__transactions
     description: '{{ doc("flowevm_tx_table_doc") }}'
     tests:
       - dbt_utils.recency:
@@ -11,58 +11,120 @@ models:
     columns:
       - name: BLOCK_NUMBER
         description: '{{ doc("flowevm_block_number") }}'   
+        tests:
+          - not_null
       - name: BLOCK_TIMESTAMP
         description: '{{ doc("flowevm_block_timestamp") }}'
+        tests:
+          - not_null
       - name: BLOCK_HASH
         description: '{{ doc("flowevm_block_hash") }}' 
+        tests:
+          - not_null
+      - name: CHAIN_ID
+        description: '{{ doc("flowevm_chain_id") }}' 
+        tests:
+          - not_null
       - name: TX_HASH
         description: '{{ doc("flowevm_tx_hash") }}' 
+        tests:
+          - not_null
+          - unique
       - name: NONCE
         description: '{{ doc("flowevm_tx_nonce") }}' 
+        tests:
+          - not_null
       - name: POSITION
         description: '{{ doc("flowevm_tx_position") }}' 
+        tests:
+          - not_null
       - name: FROM_ADDRESS
         description: '{{ doc("flowevm_from_address") }}' 
       - name: TO_ADDRESS
         description: '{{ doc("flowevm_to_address") }}' 
+      - name: TX_TYPE
+        description: '{{ doc("flowevm_tx_type") }}'
       - name: VALUE
         description: '{{ doc("flowevm_value") }}' 
-      - name: VALUE_PRECISE_RAW
+        tests:
+          - not_null
+      - name: VALUE_PRECISE_UNADJ
         description: '{{ doc("precise_amount_unadjusted") }}'
-      - name: VALUE_PRECISE
+        tests:
+          - not_null
+      - name: VALUE_PRECISE_ADJ
         description: '{{ doc("precise_amount_adjusted") }}'
+        tests:
+          - not_null
+      - name: IS_PENDING
+        description: '{{ doc("is_pending") }}'
+        tests:
+          - not_null
       - name: TX_FEE
         description: '{{ doc("flowevm_tx_fee") }}' 
+        tests:
+          - not_null
       - name: TX_FEE_PRECISE
         description: '{{ doc("tx_fee_precise") }}'
-      - name: GAS_PRICE
+        tests:
+          - not_null
+      - name: GAS_PRICE_ADJ
         description: '{{ doc("flowevm_tx_gas_price") }}' 
+        tests:
+          - not_null
+      - name: GAS_PRICE_UNADJ
+        description: '{{ doc("flowevm_tx_gas_price") }}' 
+        tests:
+          - not_null
       - name: EFFECTIVE_GAS_PRICE
         description: The total base charge plus tip paid for each unit of gas, in Gwei.
-      - name: GAS_LIMIT
+        tests:
+          - not_null
+      - name: GAS
         description: '{{ doc("flowevm_tx_gas_limit") }}' 
+        tests:
+          - not_null
       - name: GAS_USED
         description: '{{ doc("flowevm_tx_gas_used") }}'
+        tests:
+          - not_null
       - name: CUMULATIVE_GAS_USED
         description: '{{ doc("flowevm_cumulative_gas_used") }}' 
-      - name: MAX_FEE_PER_GAS
-        description: The maximum fee per gas of the transaction, in Gwei.
-      - name: MAX_PRIORITY_FEE_PER_GAS
-        description: The maximum priority fee per gas of the transaction, in Gwei.
-      - name: STATUS
+        tests:
+          - not_null
+      - name: TX_SUCCEEDED
+        description: '{{ doc("flowevm_tx_status") }}'
+        tests:
+          - not_null
+      - name: TX_STATUS
         description: '{{ doc("flowevm_tx_status") }}' 
+        tests:
+          - not_null
       - name: INPUT_DATA
         description: '{{ doc("flowevm_tx_input_data") }}'
+        tests:
+          - not_null
       - name: ORIGIN_FUNCTION_SIGNATURE 
         description: '{{ doc("flowevm_tx_origin_sig") }}'
+        tests:
+          - not_null
       - name: R
         description: The r value of the transaction signature.
+        tests:
+          - not_null
       - name: S
         description: The s value of the transaction signature.
+        tests:
+          - not_null
       - name: V
         description: The v value of the transaction signature.
-      - name: FACT_TRANSACTIONS_ID
+        tests:
+          - not_null
+      - name: EVM_TXS_ID
         description: '{{ doc("pk_id") }}'   
+        tests:
+          - not_null
+          - unique
       - name: INSERTED_TIMESTAMP
         description: '{{ doc("inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP
