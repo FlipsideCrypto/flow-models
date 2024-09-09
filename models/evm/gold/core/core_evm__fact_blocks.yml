@@ -2,6 +2,11 @@ version: 2
 models:
   - name: core_evm__fact_blocks
     description: '{{ doc("flowevm_blocks_table_doc") }}'   
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 1
 
     columns:
       - name: BLOCK_NUMBER

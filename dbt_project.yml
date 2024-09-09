@@ -51,6 +51,8 @@ tests:
     +severity: warn # default all tests to warn
     gold:
       +severity: error # heighten severity for public facing tables
+    evm:
+      +severity: error
   +store_failures: true # all tests
 
 vars:

@@ -1,5 +1,6 @@
 {{ config(
-    tags = ['evm_gap_test']
+    tags = ['evm_gap_test'],
+    severity = 'error'
 ) }}
 
 WITH blocks AS (

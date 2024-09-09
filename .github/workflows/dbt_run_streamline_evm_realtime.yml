@@ -44,3 +44,7 @@ jobs:
       - name: Run DBT Jobs
         run: |
           dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -s 2+tag:streamline_realtime_evm tag:evm
+
+      - name: Update evm tables
+        run: |
+          dbt run -s tag:evm
