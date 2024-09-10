@@ -7,7 +7,7 @@ WITH blocks AS (
 
     SELECT
         block_number,
-        block_hash,
+        HASH AS block_hash,
         parent_hash,
         _inserted_timestamp
     FROM
