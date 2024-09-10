@@ -11,6 +11,7 @@ SELECT
     block_height,
     tx_succeeded,
     delegator,
+    delegator_id,
     action,
     amount,
     node_id,

@@ -51,8 +51,13 @@ flow_staking AS (
         block_height,
         tx_succeeded,
         event_contract,
+        event_data,
         event_type AS action,
-        event_data :amount :: FLOAT AS amount,
+        COALESCE(
+            event_data :amount :: FLOAT,
+            -- amount for event NewNodeCreated rep initial stake
+            event_data :amountCommitted :: FLOAT
+         ) AS amount,
         event_data :delegatorID :: STRING AS delegator_id,
         event_data :nodeID :: STRING AS node_id,
         _inserted_timestamp,
@@ -63,11 +68,33 @@ flow_staking AS (
         event_contract = 'A.8624b52f9ddcd04a.FlowIDTableStaking'
         AND event_type IN (
             'DelegatorTokensCommitted',
-            'DelegatorRewardTokensWithdrawn',
-            'DelegatorUnstakedTokensWithdrawn',
             'TokensCommitted',
+
+            'DelegatorTokensStaked',
+            'TokensStaked',
+
+            'DelegatorTokensRequestedToUnstake',
+
+            'DelegatorTokensUnstaking',
+            'TokensUnstaking',
+
+            'DelegatorTokensUnstaked',
+            'TokensUnstaked',
+
+            'DelegatorUnstakedTokensWithdrawn',
+            'UnstakedTokensWithdrawn',
+
+            'DelegatorRewardTokensWithdrawn',
             'RewardTokensWithdrawn',
-            'UnstakedTokensWithdrawn'
+
+            -- important additions to include 
+            -- initial stake, any self-unstake, refund
+            'NewNodeCreated',
+            'NodeTokensRequestedToUnstake',
+            'NodeRemovedAndRefunded',
+
+            'RewardsPaid',
+            'DelegatorRewardsPaid'
         )
 ),
 add_auth AS (
@@ -114,9 +141,11 @@ FINAL AS (
         block_timestamp,
         block_height,
         tx_succeeded,
-        primary_authorizer AS delegator,
+        IFF(delegator_id IS NOT NULL, primary_authorizer, null) AS delegator,
+        delegator_id,
         action,
         amount,
+        event_data,
         node_id,
         _inserted_timestamp,
         _partition_by_block_id,
