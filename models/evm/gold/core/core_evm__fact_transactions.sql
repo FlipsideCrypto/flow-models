@@ -29,6 +29,7 @@ SELECT
     cumulative_gas_used,
     input_data,
     tx_status AS status,
+    tx_succeeded,
     r,
     s,
     v,

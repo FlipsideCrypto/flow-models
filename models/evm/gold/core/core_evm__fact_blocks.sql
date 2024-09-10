@@ -20,7 +20,7 @@ SELECT
     extra_data,
     gas_limit,
     gas_used,
-    block_hash,
+    block_hash AS HASH,
     parent_hash,
     receipts_root,
     sha3_uncles,
