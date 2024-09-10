@@ -22,4 +22,4 @@ SELECT
     inserted_timestamp,
     modified_timestamp
 FROM
-    {{ ref('silver__staking_actions_s') }}
+    {{ ref('silver__staking_actions') }}
