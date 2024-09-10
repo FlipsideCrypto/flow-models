@@ -51,7 +51,6 @@ flow_staking AS (
         block_height,
         tx_succeeded,
         event_contract,
-        event_data,
         event_type AS action,
         COALESCE(
             event_data :amount :: FLOAT,
@@ -145,7 +144,6 @@ FINAL AS (
         delegator_id,
         action,
         amount,
-        event_data,
         node_id,
         _inserted_timestamp,
         _partition_by_block_id,
