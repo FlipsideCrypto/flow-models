@@ -1,5 +1,5 @@
-name: dbt_run_streamline_evm_realtime
-run-name: dbt_run_streamline_evm_realtime
+name: dbt_run_evm
+run-name: dbt_run_evm
 
 on:
   workflow_dispatch:
