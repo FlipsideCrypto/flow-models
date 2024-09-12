@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = 'block_timestamp::date',
-    post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,actors);',
+    post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,address);',
     tags = ['scheduled_core']
 ) }}
 
@@ -23,7 +23,6 @@ WITH transactions AS (
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
         ARRAY_SIZE(events) > 0
-
 {% if is_incremental() %}
 AND modified_timestamp >= (
     SELECT
@@ -36,10 +35,13 @@ AND modified_timestamp >= (
 flatten_events AS (
     SELECT
         tx_id,
+        A.value :type :: STRING AS event_type,
+        A.value :event_index :: INT AS event_index,
         COALESCE(
             b.value :value :value :type :: STRING,
             b.value :value :type :: STRING
-        ) AS event_value_type,
+        ) AS argument_type,
+        b.value :name :: STRING AS argument_name,
         COALESCE(
             b.value :value :value :value :: STRING,
             b.value :value :value :: STRING
@@ -55,35 +57,27 @@ flatten_events AS (
             'Optional',
             'Address'
         )
-),
-build_actors_array AS (
-    SELECT
-        tx_id,
-        ARRAY_AGG(
-            DISTINCT address
-        ) AS actors
-    FROM
-        flatten_events
-    WHERE
-        event_value_type = 'Address'
-    GROUP BY
-        1
 )
 SELECT
-    A.tx_id,
     t.block_height,
     t.block_timestamp,
-    t.authorizers,
-    t.payer,
+    A.tx_id,
     t.proposer,
-    A.actors,
+    t.payer,
+    t.authorizers,
+    A.event_type,
+    A.event_index,
+    A.argument_name,
+    A.address,
     t._partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_id']
+        ['tx_id', 'event_index', 'argument_name', 'address']
     ) }} AS transaction_actors_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    build_actors_array A
+    flatten_events A
     LEFT JOIN transactions t USING (tx_id)
+WHERE
+    A.argument_type = 'Address'
