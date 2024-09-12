@@ -17,17 +17,23 @@ WITH silver_actors AS (
         payer,
         proposer,
         authorizers,
-        address
+        address,
+        ROW_NUMBER() over (
+            PARTITION BY tx_id
+            ORDER BY
+                event_index
+        ) AS rn
     FROM
         {{ ref('silver__transaction_actors') }}
 
 {% if is_incremental() %}
-AND modified_timestamp >= (
-    SELECT
-        MAX(modified_timestamp)
-    FROM
-        {{ this }}
-)
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 generate_actors_array AS (
@@ -58,3 +64,4 @@ FROM
     generate_actors_array A
     LEFT JOIN silver_actors b
     ON A.tx_id = b.tx_id
+    AND b.rn = 1
