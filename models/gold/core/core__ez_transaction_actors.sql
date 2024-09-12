@@ -50,7 +50,7 @@ SELECT
     b.proposer,
     b.authorizers,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_id']
+        ['A.tx_id']
     ) }} AS ez_transaction_actors_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
