@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: silver__transaction_actors
+    description: -|
+      A curated table that extracts addresses involved in the events of a transactions, tagging them as actors in the transaction.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 2
+
+    columns:
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_number') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: PROPOSER
+        description: "{{ doc('proposer') }}"
+        tests:
+          - not_null
+
+      - name: PAYER
+        description: "{{ doc('payer') }}"
+        tests:
+          - not_null
+
+      - name: AUTHORIZERS
+        description: "{{ doc('authorizers') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: EVENT_TYPE
+        description: "{{ doc('event_type') }}"
+        tests:
+          - not_null
+
+      - name: EVENT_INDEX
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+
+      - name: ARGUMENT_NAME
+        description: "{{ doc('argument_name') }}"
+        tests:
+          - not_null
+      
+      - name: ADDRESS
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+
+      - name: _PARTITION_BY_BLOCK_ID
+        description: "{{ doc('_partition_by_block_id') }}"
+
+      - name: TRANSACTION_ACTORS_ID
+        description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"

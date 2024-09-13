@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: core__ez_transaction_actors
+    description: -|
+      A curated table that extracts addresses involved in the events of a transactions and generates an array of distinct actors (including authorizers, payers and proposers).
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 2
+
+    columns:
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_number') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+      
+      - name: ACTORS
+        description: "{{ doc('actors') }}"
+        tests:
+          - not_null
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+
+      - name: EZ_TRANSACTION_ACTORS_ID
+        description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
