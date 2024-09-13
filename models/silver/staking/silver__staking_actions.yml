@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__staking_actions_s
+  - name: silver__staking_actions
     description: |-
       This table provides transaction-level info on FLOW staking activities.
 
