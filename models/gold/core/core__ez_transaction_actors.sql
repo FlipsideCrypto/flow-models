@@ -6,7 +6,7 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = 'block_timestamp::date',
     post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,actors);',
-    tags = ['scheduled_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 WITH silver_actors AS (
