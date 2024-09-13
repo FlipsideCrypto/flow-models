@@ -31,6 +31,11 @@ models:
         tests:
           - not_null
 
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+
       - name: EZ_TRANSACTION_ACTORS_ID
         description: "{{ doc('pk_id') }}"
         tests:

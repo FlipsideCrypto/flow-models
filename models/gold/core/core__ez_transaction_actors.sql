@@ -19,6 +19,7 @@ WITH silver_actors AS (
         proposer,
         authorizers,
         address,
+        tx_succeeded,
         ROW_NUMBER() over (
             PARTITION BY tx_id
             ORDER BY
@@ -56,6 +57,7 @@ SELECT
     b.payer,
     b.proposer,
     b.authorizers,
+    b.tx_succeeded,
     {{ dbt_utils.generate_surrogate_key(
         ['A.tx_id']
     ) }} AS ez_transaction_actors_id,

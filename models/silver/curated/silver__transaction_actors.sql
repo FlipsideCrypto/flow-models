@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    cluster_by = 'block_timestamp::date',
+    cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,address);',
     tags = ['scheduled_core']
 ) }}
@@ -19,6 +19,7 @@ WITH transactions AS (
         payer,
         proposer,
         events,
+        tx_succeeded,
         _partition_by_block_id
     FROM
         {{ ref('silver__streamline_transactions_final') }}
@@ -70,6 +71,7 @@ SELECT
     A.event_index,
     A.argument_name,
     A.address,
+    t.tx_succeeded,
     t._partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_id', 'event_index', 'argument_name', 'address']
