@@ -36,52 +36,61 @@ ORDER BY
     _inserted_timestamp DESC)) = 1
 ),
 FINAL AS (
-SELECT
-    block_number,
-    COALESCE(
-        VALUE :PrecompiledCalls :: STRING,
-        VALUE :precompiledCalls :: STRING
-    ) AS precompiled_calls,
-    VALUE :blobGasPrice :: INT AS blob_gas_price,
-    VALUE :blockHash :: STRING AS block_hash,
-    VALUE :blockNumber :: INT AS blockNumber,
-    VALUE :contractAddress :: STRING AS contract_address,
-    VALUE :cumulativeGasUsed :: INT AS cumulative_gas_used,
-    VALUE :effectiveGasPrice :: INT AS effective_gas_price_unadj,
-    VALUE :from :: STRING AS from_address,
-    VALUE :effectiveGasPrice :: INT / pow(
-        10,
-        9
-    ) AS effective_gas_price_adj,
-    ZEROIFNULL(
-        VALUE :gasUsed :: INT
-    ) AS gas_used,
-    VALUE :logs :: ARRAY AS logs,
-    VALUE :logsBloom :: STRING AS logs_bloom,
-    VALUE :revertReason :: STRING AS revert_reason,
-    VALUE :root :: STRING AS root,
-    VALUE :status :: INT AS status,
-    VALUE :status :: INT = 1 AS tx_succeeded,
-    IFF(
-        VALUE :status :: INT = 1,
-        'SUCCESS',
-        'FAIL'
-    ) AS tx_status,
-    VALUE :transactionHash :: STRING AS tx_hash,
-    VALUE :transactionIndex :: INT AS tx_index,
-    CASE
-        WHEN block_number <> blockNumber THEN NULL
-        ELSE VALUE :transactionIndex :: INT
-    END AS POSITION,
-    VALUE :type :: STRING AS receipt_type,
-    VALUE :to :: STRING AS to_address,
-    _partition_by_block_id,
-    _inserted_timestamp
-FROM
-    receipts,
-    LATERAL FLATTEN (
-        DATA :result :: variant
-    )
+    SELECT
+        block_number,
+        COALESCE(
+            VALUE :PrecompiledCalls :: STRING,
+            VALUE :precompiledCalls :: STRING
+        ) AS precompiled_calls,
+        VALUE :blobGasPrice :: INT AS blob_gas_price,
+        VALUE :blockHash :: STRING AS block_hash,
+        IFF(LEFT(VALUE :blockNumber :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :blockNumber :: STRING), VALUE :blockNumber) :: INT AS blockNumber,
+        VALUE :contractAddress :: STRING AS contract_address,
+        IFF(LEFT(VALUE :cumulativeGasUsed :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :cumulativeGasUsed :: STRING), VALUE :cumulativeGasUsed) :: INT AS cumulative_gas_used,
+        IFF(LEFT(VALUE :effectiveGasPrice :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :effectiveGasPrice :: STRING), VALUE :effectiveGasPrice) :: INT AS effective_gas_price_unadj,
+        VALUE :from :: STRING AS from_address,
+        effective_gas_price_unadj / pow(
+            10,
+            9
+        ) AS effective_gas_price_adj,
+        ZEROIFNULL(
+            IFF(LEFT(VALUE :gasUsed :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :gasUsed :: STRING), VALUE :gasUsed) :: INT
+        ) AS gas_used,
+        VALUE :logs :: ARRAY AS logs,
+        VALUE :logsBloom :: STRING AS logs_bloom,
+        VALUE :revertReason :: STRING AS revert_reason,
+        VALUE :root :: STRING AS root,
+        IFF(LEFT(VALUE :status :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :status :: STRING), VALUE :status) :: INT AS status,
+        status = 1 AS tx_succeeded,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
+        VALUE :transactionHash :: STRING AS tx_hash,
+        IFF(
+            LEFT(
+                VALUE :transactionIndex :: STRING,
+                2
+            ) = '0x',
+            utils.udf_hex_to_int(
+                VALUE :transactionIndex :: STRING
+            ),
+            VALUE :transactionIndex
+        ) :: INT AS tx_index,
+        CASE
+            WHEN block_number <> blockNumber THEN NULL
+            ELSE tx_index
+        END AS POSITION,
+        IFF(LEFT(VALUE :type :: STRING, 2) = '0x', utils.udf_hex_to_int(VALUE :type :: STRING), VALUE :type) :: INT AS receipt_type,
+        VALUE :to :: STRING AS to_address,
+        _partition_by_block_id,
+        _inserted_timestamp
+    FROM
+        receipts,
+        LATERAL FLATTEN (
+            DATA :result :: variant
+        )
 )
 SELECT
     block_number,
@@ -119,4 +128,4 @@ FROM
     FINAL
 WHERE
     tx_hash IS NOT NULL
-    AND POSITION IS NOT NULL 
+    AND POSITION IS NOT NULL
