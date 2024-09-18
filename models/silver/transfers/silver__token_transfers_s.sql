@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['block_timestamp::date'],
+    cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     unique_key = "CONCAT_WS('-', tx_id, sender, recipient, token_contract, amount)",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,sender,recipient,token_contract);",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
@@ -23,8 +23,10 @@ WITH events AS (
         modified_timestamp
     FROM
         {{ ref('silver__streamline_events') }}
-        -- WHERE
-        --     event_data :: STRING != '{}'
+    WHERE
+        -- crescendo upgrade cutoff
+        _partition_by_block_id <= 86000000
+        AND block_height < 85981726
 
 {% if is_incremental() %}
 WHERE
@@ -155,7 +157,10 @@ FINAL AS (
 )
 SELECT
     *,
-    round(block_height, -5) AS _partition_by_block_id,
+    ROUND(
+        block_height,
+        -5
+    ) AS _partition_by_block_id,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_id','sender', 'recipient','token_contract', 'amount']
     ) }} AS token_transfers_id,

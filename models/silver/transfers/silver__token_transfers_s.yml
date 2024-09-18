@@ -3,7 +3,7 @@ version: 2
 models:
   - name: silver__token_transfers_s
     description: |-
-      This table records all token transfers on the FLOW blockchain.
+      This table records all token transfers on the FLOW blockchain from before the Crescendo upgrade.
 
     columns:
       - name: tx_id

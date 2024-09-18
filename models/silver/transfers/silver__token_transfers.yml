@@ -1,0 +1,93 @@
+version: 2
+
+models:
+  - name: silver__token_transfers
+    description: |-
+      This table records all token transfers on the FLOW blockchain from after the Crescendo upgrade.
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 1
+
+    columns:
+      - name: DEPOSITED_UUID
+        description: "{{ doc('deposited_uuid') }}"
+        tests:
+          - not_null
+
+      - name: WITHDRAWN_UUID_ROOT
+        description: "{{ doc('withdrawn_uuid_root') }}"
+        tests:
+          - not_null
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+ 
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_CONTRACT
+        description: "{{ doc('token_contract') }}"
+        tests:
+          - not_null
+
+      - name: FROM_ADDRESS
+        description: "{{ doc('sender') }}"
+        tests:
+          - not_null
+
+      - name: TO_ADDRESS
+        description: "{{ doc('recipient') }}"
+        tests:
+          - not_null
+
+      - name: AMOUNT_ADJ
+        description: "{{ doc('amount_adj') }}"
+        tests:
+          - not_null
+
+      - name: FROM_ADDRESS_BALANCE_AFTER
+        description: "{{ doc('from_address_balance_after') }}"
+        tests:
+          - not_null:
+              where: WITHDRAWN_UUID_ROOT != '-1'
+
+      - name: TO_ADDRESS_BALANCE_AFTER
+        description: "{{ doc('to_address_balance_after') }}"
+        tests:
+          - not_null
+
+      - name: IS_FEE_TRANSFER
+        description: "{{ doc('is_fee_transfer') }}"
+        tests:
+          - not_null
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+
+      - name: TOKEN_TRANSFERS_ID
+        description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"
