@@ -35,8 +35,9 @@ WITH events AS (
             )
             OR (
                 -- no initial "Withdrawal" event if it's a new token mint
-                event_type IN ('TokensMinted'))
+                event_type IN ('TokensMinted')
             )
+        )
 
 {% if is_incremental() %}
 AND modified_timestamp > (
@@ -77,7 +78,7 @@ deposited AS (
         event_data :to :: STRING AS to_address,
         event_data :toUUID :: STRING AS to_uuid,
         event_data :type :: STRING AS token_type,
-        row_number() OVER (
+        ROW_NUMBER() over (
             PARTITION BY tx_id
             ORDER BY
                 event_index
@@ -100,7 +101,7 @@ minted AS (
             event_data :type :: STRING
         ) AS from_address,
         '-1' AS withdrawn_uuid,
-        row_number() OVER (
+        ROW_NUMBER() over (
             PARTITION BY tx_id
             ORDER BY
                 event_index
@@ -109,60 +110,85 @@ minted AS (
         events
     WHERE
         event_type = 'TokensMinted'
+),
+FINAL AS (
+    SELECT
+        COALESCE(
+            d2.deposited_uuid,
+            d.deposited_uuid
+        ) AS deposited_uuid_root,
+        COALESCE(
+            w2.withdrawn_uuid,
+            w.withdrawn_uuid,
+            m.withdrawn_uuid
+        ) AS withdrawn_uuid_root,
+        d.tx_id,
+        d.block_height,
+        d.block_timestamp,
+        REGEXP_REPLACE(
+            COALESCE(
+                d.token_type,
+                d2.token_type,
+                w2.token_type,
+                w.token_type,
+                m.token_type
+            ),
+            '\.Vault$',
+            ''
+        ) AS token_contract,
+        COALESCE(
+            w2.from_address,
+            w.from_address,
+            m.from_address
+        ) AS from_address,
+        COALESCE(
+            d2.to_address,
+            d.to_address
+        ) AS to_address,
+        COALESCE(
+            d.amount_adj,
+            d2.amount_adj,
+            w2.amount_adj,
+            w.amount_adj,
+            m.amount_adj
+        ) AS amount_adj,
+        COALESCE(
+            w2.balance_after_adj,
+            w.balance_after_adj
+        ) AS from_address_balance_after,
+        COALESCE(
+            d2.balance_after_adj,
+            d.balance_after_adj
+        ) AS to_address_balance_after,
+        d.to_uuid = '0' AS is_fee_transfer,
+        d.tx_succeeded,
+        d._inserted_timestamp
+    FROM
+        deposited d
+        LEFT JOIN deposited d2
+        ON d.tx_id = d2.tx_id
+        AND d.to_uuid = d2.deposited_uuid
+        LEFT JOIN withdrawn w
+        ON d.tx_id = w.tx_id
+        AND d.deposited_uuid = w.withdrawn_uuid
+        LEFT JOIN withdrawn w2
+        ON d.tx_id = w2.tx_id
+        AND w.from_uuid = w2.withdrawn_uuid
+        LEFT JOIN minted m
+        ON d.tx_id = m.tx_id
+        AND d.amount_adj = m.amount_adj
+        AND d.rn = m.rn
 )
 SELECT
-    d.deposited_uuid,
-    COALESCE(
-        w2.withdrawn_uuid,
-        w.withdrawn_uuid,
-        m.withdrawn_uuid
-    ) AS withdrawn_uuid_root,
-    d.tx_id,
-    d.block_height,
-    d.block_timestamp,
-    REGEXP_REPLACE(
-        COALESCE(
-            w2.token_type,
-            w.token_type,
-            m.token_type
-        ),
-        '\.Vault$',
-        ''
-    ) AS token_contract,
-    COALESCE(
-        w2.from_address,
-        w.from_address,
-        m.from_address
-    ) AS from_address,
-    d.to_address,
-    COALESCE(
-        w2.amount_adj,
-        w.amount_adj,
-        m.amount_adj
-    ) AS amount_adj,
-    COALESCE(
-        w2.balance_after_adj,
-        w.balance_after_adj
-    ) AS from_address_balance_after,
-    d.balance_after_adj AS to_address_balance_after,
-    d.to_uuid = '0' AS is_fee_transfer,
-    d.tx_succeeded,
-    d._inserted_timestamp,
+    *,
     {{ dbt_utils.generate_surrogate_key(
-        ['d.tx_id', 'd.deposited_uuid :: STRING', 'withdrawn_uuid_root :: STRING']
+        ['tx_id', 'deposited_uuid_root', 'withdrawn_uuid_root']
     ) }} AS token_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    deposited d
-    LEFT JOIN withdrawn w
-    ON d.tx_id = w.tx_id
-    AND d.deposited_uuid = w.withdrawn_uuid
-    LEFT JOIN withdrawn w2
-    ON d.tx_id = w2.tx_id
-    AND w.from_uuid = w2.withdrawn_uuid
-    LEFT JOIN minted m
-    ON d.tx_id = m.tx_id
-    AND d.amount_adj = m.amount_adj
-    AND d.rn = m.rn
+    FINAL 
+qualify(ROW_NUMBER() over (PARTITION BY tx_id, deposited_uuid_root
+ORDER BY
+    from_address = 'null')) = 1

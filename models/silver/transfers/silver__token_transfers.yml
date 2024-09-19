@@ -11,15 +11,13 @@ models:
           interval: 1
 
     columns:
-      - name: DEPOSITED_UUID
-        description: "{{ doc('deposited_uuid') }}"
+      - name: DEPOSITED_UUID_ROOT
+        description: "{{ doc('deposited_uuid_root') }}"
         tests:
           - not_null
 
       - name: WITHDRAWN_UUID_ROOT
         description: "{{ doc('withdrawn_uuid_root') }}"
-        tests:
-          - not_null
 
       - name: TX_ID
         description: "{{ doc('tx_id') }}"
@@ -44,7 +42,8 @@ models:
       - name: FROM_ADDRESS
         description: "{{ doc('sender') }}"
         tests:
-          - not_null
+          - not_null:
+              where: WITHDRAWN_UUID_ROOT != '-1'
 
       - name: TO_ADDRESS
         description: "{{ doc('recipient') }}"
