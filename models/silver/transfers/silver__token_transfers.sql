@@ -5,7 +5,6 @@
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     unique_key = "token_transfers_id",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,from_address,to_address,token_contract);",
     tags = ['scheduled_non_core']
 ) }}
 

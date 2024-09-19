@@ -3,7 +3,6 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     unique_key = "CONCAT_WS('-', tx_id, sender, recipient, token_contract, amount)",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,sender,recipient,token_contract);",
     tags = ['scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
