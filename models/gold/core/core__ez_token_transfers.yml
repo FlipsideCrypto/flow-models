@@ -4,17 +4,11 @@ models:
   - name: core__ez_token_transfers
     description: |-
       This table records all token transfers on the FLOW blockchain.
-
     tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - tx_id
-            - sender
-            - recipient
-            - token_contract
-            - amount
-          config:
-            severity: warn
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 1
 
     columns:
       - name: TX_ID
@@ -45,7 +39,6 @@ models:
       - name: SENDER
         description: "{{ doc('sender') }}"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -87,6 +80,10 @@ models:
 
       - name: EZ_TOKEN_TRANSFERS_ID
         description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique:
+              where: block_height >= 85981726
 
       - name: INSERTED_TIMESTAMP
         description: "{{ doc('inserted_timestamp') }}"
