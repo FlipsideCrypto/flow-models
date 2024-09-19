@@ -29,7 +29,7 @@ WITH events AS (
         AND block_height < 85981726
 
 {% if is_incremental() %}
-WHERE
+AND
     modified_timestamp >= (
         SELECT
             MAX(modified_timestamp)
