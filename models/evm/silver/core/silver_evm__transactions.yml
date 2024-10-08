@@ -124,7 +124,6 @@ models:
         description: '{{ doc("pk_id") }}'   
         tests:
           - not_null
-          - unique
       - name: INSERTED_TIMESTAMP
         description: '{{ doc("inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP

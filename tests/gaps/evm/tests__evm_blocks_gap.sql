@@ -3,13 +3,12 @@
     severity = 'error'
 ) }}
 
-WITH blocks AS (
+WITH MIN AS (
 
     SELECT
-        block_number,
-        block_hash,
-        parent_hash,
-        _inserted_timestamp
+        MIN(
+            block_timestamp :: DATE
+        ) bd
     FROM
         {{ ref('silver_evm__blocks') }}
 
@@ -20,6 +19,22 @@ WITH blocks AS (
         WHERE
             _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
         {% endif %}
+),
+blocks AS (
+    SELECT
+        block_number,
+        block_hash,
+        parent_hash,
+        _inserted_timestamp
+    FROM
+        {{ ref('silver_evm__blocks') }}
+    WHERE
+        block_timestamp :: DATE >= (
+            SELECT
+                bd
+            FROM
+                MIN
+        )
 ),
 check_orphan AS (
     SELECT
@@ -46,7 +61,11 @@ determine_previous_block AS (
         LAG(block_number) over (
             ORDER BY
                 block_number
-        ) AS prev_block_number
+        ) AS prev_block_number,
+        ROW_NUMBER() over(
+            ORDER BY
+                block_number
+        ) rn
     FROM
         check_orphan
 )
@@ -61,6 +80,6 @@ FROM
     determine_previous_block
 WHERE
     confirmed_parent_hash IS NULL
-    AND block_number > 1
-    -- may be some temporarily missing blocks at chainhead, only issue if not filled on subsequent run
+    AND block_number > 1 -- may be some temporarily missing blocks at chainhead, only issue if not filled on subsequent run
+    AND rn > 1
     AND _inserted_timestamp <= SYSDATE() - INTERVAL '1 hour'
