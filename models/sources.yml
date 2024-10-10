@@ -125,6 +125,7 @@ sources:
       - name: evm_blocks
       - name: evm_receipts
       - name: evm_traces
+      - name: reward_points
 
   - name: crosschain_silver
     database: crosschain

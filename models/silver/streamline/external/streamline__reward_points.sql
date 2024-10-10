@@ -4,7 +4,7 @@
         func = '{{this.schema}}.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
-            "external_table": "points_api",
+            "external_table": "reward_points",
             "sql_limit": "1000",
             "producer_batch_size": "1000",
             "worker_batch_size": "1000",
@@ -17,19 +17,19 @@
 WITH evm_addresses AS (
 
     SELECT
-        DISTINCT from_address AS address
+        DISTINCT address AS address
     FROM
-        {{ ref('silver_evm__transactions') }}
-        -- note dev just has 3 rn because it hasn't been refreshed
-        -- good for testing
+        {{ ref('streamline__evm_addresses') }}
 )
 SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
+    address,
     flow.live.udf_api(
         'GET',
-        'https://crescendo-rewards-c1-309975214470.us-central1.run.app/points/ethereum/' || address,
+        '{Service}/points/ethereum/' || address,
         {},
-        {}
+        {},
+        'Vault/prod/flow/points-api/prod'
     ) AS request
 FROM
     evm_addresses
