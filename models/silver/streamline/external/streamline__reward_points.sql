@@ -29,7 +29,6 @@ SELECT
         '{Service}/points/ethereum/' || address,
         {
             'User-Agent': 'Flipside/0.1',
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Connection': 'keep-alive'
         },
