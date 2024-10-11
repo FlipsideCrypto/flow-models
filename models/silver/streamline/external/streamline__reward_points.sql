@@ -26,10 +26,9 @@ SELECT
     address,
     flow.live.udf_api(
         'GET',
-        '{Service}' || 'points/ethereum/' || address,
+        '{Service}/points/ethereum/' || address,
         {},
-        {},
-        'Vault/prod/flow/points-api/prod'
+        {}
     ) AS request
 FROM
     evm_addresses
