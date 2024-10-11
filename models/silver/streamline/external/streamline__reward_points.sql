@@ -24,7 +24,7 @@ WITH evm_addresses AS (
 SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     address,
-    flow.live.udf_api(
+    {{ target.database }}.live.udf_api(
         'GET',
         '{Service}/points/ethereum/' || address,
         {
