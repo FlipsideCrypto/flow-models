@@ -32,7 +32,8 @@ SELECT
             'Accept': 'application/json',
             'Connection': 'keep-alive'
         },
-        {}
+        {},
+        'Vault/prod/flow/points-api/prod'
     ) AS request
 FROM
     evm_addresses
