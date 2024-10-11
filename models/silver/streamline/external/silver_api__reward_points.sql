@@ -1,4 +1,5 @@
 -- depends_on: {{ ref('bronze_api__reward_points') }}
+-- depends_on: {{ ref('bronze_api__FR_reward_points') }}
 {{ config(
     materialized = 'incremental',
     unique_key = "reward_points_id",
@@ -9,7 +10,7 @@
 
 SELECT
     partition_key,
-    address,
+    VALUE :ADDRESS :: STRING as address,
     to_timestamp(partition_key) :: DATE AS request_date,
     DATA :boxes :: NUMBER as boxes,
     DATA :boxes_opened :: NUMBER as boxes_opened,
@@ -25,8 +26,8 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
 
-{{ ref('bronze_api__reward_points') }}
 {% if is_incremental() %}
+{{ ref('bronze_api__reward_points') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -34,6 +35,8 @@ WHERE
         FROM
             {{ this }}
     )
+{% else %}
+    {{ ref('bronze_api__FR_reward_points') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY reward_points_id
