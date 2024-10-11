@@ -8,6 +8,7 @@ on:
     - cron: "0 1 * * 0"
 
 env:
+  SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
   USE_VARS: "${{ vars.USE_VARS }}"
   DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
   DBT_VERSION: "${{ vars.DBT_VERSION }}"
