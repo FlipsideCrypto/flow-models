@@ -27,7 +27,13 @@ SELECT
     flow.live.udf_api(
         'GET',
         '{Service}/points/ethereum/' || address,
-        {},
+        {
+            'User-Agent': 'Flipside/0.1',
+            'Accept-Encoding': 'gzip', 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Connection': 'keep-alive'
+        },
         {}
     ) AS request
 FROM
