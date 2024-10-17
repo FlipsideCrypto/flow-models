@@ -29,7 +29,8 @@ blocks AS (
     FROM
         {{ ref('silver_evm__blocks') }}
     WHERE
-        block_timestamp :: DATE >= (
+        block_timestamp < DATEADD('hour', -3, SYSDATE())
+        AND block_timestamp :: DATE >= (
             SELECT
                 bd
             FROM
