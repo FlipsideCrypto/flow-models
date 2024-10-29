@@ -23,7 +23,7 @@ FROM
 UNION ALL
 SELECT
     HOUR,
-    NULL AS token_address,
+    'A.1654653399040a61.FlowToken' AS token_address,
     symbol,
     NAME,
     decimals,
