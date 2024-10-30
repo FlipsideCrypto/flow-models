@@ -4,9 +4,8 @@ run-name: dbt_run_scheduled_reward_points_silver
 on:
   workflow_dispatch:
   schedule:
-    # Sunday at 01:00 UTC
-    - cron: "0 1 * * 0"
-
+    # Daily at 01:00 UTC
+    - cron: "0 1 * * *"
 env:
   SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
   USE_VARS: "${{ vars.USE_VARS }}"

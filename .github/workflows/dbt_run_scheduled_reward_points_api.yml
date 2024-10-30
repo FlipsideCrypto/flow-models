@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled_reward_points_api
 on:
   workflow_dispatch:
   schedule:
-    # Sunday at 00:00 UTC
-    - cron: "0 0 * * 0"
+    # Daily at 00:00 UTC
+    - cron: "0 0 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
