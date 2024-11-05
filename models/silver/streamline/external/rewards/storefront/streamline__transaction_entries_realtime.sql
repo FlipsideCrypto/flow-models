@@ -38,7 +38,7 @@ SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        'https://flow-prod.snag-render.com/api/loyalty/transaction_entries' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %}|| '&startingAfter=' || '{{ last_id }}'{% endif %},
-        { 'x-api-key': 'bb10122dec05444bbe224ef4af286179' },
+        '' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %}|| '&startingAfter=' || '{{ last_id }}'{% endif %},
+        { 'x-api-key': '' },
         {}
     ) AS request
