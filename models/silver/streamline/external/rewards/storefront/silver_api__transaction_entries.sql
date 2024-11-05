@@ -14,7 +14,7 @@ WITH bronze AS (
         partition_key,
         DATA,
         VALUE :STARTING_AFTER :: STRING AS starting_after,
-        VALUE :LIMIT :: INTEGER AS api_limit,
+        VALUE :API_LIMIT :: INTEGER AS api_limit,
         ARRAY_SIZE(
             DATA :data :: ARRAY
         ) AS entry_count,
