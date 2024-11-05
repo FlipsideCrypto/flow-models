@@ -126,6 +126,7 @@ sources:
       - name: evm_receipts
       - name: evm_traces
       - name: reward_points
+      - name: transaction_entries
 
   - name: crosschain_silver
     database: crosschain
