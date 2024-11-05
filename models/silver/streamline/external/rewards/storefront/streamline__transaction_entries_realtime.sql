@@ -38,7 +38,8 @@ SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        '' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %}|| '&startingAfter=' || '{{ last_id }}'{% endif %},
-        { 'x-api-key': '' },
-        {}
+        '{Service}/api/loyalty/transaction_entries' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %}|| '&startingAfter=' || '{{ last_id }}'{% endif %},
+        { 'x-api-key': '{Authentication}' },
+        {},
+        'Vault/dev/flow/snag-api'
     ) AS request
