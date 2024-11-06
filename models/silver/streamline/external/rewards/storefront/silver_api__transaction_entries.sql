@@ -18,6 +18,8 @@ WITH bronze AS (
         ARRAY_SIZE(
             DATA :data :: ARRAY
         ) AS entry_count,
+        DATA :data [0] :id :: STRING AS first_entry_id,
+        DATA :data [entry_count - 1] :id :: STRING AS last_entry_id,
         _inserted_timestamp
     FROM
 
@@ -39,6 +41,8 @@ SELECT
     entry_count,
     starting_after,
     api_limit,
+    first_entry_id AS request_first_entry_id,
+    last_entry_id AS request_last_entry_id,
     VALUE :createdAt :: timestamp_ntz AS created_at,
     VALUE :id :: STRING AS entry_id,
     INDEX :: INTEGER AS INDEX,
@@ -54,6 +58,5 @@ FROM
     bronze,
     LATERAL FLATTEN(
         input => DATA :data :: ARRAY
-    ) qualify(ROW_NUMBER() over (PARTITION BY entry_id
-ORDER BY
-    _inserted_timestamp DESC)) = 1
+    ) 
+

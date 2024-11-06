@@ -12,34 +12,52 @@
     ),
     tags = ['streamline_non_core']
 ) }}
-{% if not var('INITIAL_RUN', false) %}
-{% if execute %}
-    {% set query %}
 
-        SELECT
-            entry_id
-        FROM
-            {{ ref('silver_api__transaction_entries') }}
-        ORDER BY
-            partition_key DESC,
-            INDEX DESC
-        LIMIT
-            1 
-    {% endset %}
-    {% set last_id = run_query(query).columns [0].values() [0] %}
-    {{ log("last_id: " ~ last_id, info=True) }}
+{% if not var(
+        'INITIAL_RUN',
+        false
+    ) %}
+    {% if execute %}
+        {% set query %}
+            WITH target_entry_id AS (
 
+                SELECT
+                    entry_id,
+                    ROW_NUMBER() over (
+                        ORDER BY
+                            partition_key DESC,
+                            INDEX DESC
+                    ) AS rn
+                FROM
+                    {{ ref('silver_api__transaction_entries') }}
+                    {# WHERE _inserted_timestamp >= CURRENT_DATE - 3 #}
+            )
+            SELECT
+                entry_id
+            FROM
+                target_entry_id
+            WHERE
+            rn = 2 
+        {% endset %}
+        {% set starting_after = run_query(query).columns [0].values() [0] %}
+        {{ log(
+            "last_id: " ~ starting_after,
+            info = True
+        ) }}
     {% endif %}
 {% endif %}
 
 SELECT
-    2 as api_limit,
-    '{{ last_id }}' as starting_after,
+    {{ var(
+        'API_LIMIT',
+        2
+    ) }} AS api_limit,
+    '{{ starting_after }}' AS starting_after,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        '{Service}/api/loyalty/transaction_entries' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %}|| '&startingAfter=' || '{{ last_id }}'{% endif %},
+        '{Service}/api/loyalty/transaction_entries' || '?limit=' || api_limit{% if not var('INITIAL_RUN', false) %} || '&startingAfter=' || '{{ starting_after }}'{% endif %},
         { 'x-api-key': '{Authentication}' },
         {},
-        'Vault/dev/flow/snag-api'
+        'Vault/prod/flow/snag-api'
     ) AS request
