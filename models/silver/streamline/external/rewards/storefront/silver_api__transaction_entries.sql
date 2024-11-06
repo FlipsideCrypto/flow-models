@@ -49,7 +49,7 @@ SELECT
     VALUE :: variant AS DATA,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['partition_key']
+        ['entry_id', 'partition_key']
     ) }} AS transaction_entries_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
