@@ -9,8 +9,7 @@
         "producer_batch_size": "1000",
         "worker_batch_size": "1000",
         "sql_source": "{{this.identifier}}" }
-    ),
-    tags = ['streamline_non_core']
+    )
 ) }}
 
 {% if not var(
@@ -50,7 +49,7 @@
 SELECT
     {{ var(
         'API_LIMIT',
-        2
+        1000
     ) }} AS api_limit,
     '{{ starting_after }}' AS starting_after,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
