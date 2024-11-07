@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: silver__flow_evm_address_map
+    description: -|
+      An internal table that maps EVM addresses to Flow addresses based on COA Creation events.
+    tests:
+      - dbt_utils.recency:
+          datepart: hours
+          field: block_timestamp
+          interval: 2
+
+    columns:
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_number') }}"
+        tests:
+          - not_null
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: EVM_ADDRESS
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: FLOW_ADDRESS
+        description: "{{ doc('address') }}"
+        tests:
+          - not_null
+
+      - name: FLOW_EVM_ADDRESS_MAP_ID
+        description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"
