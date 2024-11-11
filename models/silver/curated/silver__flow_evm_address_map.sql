@@ -52,7 +52,7 @@ txs AS (
         block_timestamp :: DATE >= '2024-09-02'
         AND tx_id IN (
             SELECT
-                DISTINCT tx_id
+                tx_id
             FROM
                 events
         )
@@ -80,7 +80,7 @@ get_flow_address AS (
         AND event_type = 'CapabilityPublished'
         AND tx_id IN (
             SELECT
-                DISTINCT tx_id
+                tx_id
             FROM
                 coa_creation
         ) -- a transaction may emit multiple CapabilityPublished events
