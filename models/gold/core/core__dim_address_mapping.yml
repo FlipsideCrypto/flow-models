@@ -1,28 +1,23 @@
 version: 2
 
 models:
-  - name: silver__flow_evm_address_map
+  - name: core__dim_address_mapping
     description: -|
       A table that maps EVM addresses to Flow addresses based on COA Creation events.
     tests:
       - dbt_utils.recency:
           datepart: hours
-          field: block_timestamp
+          field: BLOCK_TIMESTAMP_ASSOCIATED
           interval: 2
 
     columns:
-      - name: BLOCK_HEIGHT
+      - name: BLOCK_HEIGHT_ASSOCIATED
         description: "{{ doc('block_number') }}"
         tests:
           - not_null
 
-      - name: BLOCK_TIMESTAMP
+      - name: BLOCK_TIMESTAMP_ASSOCIATED
         description: "{{ doc('block_timestamp') }}"
-        tests:
-          - not_null
-
-      - name: TX_ID
-        description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
@@ -37,7 +32,7 @@ models:
         tests:
           - not_null
 
-      - name: FLOW_EVM_ADDRESS_MAP_ID
+      - name: DIM_ADDRESS_MAPPING_ID
         description: "{{ doc('pk_id') }}"
         tests:
           - not_null
@@ -49,5 +44,3 @@ models:
       - name: MODIFIED_TIMESTAMP
         description: "{{ doc('modified_timestamp') }}"
 
-      - name: _INVOCATION_ID
-        description: "{{ doc('invocation_id') }}"

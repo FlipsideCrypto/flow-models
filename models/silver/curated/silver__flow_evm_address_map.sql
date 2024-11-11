@@ -4,7 +4,6 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
-    post_hook = 'ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(evm_address, flow_address);',
     tags = ['scheduled_non_core']
 ) }}
 
@@ -15,7 +14,7 @@ WITH events AS (
     FROM
         {{ ref('silver__streamline_events') }}
     WHERE
-        block_height >= 85981853
+        block_timestamp :: DATE >= '2024-09-02'
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
@@ -50,7 +49,7 @@ txs AS (
     FROM
         {{ ref('silver__streamline_transactions_final') }}
     WHERE
-        block_height >= 85981853
+        block_timestamp :: DATE >= '2024-09-02'
         AND tx_id IN (
             SELECT
                 DISTINCT tx_id
