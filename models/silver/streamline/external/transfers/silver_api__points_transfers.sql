@@ -13,15 +13,20 @@ WITH points_transfers_raw AS (
 
     SELECT
         partition_key,
-        TO_TIMESTAMP(partition_key) :: DATE AS request_date,
-        DATA,
+        request_date,
+        address,
+        transfers,
         _inserted_timestamp
     FROM
-
+        {{ ref('silver_api__points_transfers_protocol_balances') }}
 {% if is_incremental() %}
-{{ ref('bronze_api__points_transfers') }}
-{% else %}
-    {{ ref('bronze_api__FR_points_transfers') }}
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
 {% endif %}
 ),
 flatten_batches AS (
@@ -29,16 +34,15 @@ flatten_batches AS (
         partition_key,
         request_date,
         _inserted_timestamp,
-        A.value :address :: STRING AS from_address,
+        address AS from_address,
         b.index AS batch_index,
         b.value :batchId :: STRING AS batch_id,
         b.value :status :: STRING AS batch_status,
         b.value :transfers :: ARRAY AS transfers
     FROM
         points_transfers_raw,
-        LATERAL FLATTEN(DATA) A,
         LATERAL FLATTEN(
-            A.value :transfers
+            transfers
         ) b
 ),
 flatten_transfers AS (
@@ -77,6 +81,7 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id,
     _inserted_timestamp
 FROM
-    flatten_transfers qualify(ROW_NUMBER() over (PARTITION BY points_transfers_id
+    flatten_transfers 
+qualify(ROW_NUMBER() over (PARTITION BY points_transfers_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

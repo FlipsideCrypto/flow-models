@@ -19,6 +19,13 @@ WITH points_transfers_raw AS (
 
 {% if is_incremental() %}
 {{ ref('bronze_api__points_transfers') }}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
 {% else %}
     {{ ref('bronze_api__FR_points_transfers') }}
 {% endif %}
@@ -32,7 +39,10 @@ flatten_protocols AS (
         A.value :boxes :: NUMBER AS boxes,
         A.value :keys :: NUMBER AS keys,
         A.value :points :: NUMBER AS points,
-        ARRAY_SIZE(A.value :transfers) AS transfers_count
+        ARRAY_SIZE(
+            A.value :transfers
+        ) AS transfers_count,
+        A.value :transfers :: ARRAY AS transfers
     FROM
         points_transfers_raw,
         LATERAL FLATTEN(DATA) A
@@ -46,6 +56,7 @@ SELECT
     keys,
     points,
     transfers_count,
+    transfers,
     {{ dbt_utils.generate_surrogate_key(
         ['partition_key', 'address']
     ) }} AS transfer_response_id,
