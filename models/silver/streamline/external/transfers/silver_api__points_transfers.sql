@@ -2,11 +2,11 @@
 -- depends_on: {{ ref('bronze_api__FR_points_transfers') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "points_transfers_id",
+    unique_key = "batch_id",
     incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
+    merge_exclude_columns = ["inserted_timestamp", "_inserted_timestamp"],
     cluster_by = ['modified_timestamp :: DATE', 'from_address'],
-    post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(from_address)" ],
+    post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(from_address, to_address)" ],
     tags = ['streamline_non_core']
 ) }}
 
@@ -14,21 +14,34 @@ WITH points_transfers_raw AS (
 
     SELECT
         partition_key,
-        request_date,
-        address,
-        transfers,
+        TO_TIMESTAMP(partition_key) :: DATE AS request_date,
+        DATA,
         _inserted_timestamp
     FROM
-        {{ ref('silver_api__points_transfers_protocol_balances') }}
+
 {% if is_incremental() %}
+{{ ref('bronze_api__points_transfers') }}
 WHERE
-    modified_timestamp >= (
+    _inserted_timestamp >= (
         SELECT
-            MAX(modified_timestamp)
+            MAX(_inserted_timestamp)
         FROM
             {{ this }}
     )
+{% else %}
+    {{ ref('bronze_api__FR_points_transfers') }}
 {% endif %}
+),
+flatten_protocols AS (
+    SELECT
+        partition_key,
+        request_date,
+        _inserted_timestamp,
+        A.value :address :: STRING AS address,
+        A.value :transfers :: ARRAY AS transfers
+    FROM
+        points_transfers_raw,
+        LATERAL FLATTEN(DATA) A
 ),
 flatten_batches AS (
     SELECT
@@ -36,15 +49,15 @@ flatten_batches AS (
         request_date,
         _inserted_timestamp,
         address AS from_address,
-        b.index AS batch_index,
-        b.value :batchId :: STRING AS batch_id,
-        b.value :status :: STRING AS batch_status,
-        b.value :transfers :: ARRAY AS transfers
+        A.index AS batch_index,
+        A.value :batchId :: STRING AS batch_id,
+        A.value :status :: STRING AS batch_status,
+        A.value :transfers :: ARRAY AS batch_transfers
     FROM
-        points_transfers_raw,
+        flatten_protocols,
         LATERAL FLATTEN(
             transfers
-        ) b
+        ) A
 ),
 flatten_transfers AS (
     SELECT
@@ -61,21 +74,21 @@ flatten_transfers AS (
         A.value :toAddressId :: STRING AS to_address
     FROM
         flatten_batches,
-        LATERAL FLATTEN(transfers) A
+        LATERAL FLATTEN(batch_transfers) A
 )
 SELECT
-    partition_key,
     request_date,
-    from_address,
     batch_id,
     batch_index,
     transfer_index,
+    from_address,
+    to_address,
     boxes,
     keys,
     points,
-    to_address,
+    partition_key,
     {{ dbt_utils.generate_surrogate_key(
-        ['batch_id']
+        ['batch_id', 'transfer_index']
     ) }} AS points_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
@@ -83,6 +96,7 @@ SELECT
     _inserted_timestamp
 FROM
     flatten_transfers 
-qualify(ROW_NUMBER() over (PARTITION BY points_transfers_id
+
+qualify(ROW_NUMBER() over (PARTITION BY batch_id
 ORDER BY
-    _inserted_timestamp DESC)) = 1
+    _inserted_timestamp ASC)) = 1
