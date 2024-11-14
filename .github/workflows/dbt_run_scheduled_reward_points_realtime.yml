@@ -45,7 +45,7 @@ jobs:
 
       - name: Request User Points Balances
         run: >
-          dbt run -s streamline__reward_points_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": False}'
+          dbt run -s streamline__reward_points_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Authenticate with Flow Points API
         run: |
@@ -53,7 +53,7 @@ jobs:
 
       - name: Request Points Transfers
         run: >
-          dbt run -s streamline__points_transfers_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": False}'
+          dbt run -s streamline__points_transfers_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Store logs
         uses: actions/upload-artifact@v3
