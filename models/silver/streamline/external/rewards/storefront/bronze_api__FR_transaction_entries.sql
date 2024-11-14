@@ -1,6 +1,6 @@
 {{ config (
     materialized = 'view',
-    tags = ['rewards_points_spend']
+    tags = ['streamline_non_core']
 ) }}
 
 {{ streamline_external_table_FR_query_v2(
