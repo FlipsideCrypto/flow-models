@@ -4,6 +4,7 @@ from eth_account import Account
 from eth_account.messages import encode_defunct
 from web3 import Web3
 import json
+import sys
 from datetime import datetime
 
 # Retrieve environment variables
@@ -117,7 +118,11 @@ def main():
     """
     Main function to execute the authentication process.
     """
-    authenticate_dapp()
+    success = authenticate_dapp()
+    if not success:
+        print("Authentication failed. Exiting with status code 1.")
+        sys.exit(1)
+    print("Authentication succeeded.")
 
 if __name__ == "__main__":
     main()
