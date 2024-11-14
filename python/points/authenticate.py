@@ -101,7 +101,8 @@ def authenticate_dapp():
         print("JWT generated successfully.")
 
         # Set the JWT as an environment variable
-        os.environ['JWT'] = token
+        with open(os.environ['GITHUB_ENV'], 'a') as f:
+            f.write(f"JWT={token}\n")
 
         return token
 

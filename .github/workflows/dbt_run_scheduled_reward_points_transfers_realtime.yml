@@ -57,7 +57,7 @@ jobs:
 
       - name: Print JWT
         run: |
-          echo $ROLE
+          echo $JWT
 
       - name: Run DBT Jobs
         run: >
