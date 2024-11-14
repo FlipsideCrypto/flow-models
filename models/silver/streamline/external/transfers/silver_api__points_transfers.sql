@@ -6,7 +6,8 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['modified_timestamp :: DATE', 'from_address'],
-    post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(from_address)" ]
+    post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(from_address)" ],
+    tags = ['streamline_non_core']
 ) }}
 
 WITH points_transfers_raw AS (

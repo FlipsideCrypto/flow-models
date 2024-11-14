@@ -10,8 +10,7 @@
             "worker_batch_size": "1",
             "sql_source": "{{this.identifier}}"
         }
-    ),
-    tags = ['streamline_non_core']
+    )
 ) }}
 
 

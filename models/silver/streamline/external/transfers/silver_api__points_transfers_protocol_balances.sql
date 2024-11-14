@@ -5,7 +5,8 @@
     unique_key = "transfer_response_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE']
+    cluster_by = ['_inserted_timestamp :: DATE'],
+    tags = ['streamline_non_core']
 ) }}
 
 WITH points_transfers_raw AS (
