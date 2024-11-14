@@ -42,12 +42,12 @@ def authenticate_dapp():
     """
     if not PRIVATE_KEY or not PUBLIC_ADDRESS:
         print("Error: PRIVATE_KEY or PUBLIC_ADDRESS not set in environment.")
-        return
+        return False
 
     # Verify the public address format
     if not verify_wallet_address(PUBLIC_ADDRESS):
         print("Error: Invalid PUBLIC_ADDRESS format in environment.")
-        return
+        return False
 
     try:
         # Initialize the wallet
@@ -68,7 +68,7 @@ def authenticate_dapp():
 
         if challenge_response.status_code != 200:
             error_message = f"Failed to create Dapp challenge: {challenge_response.status_code} {challenge_response.reason}"
-            return
+            return False
 
         challenge_data = challenge_response.json().get("challengeData")
         print("Dapp Challenge created successfully.")
@@ -95,7 +95,7 @@ def authenticate_dapp():
 
         if solve_response.status_code != 200:
             error_message = f"Failed to solve Dapp challenge: {solve_response.status_code} {solve_response.reason}"
-            return
+            return False
 
         token = solve_response.json().get("token")
         print("JWT generated successfully.")
@@ -108,8 +108,10 @@ def authenticate_dapp():
 
     except requests.exceptions.RequestException as e:
         error_message = f"HTTP Request failed: {e}"
+        return False
     except Exception as e:
         error_message = f"An unexpected error occurred: {e}"
+        return False
 
 def main():
     """
