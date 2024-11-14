@@ -3,10 +3,10 @@ version: 2
 models:
   - name: streamline__evm_addresses
     description: "Table of unique EVM addresses."
-    tests:
+    data_tests:
       - dbt_utils.recency:
           datepart: day
-          field: request_date
+          field: modified_timestamp
           interval: 1
 
     columns:
