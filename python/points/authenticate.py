@@ -1,10 +1,10 @@
 import os
+import sys
 import requests
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from web3 import Web3
 import json
-import sys
 from datetime import datetime
 
 # Retrieve environment variables
@@ -105,7 +105,7 @@ def authenticate_dapp():
         with open(os.environ['GITHUB_ENV'], 'a') as f:
             f.write(f"JWT={token}\n")
 
-        return token
+        return True
 
     except requests.exceptions.RequestException as e:
         error_message = f"HTTP Request failed: {e}"
