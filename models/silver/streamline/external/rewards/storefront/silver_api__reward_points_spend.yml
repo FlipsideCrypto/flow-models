@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: silver_api__reward_points_spend
+    description: "Response from the Storefront Transaction Entries API"
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: created_at
+          interval: 1
+
+    columns:
+      - name: entry_id
+        tests:
+          - not_null
+          - unique
+
+      - name: created_at
+        tests:
+          - not_null
+
+      - name: direction
+        tests:
+          - not_null
+
+      - name: amount
+        tests:
+          - not_null
+
+      - name: amount_start
+        tests:
+          - not_null
+
+      - name: amount_end
+        tests:
+          - not_null
+
+      - name: idempotency_key
+
+      - name: organization_id
+        tests:
+          - not_null
+
+      - name: website_id
+        tests:
+          - not_null
+
+      - name: account_id
+        tests:
+          - not_null
+
+      - name: user_id
+        tests:
+          - not_null
+
+      - name: user_wallet_address
+        tests:
+          - not_null
+
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique
+
+      - name: transaction_description
+
+      - name: transaction_type
+        tests:
+          - not_null
+
+      - name: rule_id
+        tests:
+          - not_null
+
+      - name: rule_type
+        tests:
+          - not_null
+
+      - name: rule_name
+
+      - name: rule_description
+
+      - name: rule_metadata
+
+      - name: data
+
+      - name: partition_key
+        tests:
+          - not_null
+
+      - name: index
+
+      - name: _inserted_timestamp
+
+      - name: reward_points_spend_id
+
+      - name: inserted_timestamp
+
+      - name: modified_timestamp
+
+      - name: _invocation_id

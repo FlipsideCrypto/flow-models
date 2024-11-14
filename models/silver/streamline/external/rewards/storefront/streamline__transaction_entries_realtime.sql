@@ -5,9 +5,9 @@
         func = '{{this.schema}}.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table": "transaction_entries",
-        "sql_limit": "1000",
-        "producer_batch_size": "1000",
-        "worker_batch_size": "1000",
+        "sql_limit": "1",
+        "producer_batch_size": "1",
+        "worker_batch_size": "1",
         "sql_source": "{{this.identifier}}" }
     )
 ) }}
