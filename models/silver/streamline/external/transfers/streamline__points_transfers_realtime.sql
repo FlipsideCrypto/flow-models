@@ -20,7 +20,7 @@ SELECT
         'GET',
         '{Service}/points/dapp/transfer/all',
         {
-            'Authorization': 'Bearer ' || '{{ env_var("JWT") }}',
+            'Authorization': 'Bearer ' || '{{ env_var("JWT", None) }}',
             'Accept': 'application/json',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
