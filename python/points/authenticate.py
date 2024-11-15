@@ -6,6 +6,14 @@ from eth_account.messages import encode_defunct
 from web3 import Web3
 import json
 from datetime import datetime
+import logging
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Retrieve environment variables
 FLOW_POINTS_URL = os.getenv('FLOW_POINTS_URL')
@@ -23,10 +31,10 @@ def verify_wallet_address(address):
         bool: Returns True if valid, False otherwise.
     """
     if not Web3.is_address(address):
-        print("Invalid Ethereum address format.")
+        logger.error("Invalid Ethereum address format.")
         return False
 
-    print("The wallet address is valid and correctly formatted.")
+    logger.info("The wallet address is valid and correctly formatted.")
     return True
 
 def authenticate_dapp():
@@ -42,64 +50,63 @@ def authenticate_dapp():
         str: The JWT token.
     """
     if not PRIVATE_KEY or not PUBLIC_ADDRESS:
-        print("Error: PRIVATE_KEY or PUBLIC_ADDRESS not set in environment.")
+        logger.error("Error: PRIVATE_KEY or PUBLIC_ADDRESS not set in environment.")
         return False
 
     # Verify the public address format
     if not verify_wallet_address(PUBLIC_ADDRESS):
-        print("Error: Invalid PUBLIC_ADDRESS format in environment.")
+        logger.error("Error: Invalid PUBLIC_ADDRESS format in environment.")
         return False
 
     try:
-        # Initialize the wallet
-        wallet = Account.from_key(PRIVATE_KEY)
-        print("Wallet initialized successfully.")
+        # Validate private key by attempting to create a wallet
+        _ = Account.from_key(PRIVATE_KEY)
+        logger.info("Wallet initialized successfully.")
 
         # Step 1: Create Dapp Challenge
-        print("Creating Dapp Challenge...")
+        logger.info("Creating Dapp Challenge...")
         challenge_endpoint = f"{FLOW_POINTS_URL}/points/dapp/challenge"
         challenge_payload = {
             "addressId": PUBLIC_ADDRESS.lower(),
         }
-        challenge_headers = {
+        headers = {
             "Content-Type": "application/json"
         }
 
-        challenge_response = requests.post(challenge_endpoint, headers=challenge_headers, json=challenge_payload)
+        challenge_response = requests.post(challenge_endpoint, headers=headers, json=challenge_payload)
 
         if challenge_response.status_code != 200:
             error_message = f"Failed to create Dapp challenge: {challenge_response.status_code} {challenge_response.reason}"
+            logger.error(error_message)
             return False
 
         challenge_data = challenge_response.json().get("challengeData")
-        print("Dapp Challenge created successfully.")
+        logger.info("Dapp Challenge created successfully.")
 
         # Step 2: Sign the challengeData
-        print("Signing challengeData...")
+        logger.info("Signing challengeData...")
         message = encode_defunct(text=challenge_data)
         signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
-        signature = '0x' + signed_message.signature.hex()
-        print("challengeData signed successfully.")
+        signature = f"0x{signed_message.signature.hex()}"
+        logger.info("challengeData signed successfully.")
 
         # Step 3: Solve Dapp Challenge to get JWT
-        print("Solving Dapp Challenge...")
+        logger.info("Solving Dapp Challenge...")
         solve_endpoint = f"{FLOW_POINTS_URL}/points/dapp/solve"
         solve_payload = {
             "challengeData": challenge_data,
             "signature": signature,
         }
-        solve_headers = {
-            "Content-Type": "application/json"
-        }
 
-        solve_response = requests.post(solve_endpoint, headers=solve_headers, json=solve_payload)
+        solve_response = requests.post(solve_endpoint, headers=headers, json=solve_payload)
 
         if solve_response.status_code != 200:
             error_message = f"Failed to solve Dapp challenge: {solve_response.status_code} {solve_response.reason}"
+            logger.error(error_message)
             return False
 
         token = solve_response.json().get("token")
-        print("JWT generated successfully.")
+        logger.info("JWT generated successfully.")
 
         # Set the JWT as an environment variable
         with open(os.environ['GITHUB_ENV'], 'a') as f:
@@ -109,20 +116,21 @@ def authenticate_dapp():
 
     except requests.exceptions.RequestException as e:
         error_message = f"HTTP Request failed: {e}"
+        logger.error(error_message)
         return False
     except Exception as e:
         error_message = f"An unexpected error occurred: {e}"
+        logger.error(error_message)
         return False
 
 def main():
     """
     Main function to execute the authentication process.
     """
-    success = authenticate_dapp()
-    if not success:
-        print("Authentication failed. Exiting with status code 1.")
+    if not authenticate_dapp():
+        logger.error("Authentication failed. Exiting with status code 1.")
         sys.exit(1)
-    print("Authentication succeeded.")
+    logger.info("Authentication succeeded.")
 
 if __name__ == "__main__":
     main()
