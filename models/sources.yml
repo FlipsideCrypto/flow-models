@@ -127,6 +127,7 @@ sources:
       - name: evm_traces
       - name: reward_points
       - name: transaction_entries
+      - name: points_transfers
 
   - name: crosschain_silver
     database: crosschain

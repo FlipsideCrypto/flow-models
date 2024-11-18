@@ -43,11 +43,11 @@ jobs:
 
       - name: Run DBT Jobs
         run: >
-          dbt run -s silver_api__reward_points
+          dbt run -s tag:streamline_non_core
 
       - name: Test DBT Models
         run: >
-          dbt test -s silver_api__reward_points
+          dbt test -s tag:streamline_non_core
         continue-on-error: true
 
       - name: Log test results

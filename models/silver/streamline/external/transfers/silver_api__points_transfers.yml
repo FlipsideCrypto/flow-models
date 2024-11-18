@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: silver_api__points_transfers
+    description: "Response from the Reward Points API Transfers Endpoint. Logs each response and dedplicates by batch_id. Original _inserted_timestamp preserved as request timestamp."
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: request_date
+          interval: 1
+
+    columns:
+      - name: partition_key
+
+      - name: request_date
+
+      - name: from_address
+        tests:
+          - not_null
+
+      - name: batch_id
+        tests:
+          - not_null
+
+      - name: batch_index
+        tests:
+          - not_null
+
+      - name: transfer_index
+        tests:
+          - not_null
+
+      - name: boxes
+        tests:
+          - not_null
+
+      - name: keys
+        tests:
+          - not_null
+
+      - name: points
+
+      - name: to_address
+        tests:
+          - not_null
+
+      - name: points_transfers_id
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+
+      - name: modified_timestamp
+
+      - name: _invocation_id
+      - name: _inserted_timestamp

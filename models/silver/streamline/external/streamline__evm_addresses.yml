@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: streamline__evm_addresses
+    description: "Table of unique EVM addresses."
+    data_tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: modified_timestamp
+          interval: 1
+
+    columns:
+      - name: address
+        tests:
+          - not_null
+          - unique
+
+      - name: modified_timestamp
+
+      - name: inserted_timestamp
+
+      - name: evm_addresses_id
+
+      - name: _invocation_id

@@ -5,7 +5,8 @@
     unique_key = "reward_points_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE', 'address']
+    cluster_by = ['_inserted_timestamp :: DATE', 'address'],
+    tags = ['streamline_non_core']
 ) }}
 
 SELECT
