@@ -4,7 +4,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'entry_id'],
-    tags = ['streamline_non_core']
+    tags = ['streamline_non_core', 'rewards_points_spend']
 ) }}
 
 WITH silver_responses AS (
