@@ -18,36 +18,36 @@ DBT_TARGET=sbx make sl-flow-api
 
 ```zsh
 # call sbx udf_bulk_grpc() to test the API integration
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/streamline__get_blocks_history.sql --profile flow --target sbx --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/history/streamline__get_blocks_history.sql --profile flow --target sbx --profiles-dir ~/.dbt
 ```
 
 
 ```zsh 
 # dev bronze__streamline_blocks.sql
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/bronze/core/realtime/bronze__streamline_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/bronze/core/realtime/bronze__streamline_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
 ```
 
 ```zsh
 # dev complete_get_blocks
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/complete/streamline__complete_get_blocks.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev complete_get_collections
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_collections.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/complete/streamline__complete_get_collections.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev complete_get_transactions
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/complete/streamline__complete_get_transactions.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/complete/streamline__complete_get_transactions.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_blocks_history
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_collections_history
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_transactions_history
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev get_transaction_results_history
-dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
+dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' -m 1+models/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet22.sql --profile flow --target dev --profiles-dir ~/.dbt
 
 # dev bronze__streamline_blocks.sql
 dbt run --select bronze__streamline_blocks.sql --profiles-dir ~/.dbt --target dev --profile flow --vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}'

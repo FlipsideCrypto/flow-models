@@ -36,7 +36,7 @@ dbt run -s 1+tag:streamline_load --vars '{"LOAD_BACKFILL": True, "LOAD_BACKFILL_
   - MAINNET_22
 
 ## View Types
-Views with the word `complete` in the name are used in the complete history models at `models/silver/streamline/core/complete`. These use a macro to scan multiple external tables in one call, and feed the streamline backfill process.  
+Views with the word `complete` in the name are used in the complete history models at `models/streamline/core/complete`. These use a macro to scan multiple external tables in one call, and feed the streamline backfill process.  
 
 The views `bronze__streamline_<method>_history` query just one network version based on the `LOAD_BACKFILL_VERSION` argument passed at runtime. No default is set for this variable so execution fails if it is forgottten.  
 

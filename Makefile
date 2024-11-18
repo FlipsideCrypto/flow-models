@@ -34,7 +34,7 @@ udf_2:
 complete:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/complete \
+	-m 1+models/streamline/core/complete \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -52,7 +52,7 @@ streamline: sl-flow-api udfs grant-streamline-privileges streamline_bronze
 streamline_bronze:
 	dbt run \
 	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/bronze \
+	-m 1+models/streamline/bronze \
 	--profiles-dir ~/.dbt \
 	--target $(DBT_TARGET) \
 	--profile flow
@@ -60,7 +60,7 @@ streamline_bronze:
 blocks_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql \
+	-m 1+models/streamline/core/history/blocks/streamline__get_blocks_history_mainnet22.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -68,7 +68,7 @@ blocks_history:
 collections_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql \
+	-m 1+models/streamline/core/history/collections/streamline__get_collections_history_mainnet22.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -76,7 +76,7 @@ collections_history:
 tx_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql \
+	-m 1+models/streamline/core/history/transactions/streamline__get_transactions_history_mainnet22.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -84,7 +84,7 @@ tx_history:
 tx_results_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_18.sql \
+	-m 1+models/streamline/core/history/transaction_results/streamline__get_transaction_results_history_mainnet_18.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -92,7 +92,7 @@ tx_results_history:
 tx_results_batch_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_19.sql \
+	-m 1+models/streamline/core/history/transaction_results/batch/streamline__get_batch_transaction_results_history_mainnet_19.sql \
 	--profile flow \
 	--target $(DBT_TARGET) \
 	--profiles-dir ~/.dbt
@@ -100,7 +100,7 @@ tx_results_batch_history:
 tx_batch_history:
 	dbt run \
 	--vars '{"STREAMLINE_INVOKE_STREAMS": $(INVOKE_STREAMS), "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
-	-m 1+models/silver/streamline/core/history/transactions/batch/streamline__get_batch_transactions_mainnet_18.sql \
+	-m 1+models/streamline/core/history/transactions/batch/streamline__get_batch_transactions_mainnet_18.sql \
 	--profile flow \
 	--target dev \
 	--profiles-dir ~/.dbt
