@@ -5,7 +5,7 @@
     unique_key = "transaction_entries_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE', 'entry_id'],
+    cluster_by = ['_inserted_timestamp :: DATE'],
     tags = ['streamline_non_core', 'rewards_points_spend']
 ) }}
 

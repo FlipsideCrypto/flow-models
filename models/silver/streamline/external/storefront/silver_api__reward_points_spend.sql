@@ -1,9 +1,10 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = "reward_points_spend_id",
+    unique_key = "entry_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE', 'entry_id'],
+    cluster_by = ['_inserted_timestamp :: DATE'],
+    post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(user_wallet_address)" ],
     tags = ['streamline_non_core', 'rewards_points_spend']
 ) }}
 
