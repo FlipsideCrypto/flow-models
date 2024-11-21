@@ -1,4 +1,5 @@
--- depends_on: {{ ref('silver_api__transaction_entries') }}
+ -- depends_on: {{ ref('silver_api__storefront_items') }}
+ 
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
@@ -18,10 +19,10 @@
     ) %}
     {% if execute %}
         {% set query %}
-            WITH target_entry_id AS (
+            WITH target_id AS (
 
                 SELECT
-                    entry_id,
+                    item_id,
                     ROW_NUMBER() over (
                         ORDER BY
                             partition_key DESC,
@@ -32,9 +33,9 @@
                     {# WHERE _inserted_timestamp >= CURRENT_DATE - 3 #}
             )
             SELECT
-                entry_id
+                item_id
             FROM
-                target_entry_id
+                target_id
             WHERE
             rn = 2 
         {% endset %}
