@@ -10,9 +10,26 @@
 WITH points_transfers AS (
 
     SELECT
-        *
+        from_address,
+        to_address
     FROM
         {{ ref('silver_api__points_transfers') }}
+
+{% if is_incremental() %}
+WHERE
+    modified_timestamp > (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+onchain AS (
+    SELECT
+        DISTINCT from_address AS address
+    FROM
+        {{ ref('silver_evm__transactions') }}
 
 {% if is_incremental() %}
 WHERE
@@ -34,6 +51,11 @@ evm_addresses AS (
         DISTINCT to_address AS address
     FROM
         points_transfers
+    UNION
+    SELECT
+        DISTINCT address
+    FROM
+        onchain
 )
 SELECT
     address,
