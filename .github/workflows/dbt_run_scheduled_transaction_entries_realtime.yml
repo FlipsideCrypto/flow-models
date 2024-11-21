@@ -3,9 +3,9 @@ run-name: dbt_run_scheduled_transaction_entries_realtime
 
 on:
   workflow_dispatch:
-  # schedule:
+  schedule:
     # Daily at 00:00 UTC
-    # - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
@@ -42,7 +42,6 @@ jobs:
 
       - name: Run DBT Jobs
         run: >
-          dbt run -s streamline__transaction_entries_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
           dbt run -s streamline__minting_assets_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Store logs
