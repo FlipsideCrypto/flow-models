@@ -14,7 +14,6 @@ WITH bronze AS (
     SELECT
         partition_key,
         DATA,
-        VALUE :STARTING_AFTER :: STRING AS starting_after,
         VALUE :API_LIMIT :: INTEGER AS api_limit,
         ARRAY_SIZE(
             DATA :data :: ARRAY
@@ -40,7 +39,6 @@ WHERE
 SELECT
     partition_key,
     item_count,
-    starting_after,
     api_limit,
     first_item_id AS request_first_item_id,
     last_item_id AS request_last_item_id,

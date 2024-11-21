@@ -1,5 +1,5 @@
  -- depends_on: {{ ref('silver_api__storefront_items') }}
- 
+
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
@@ -13,50 +13,15 @@
     )
 ) }}
 
-{% if not var(
-        'STOREFRONT_INITIAL_RUN',
-        false
-    ) %}
-    {% if execute %}
-        {% set query %}
-            WITH target_id AS (
-
-                SELECT
-                    item_id,
-                    ROW_NUMBER() over (
-                        ORDER BY
-                            partition_key DESC,
-                            INDEX DESC
-                    ) AS rn
-                FROM
-                    {{ ref('silver_api__storefront_items') }}
-                    {# WHERE _inserted_timestamp >= CURRENT_DATE - 3 #}
-            )
-            SELECT
-                item_id
-            FROM
-                target_id
-            WHERE
-            rn = 2 
-        {% endset %}
-        {% set starting_after = run_query(query).columns [0].values() [0] %}
-        {{ log(
-            "last_id: " ~ starting_after,
-            info = True
-        ) }}
-    {% endif %}
-{% endif %}
-
 SELECT
     {{ var(
         'API_LIMIT',
         1000
     ) }} AS api_limit,
-    '{{ starting_after }}' AS starting_after,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        '{Service}/api/minting/assets' || '?limit=' || api_limit{% if not var('STOREFRONT_INITIAL_RUN', false) %} || '&startingAfter=' || '{{ starting_after }}'{% endif %},
+        '{Service}/api/minting/assets' || '?limit=' || api_limit,
         { 'x-api-key': '{Authentication}' },
         {},
         'Vault/prod/flow/snag-api'
