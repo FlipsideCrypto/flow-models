@@ -5,9 +5,9 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "reward_points",
-            "sql_limit": "25000",
-            "producer_batch_size": "5000",
-            "worker_batch_size": "1000",
+            "sql_limit": "18000",
+            "producer_batch_size": "3000",
+            "worker_batch_size": "3000",
             "sql_source": "{{this.identifier}}"
         }
     )
