@@ -45,6 +45,8 @@ models:
     relation: true
     columns: true
   +on_schema_change: "append_new_columns"
+  flow_models:
+    +pre-hook: '{{ fsc_utils.set_query_tag() }}'
 
 tests:
   flow_models:
@@ -69,6 +71,15 @@ vars:
   REST_API_PREFIX_DEV: sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/
   STREAMLINE_START_BLOCK: 55114467
   LOAD_BACKFILL_VERSION: CANDIDATE_07
+  core_folders: [
+    'silver/core',
+    'gold/core',
+    'bronze/streamline',  
+    'evm/silver/core',
+    'evm/gold/core',
+    'evm/streamline',
+    'streamline/core'
+  ]
 
 dispatch:
   - macro_namespace: dbt
