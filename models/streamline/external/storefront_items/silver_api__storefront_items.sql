@@ -5,7 +5,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
     post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(storefront_item_id)" ],
-    tags = ['streamline_non_core', 'minting_assets']
+    tags = ['streamline_non_core']
 ) }}
 
 WITH silver_responses AS (

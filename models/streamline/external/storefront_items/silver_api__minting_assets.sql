@@ -6,7 +6,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
-    tags = ['streamline_non_core', 'minting_assets']
+    tags = ['streamline_non_core']
 ) }}
 
 WITH bronze AS (
