@@ -18,4 +18,4 @@ SELECT
 FROM
     distinct_count
 WHERE
-    ct > 7000
+    ct > 20000
