@@ -7,8 +7,25 @@
     tags = ['streamline_non_core']
 ) }}
 
-WITH evm_transactions AS (
+WITH points_transfers AS (
 
+    SELECT
+        from_address,
+        to_address
+    FROM
+        {{ ref('silver_api__points_transfers') }}
+
+{% if is_incremental() %}
+WHERE
+    modified_timestamp > (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+onchain AS (
     SELECT
         DISTINCT from_address AS address
     FROM
@@ -23,6 +40,22 @@ WHERE
             {{ this }}
     )
 {% endif %}
+),
+evm_addresses AS (
+    SELECT
+        DISTINCT from_address AS address
+    FROM
+        points_transfers
+    UNION
+    SELECT
+        DISTINCT to_address AS address
+    FROM
+        points_transfers
+    UNION
+    SELECT
+        DISTINCT address
+    FROM
+        onchain
 )
 SELECT
     address,
@@ -33,8 +66,6 @@ SELECT
     ) }} AS evm_addresses_id,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    evm_transactions 
-
-qualify(ROW_NUMBER() over (PARTITION BY address
+    evm_addresses qualify(ROW_NUMBER() over (PARTITION BY address
 ORDER BY
     inserted_timestamp DESC)) = 1
