@@ -50,6 +50,7 @@ flatten_batches AS (
         _inserted_timestamp,
         address AS from_address,
         A.index AS batch_index,
+        A.value :createdAt :: TIMESTAMP_NTZ AS created_at,
         A.value :batchId :: STRING AS batch_id,
         A.value :status :: STRING AS batch_status,
         A.value :transfers :: ARRAY AS batch_transfers
@@ -63,6 +64,7 @@ flatten_transfers AS (
     SELECT
         partition_key,
         request_date,
+        created_at,
         from_address,
         batch_index,
         batch_id,
@@ -78,6 +80,7 @@ flatten_transfers AS (
 )
 SELECT
     request_date,
+    created_at,
     batch_id,
     batch_index,
     transfer_index,
