@@ -129,6 +129,7 @@ sources:
       - name: transaction_entries
       - name: points_transfers
       - name: minting_assets
+      - name: contract_abis
 
   - name: crosschain_silver
     database: crosschain
