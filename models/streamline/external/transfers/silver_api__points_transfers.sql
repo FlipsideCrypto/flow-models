@@ -21,6 +21,7 @@ WITH points_transfers_raw AS (
 
 {% if is_incremental() %}
 {{ ref('bronze_api__points_transfers') }}
+WHERE
     _inserted_timestamp >= COALESCE(
         (
             SELECT
