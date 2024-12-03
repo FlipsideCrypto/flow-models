@@ -30,11 +30,14 @@ FROM
 {% if is_incremental() %}
 {{ ref('bronze_api__reward_points') }}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
+    _inserted_timestamp >= COALESCE(
+        (
+            SELECT
+                MAX(_inserted_timestamp) _inserted_timestamp
+            FROM
+                {{ this }}
+        ),
+        '1900-01-01' :: timestamp_ntz
     )
 {% else %}
     {{ ref('bronze_api__FR_reward_points') }}

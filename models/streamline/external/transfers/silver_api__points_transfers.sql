@@ -21,12 +21,14 @@ WITH points_transfers_raw AS (
 
 {% if is_incremental() %}
 {{ ref('bronze_api__points_transfers') }}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
+    _inserted_timestamp >= COALESCE(
+        (
+            SELECT
+                MAX(_inserted_timestamp) _inserted_timestamp
+            FROM
+                {{ this }}
+        ),
+        '1900-01-01' :: timestamp_ntz
     )
 {% else %}
     {{ ref('bronze_api__FR_points_transfers') }}
