@@ -2,7 +2,7 @@
 -- depends_on: {{ ref('bronze_api__FR_contract_abis') }}
 {{ config(
     materialized = 'incremental',
-    unique_key = "contract_abis_id",
+    unique_key = "contract_address",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],

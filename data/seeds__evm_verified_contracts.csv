@@ -1,4 +1,5 @@
 address_hash,address_is_contract,address_is_verified,address_name,certified,compiler_version,has_constructor_args,language,verified_at,_request_timestamp
+0x6AC1b2a5A1f9d05A895302736AC1FDf21FbF31EC,True,True,GnosisSafeProxy,False,v0.7.6+commit.7338295f,False,solidity,2024-12-03T19:53:50.556931Z,2024-12-03T23:12:27.088744Z
 0x6D0e081Acc28eA9ee6b7fD293eC03F97147b026d,True,True,TrenchTokensBuyer,False,v0.8.25+commit.b61c2a91,True,solidity,2024-12-03T16:46:52.660378Z,2024-12-03T18:43:08.942090Z
 0x41Bdb4aa4A63a5b2Efc531858d3118392B1A1C3d,True,True,LzExecutor,False,v0.8.22+commit.4fc1097e,False,solidity,2024-12-03T02:38:33.996776Z,2024-12-03T18:43:08.942110Z
 0x7cacBe439EaD55fa1c22790330b12835c6884a91,True,True,ReceiveUln301View,False,v0.8.22+commit.4fc1097e,False,solidity,2024-12-03T02:37:14.591493Z,2024-12-03T18:43:08.942117Z

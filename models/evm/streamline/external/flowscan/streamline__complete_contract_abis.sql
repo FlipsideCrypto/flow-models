@@ -36,8 +36,6 @@ WHERE
     {{ ref('bronze_api__FR_contract_abis') }}
 {% endif %}
 
--- TODO - check for valid results only
-
 qualify(ROW_NUMBER() over (PARTITION BY contract_address
 ORDER BY
     _inserted_timestamp DESC)) = 1
