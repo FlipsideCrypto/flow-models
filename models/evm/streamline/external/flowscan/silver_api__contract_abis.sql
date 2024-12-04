@@ -5,7 +5,6 @@
     unique_key = "contract_address",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE'],
     tags = ['streamline_evm_non_core']
 ) }}
 
@@ -40,7 +39,7 @@ SELECT
     partition_key,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['partition_key']
+        ['contract_address']
     ) }} AS contract_abis_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
