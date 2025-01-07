@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: rewards__fact_balances
+    description: "Response from the Reward Points API with point-in-time balances. Note, this API only returns balances at the time the request was made, so early data is patchy."
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: request_date
+          interval: 1
+
+    columns:
+
+      - name: ADDRESS
+
+      - name: BOXES
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: BOXES_OPENED
+
+      - name: KEYS
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: POINTS
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: REQUEST_DATE
+
+      - name: FACT_BALANCES_ID
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        tests:
+          - not_null

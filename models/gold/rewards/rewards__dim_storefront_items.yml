@@ -1,0 +1,133 @@
+version: 2
+
+models:
+  - name: rewards__dim_storefront_items
+    description: "Response from the Minting Assets API"
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: created_at
+          interval: 1
+
+    columns:
+      - name: ITEM_ID
+        tests:
+          - not_null
+          - unique
+
+      - name: CREATED_AT
+        tests:
+          - not_null
+
+      - name: ADDITIONAL_MEDIA
+
+      - name: ANIMATION_URL
+
+      - name: ARTIST_INFO
+
+      - name: ASSET_NR
+
+      - name: ATTRIBUTES
+
+      - name: AUCTION_ID
+
+      - name: AUCTION_ITEMS
+
+      - name: BURN_TO_REDEEM_DETAILS
+
+      - name: BURN_TO_REDEEM_TYPE
+
+      - name: BURNED_AT
+
+      - name: CONTRACT_ADDRESS
+
+      - name: CURRENCY_ADDRESS
+
+      - name: CURRENCY_DECIMALS
+
+      - name: DELETED_AT
+
+      - name: DESCRIPTION
+
+      - name: DOES_REQUIRE_W9
+
+      - name: ENABLE_BURN_TO_REDEEM
+
+      - name: IMAGE_URL
+
+      - name: IS_LISTED
+
+      - name: IS_PHYGTAL_ITEM
+
+      - name: IS_PRICE_IN_USD
+
+      - name: IS_REDEEMABLE_SEPARATE_FROM_PURCHASE
+
+      - name: LISTING_ENDS_AT
+
+      - name: listing_starts_at
+
+      - name: LISTING_TYPE
+
+      - name: LOYALTY_CURRENCY
+
+      - name: LOYALTY_CURRENCY_ID
+
+      - name: METADATA_URI
+
+      - name: MINT_STATUS
+
+      - name: MINTING_CONTRACT
+
+      - name: MINTING_CONTRACT_ASSET_MINT_STATUS
+
+      - name: MINTING_CONTRACT_ID
+
+      - name: NAME
+
+      - name: NETWORK
+
+      - name: ORGANIZATION_ID
+
+      - name: PER_USER_MINT_LIMIT
+
+      - name: PER_USER_MINT_MIN_LIMIT
+
+      - name: PRE_REVEAL_MEDIA
+
+      - name: PRICE
+
+      - name: QUANTITY
+
+      - name: QUANTITY_MINTED
+
+      - name: REDEEMABLE_UNTIL
+
+      - name: REVEALED_AT
+
+      - name: SHIPPING_PRICE
+
+      - name: SHIPPING_WITHIN
+
+      - name: STATUS_TRACKER
+
+      - name: TOKEN_ID
+
+      - name: TOKEN_TYPE
+
+      - name: UPDATED_AT
+
+      - name: WEBSITE_ID  
+
+      - name: DIM_STOREFRONT_ITEMS_ID
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        tests:
+          - not_null

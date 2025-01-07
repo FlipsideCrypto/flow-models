@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: rewards__fact_transfers
+    description: "Response from the Reward Points API Transfers Endpoint. Logs each response and dedplicates by batch_id. Original _inserted_timestamp preserved as request timestamp."
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: request_date
+          interval: 1
+
+    columns:
+      - name: BATCH_ID
+        tests:
+          - not_null
+
+      - name: CREATED_AT
+        tests:
+          - not_null
+
+      - name: BATCH_INDEX
+        tests:
+          - not_null
+
+      - name: TRANSFER_INDEX
+        tests:
+          - not_null
+
+      - name: FROM_ADDRESS
+        tests:
+          - not_null
+
+      - name: TO_ADDRESS
+        tests:
+          - not_null
+
+      - name: BOXES
+        tests:
+          - not_null
+
+      - name: KEYS
+        tests:
+          - not_null
+
+      - name: POINTS
+
+      - name: FACT_TRANSFERS_ID
+        tests:
+          - not_null
+          - unique
+
+      - name: REQUEST_DATE
+        tests:
+          - not_null
+
+      - name: INSERTED_TIMESTAMP
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        tests:
+          - not_null
