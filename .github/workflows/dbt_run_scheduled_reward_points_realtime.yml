@@ -45,7 +45,7 @@ jobs:
 
       - name: Request User Points Balances and Storefront Items
         run: >
-          dbt run -s streamline__reward_points_realtime streamline__storefront_items_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
+          dbt run -s streamline__reward_points_realtime streamline__minting_assets_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Authenticate with Flow Points API
         run: |
