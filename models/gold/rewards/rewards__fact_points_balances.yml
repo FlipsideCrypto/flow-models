@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: rewards__fact_balances
+  - name: rewards__fact_points_balances
     description: "Response from the Reward Points API with point-in-time balances. Note, this API only returns balances at the time the request was made, so early data is patchy."
     tests:
       - dbt_utils.recency:
@@ -12,8 +12,10 @@ models:
     columns:
 
       - name: ADDRESS
+        description: "The EVM address of the account"
 
       - name: BOXES
+        description: "The number of boxes owned by the account at the time of the request"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -21,8 +23,10 @@ models:
                 - NUMBER
 
       - name: BOXES_OPENED
+        description: "The number of boxes opened by the account at the time of the request"
 
       - name: KEYS
+        description: "The number of keys owned by the account at the time of the request"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -30,6 +34,7 @@ models:
                 - NUMBER
 
       - name: POINTS
+        description: "The number of points accrued by the account at the time of the request"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -37,8 +42,8 @@ models:
                 - NUMBER
 
       - name: REQUEST_DATE
-
-      - name: FACT_BALANCES_ID
+        description: "The date of the request"
+      - name: FACT_POINTS_BALANCES_ID
         tests:
           - not_null
           - unique

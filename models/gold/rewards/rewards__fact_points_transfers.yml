@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: rewards__fact_transfers
+  - name: rewards__fact_points_transfers
     description: "Response from the Reward Points API Transfers Endpoint. Logs each response and dedplicates by batch_id. Original _inserted_timestamp preserved as request timestamp."
     tests:
       - dbt_utils.recency:
@@ -11,40 +11,49 @@ models:
 
     columns:
       - name: BATCH_ID
+        description: "The batch ID of the transfer"
         tests:
           - not_null
 
       - name: CREATED_AT
+        description: "The date of the transfer"
         tests:
           - not_null
 
       - name: BATCH_INDEX
+        description: "The index of the batch for the sending account"
         tests:
           - not_null
 
       - name: TRANSFER_INDEX
+        description: "The index of the transfer within the batch"
         tests:
           - not_null
 
       - name: FROM_ADDRESS
+        description: "The EVM address of the sender"
         tests:
           - not_null
 
       - name: TO_ADDRESS
+        description: "The EVM address of the recipient"
         tests:
           - not_null
 
       - name: BOXES
+        description: "The number of boxes transferred"
         tests:
           - not_null
 
       - name: KEYS
+        description: "The number of keys transferred"
         tests:
           - not_null
 
       - name: POINTS
+        description: "The number of points transferred"
 
-      - name: FACT_TRANSFERS_ID
+      - name: FACT_POINTS_TRANSFERS_ID
         tests:
           - not_null
           - unique

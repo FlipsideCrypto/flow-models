@@ -5,14 +5,18 @@
 ) }}
 
 SELECT
-    address,
+    batch_id,
+    created_at,
+    batch_index,
+    transfer_index,
+    from_address,
+    to_address,
     boxes,
-    boxes_opened,
     keys,
     points,
+    points_transfers_id AS fact_points_transfers_id,
     request_date,
-    reward_points_id AS fact_balances_id,
     inserted_timestamp,
     modified_timestamp
 FROM
-    {{ ref('silver_api__reward_points') }}
+    {{ ref('silver_api__points_transfers') }}
