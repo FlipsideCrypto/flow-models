@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: rewards__fact_points_transfers
-    description: "Response from the Reward Points API Transfers Endpoint. Logs each response and dedplicates by batch_id. Original _inserted_timestamp preserved as request timestamp."
+    description: "Response from the Reward Points API Transfers Endpoint."
     tests:
       - dbt_utils.recency:
           datepart: day
