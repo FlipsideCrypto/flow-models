@@ -59,6 +59,7 @@ SELECT
     website_id,
     storefront_item_id AS dim_storefront_items_id,
     inserted_timestamp,
-    modified_timestamp
+    modified_timestamp,
+    _inserted_timestamp AS request_timestamp
 FROM
     {{ ref('silver_api__storefront_items') }}
