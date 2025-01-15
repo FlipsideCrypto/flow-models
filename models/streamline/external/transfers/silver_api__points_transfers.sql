@@ -16,7 +16,8 @@ WITH points_transfers_raw AS (
         partition_key,
         TO_TIMESTAMP(partition_key) :: DATE AS request_date,
         DATA,
-        _inserted_timestamp
+        _inserted_timestamp,
+        round(octet_length(DATA) / 1048576, 2) AS data_mb
     FROM
 
 {% if is_incremental() %}
@@ -28,37 +29,32 @@ WHERE
         FROM
             {{ this }}
     )
+    AND
+        partition_key >= 1736965934
 {% else %}
     {{ ref('bronze_api__FR_points_transfers') }}
+    WHERE
+        partition_key >= 1736965934
 {% endif %}
-),
-flatten_protocols AS (
-    SELECT
-        partition_key,
-        request_date,
-        _inserted_timestamp,
-        A.value :address :: STRING AS address,
-        A.value :transfers :: ARRAY AS transfers
-    FROM
-        points_transfers_raw,
-        LATERAL FLATTEN(DATA) A
 ),
 flatten_batches AS (
     SELECT
         partition_key,
         request_date,
         _inserted_timestamp,
-        address AS from_address,
+        DATA :address :: STRING AS from_address,
         A.index AS batch_index,
         A.value :createdAt :: TIMESTAMP_NTZ AS created_at,
         A.value :batchId :: STRING AS batch_id,
         A.value :status :: STRING AS batch_status,
-        A.value :transfers :: ARRAY AS batch_transfers
+        A.value :transfers :: ARRAY AS batch_transfers,
+        data_mb
     FROM
-        flatten_protocols,
+        points_transfers_raw,
         LATERAL FLATTEN(
-            transfers
+            DATA :transfers :: ARRAY
         ) A
+
 ),
 flatten_transfers AS (
     SELECT
@@ -73,7 +69,8 @@ flatten_transfers AS (
         A.value :boxes :: NUMBER AS boxes,
         A.value :keys :: NUMBER AS keys,
         A.value :points :: NUMBER AS points,
-        A.value :toAddressId :: STRING AS to_address
+        A.value :toAddressId :: STRING AS to_address,
+        data_mb
     FROM
         flatten_batches,
         LATERAL FLATTEN(batch_transfers) A
@@ -96,10 +93,8 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id,
-    _inserted_timestamp
+    _inserted_timestamp,
+    data_mb
 FROM
     flatten_transfers 
 
-qualify(ROW_NUMBER() over (PARTITION BY batch_id
-ORDER BY
-    _inserted_timestamp ASC)) = 1
