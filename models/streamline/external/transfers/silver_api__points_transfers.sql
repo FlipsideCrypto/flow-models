@@ -98,3 +98,6 @@ SELECT
 FROM
     flatten_transfers 
 
+qualify(ROW_NUMBER() over (PARTITION BY batch_id
+ORDER BY
+    _inserted_timestamp ASC)) = 1
