@@ -1,14 +1,27 @@
 -- depends_on: {{ ref('bronze_api__points_transfers') }}
 -- depends_on: {{ ref('bronze_api__FR_points_transfers') }}
+
 {{ config(
-    materialized = 'incremental',
-    unique_key = "batch_id",
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp", "_inserted_timestamp"],
-    cluster_by = ['modified_timestamp :: DATE', 'from_address'],
+    materialized = 'table',
+    unique_key = "points_transfers_id",
+    cluster_by = ['created_at :: DATE', 'from_address'],
     post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(from_address, to_address)" ],
     tags = ['streamline_non_core']
 ) }}
+
+{% if execute %}
+-- Query max partition key from the bronze table to use in CTE
+{% set query %}
+    SELECT MAX(partition_key) FROM {{ ref('bronze_api__points_transfers') }}
+{% endset %}
+{% set max_partition_key = run_query(query)[0][0] %}
+{% do log("max_partition_key: " ~ max_partition_key, info=True) %}
+
+    {% if max_partition_key == '' or max_partition_key is none %}
+            {% do exceptions.raise_compiler_error("max_partition_key is not set. Aborting model execution.") %}
+    {% endif %}
+
+{% endif %}
 
 WITH points_transfers_raw AS (
 
@@ -19,23 +32,9 @@ WITH points_transfers_raw AS (
         _inserted_timestamp,
         round(octet_length(DATA) / 1048576, 2) AS data_mb
     FROM
-
-{% if is_incremental() %}
-{{ ref('bronze_api__points_transfers') }}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp)
-        FROM
-            {{ this }}
-    )
-    AND
-        partition_key >= 1736965934
-{% else %}
-    {{ ref('bronze_api__FR_points_transfers') }}
+        {{ ref('bronze_api__points_transfers') }}
     WHERE
-        partition_key >= 1736965934
-{% endif %}
+        partition_key = {{ max_partition_key }}
 ),
 flatten_batches AS (
     SELECT
@@ -98,6 +97,3 @@ SELECT
 FROM
     flatten_transfers 
 
-qualify(ROW_NUMBER() over (PARTITION BY batch_id
-ORDER BY
-    _inserted_timestamp ASC)) = 1
