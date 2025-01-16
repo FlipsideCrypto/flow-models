@@ -11,6 +11,9 @@ models:
 
     columns:
       - name: partition_key
+        tests:
+          - dbt_utils.at_least_one:
+              severity: error
 
       - name: request_date
 
