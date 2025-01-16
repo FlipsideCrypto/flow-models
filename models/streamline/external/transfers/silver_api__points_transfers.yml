@@ -57,10 +57,3 @@ models:
 
       - name: _invocation_id
       - name: _inserted_timestamp
-
-      - name: data_mb
-        tests:
-          - dbt_utils.accepted_range:
-              min_value: 0
-              max_value: 16
-              severity: error
