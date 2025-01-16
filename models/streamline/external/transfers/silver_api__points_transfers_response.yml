@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: silver_api__points_transfers_response
+    description: "Silver table for points transfers response"
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: request_date
+          interval: 1
+
+    columns:
+      - name: partition_key
+        tests:
+          - not_null
+
+      - name: request_date
+        description: "Request date"
+        tests:
+          - not_null
+
+      - name: data
+
+      - name: _inserted_timestamp
+        tests:
+          - not_null
+
+      - name: data_mb
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 15.5
+              severity: error
+
+      - name: points_transfers_id
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+
+      - name: modified_timestamp
+
+      - name: _invocation_id
