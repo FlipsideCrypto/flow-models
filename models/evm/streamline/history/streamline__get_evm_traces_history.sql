@@ -33,7 +33,6 @@ ready_blocks AS (
         block_number
     FROM
         tbl
-    limit 5
 )
 SELECT
     block_number,

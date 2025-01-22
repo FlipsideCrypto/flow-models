@@ -10,6 +10,7 @@
         "sql_source" :"{{this.identifier}}",
         "exploded_key": tojson(["result"])}
     ),
+    enabled = false,
     tags = ['streamline_realtime_evm']
 ) }}
 
