@@ -1,76 +1,143 @@
 -- depends_on: {{ ref('bronze_evm__traces') }}
--- depends_on: {{ ref('bronze_evm__FR_traces') }}
-{{ config(
-    materialized = 'incremental',
-    unique_key = "evm_traces_id",
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['_inserted_timestamp :: DATE', '_partition_by_block_id'],
+
+{{ config (
+    materialized = "incremental",
+    incremental_strategy = 'delete+insert',
+    unique_key = "block_number",
+    cluster_by = ['modified_timestamp::DATE','partition_key'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
+    enabled = false,
     tags = ['evm']
 ) }}
 
-WITH traces AS (
 
-    SELECT
-        block_number,
-        DATA,
-        partition_key AS _partition_by_block_id,
-        _inserted_timestamp
-    FROM
-
-{% if is_incremental() %}
-{{ ref('bronze_evm__traces') }}
-WHERE
-    _inserted_timestamp >= (
+WITH base AS (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            block_number,
+            partition_key,
+            DATA :result AS full_traces,
+            _inserted_timestamp
+        FROM 
+            {{ ref('bronze_evm__traces') }}
+    WHERE DATA :result IS NOT NULL 
+    {% if is_incremental()%}
+    and _inserted_timestamp >= (
+        SELECT
+            COALESCE(MAX(_inserted_timestamp), '1900-01-01') _inserted_timestamp
         FROM
             {{ this }}
-    )
-{% else %}
-    {{ ref('bronze_evm__FR_traces') }}
+    ) 
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number
-ORDER BY
-    _inserted_timestamp DESC)) = 1
+qualify(ROW_NUMBER() over (PARTITION BY block_number ORDER BY _inserted_timestamp DESC)) = 1
 ),
+bronze_traces AS (
+
+select 
+    block_number,
+    partition_key,
+    index as tx_position,
+    value:result as full_traces,
+    _inserted_timestamp
+from base,
+lateral flatten (input=>full_traces)
+),
+
 flatten_traces AS (
     SELECT
         block_number,
-        INDEX AS array_index,
-        VALUE :: variant AS trace_response,
-        _partition_by_block_id,
-        _inserted_timestamp
+        tx_position,
+        partition_key,
+        IFF(
+            path IN (
+                'result',
+                'result.value',
+                'result.type',
+                'result.to',
+                'result.input',
+                'result.gasUsed',
+                'result.gas',
+                'result.from',
+                'result.output',
+                'result.error',
+                'result.revertReason',
+                'result.time',
+                'gasUsed',
+                'gas',
+                'type',
+                'to',
+                'from',
+                'value',
+                'input',
+                'error',
+                'output',
+                'time',
+                'revertReason' 
+            ),
+            'ORIGIN',
+            REGEXP_REPLACE(REGEXP_REPLACE(path, '[^0-9]+', '_'), '^_|_$', '')
+        ) AS trace_address,
+        _inserted_timestamp,
+        OBJECT_AGG(
+            key,
+            VALUE
+        ) AS trace_json,
+        CASE
+            WHEN trace_address = 'ORIGIN' THEN NULL
+            WHEN POSITION(
+                '_' IN trace_address
+            ) = 0 THEN 'ORIGIN'
+            ELSE REGEXP_REPLACE(
+                trace_address,
+                '_[0-9]+$',
+                '',
+                1,
+                1
+            )
+        END AS parent_trace_address,
+        SPLIT(
+            trace_address,
+            '_'
+        ) AS trace_address_array
     FROM
-        traces,
-        LATERAL FLATTEN (
-            DATA :result :: variant
-        )
+        bronze_traces txs,
+        TABLE(
+            FLATTEN(
+                input => PARSE_JSON(
+                    txs.full_traces
+                ),
+                recursive => TRUE
+            )
+        ) f
+    WHERE
+        f.index IS NULL
+        AND f.key != 'calls'
+        AND f.path != 'result' 
+    GROUP BY
+        block_number,
+        tx_position,    
+        partition_key,
+        trace_address,
+        _inserted_timestamp
 )
 SELECT
     block_number,
-    array_index,
-    trace_response :from :: STRING AS from_address,
-    utils.udf_hex_to_int(
-        trace_response :gas :: STRING
-    ) AS gas,
-    utils.udf_hex_to_int(
-        trace_response :gasUsed :: STRING
-    ) AS gas_used,
-    trace_response :input :: STRING AS input,
-    trace_response :to :: STRING AS to_address,
-    trace_response :type :: STRING AS trace_type,
-    utils.udf_hex_to_int(
-        trace_response :value :: STRING
-    ) AS VALUE,
-    {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'array_index']
-    ) }} AS evm_traces_id,
-    _partition_by_block_id,
+    tx_position,
+    trace_address,
+    parent_trace_address,
+    trace_address_array,
+    trace_json,
+    partition_key,
     _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['block_number'] + 
+        ['tx_position'] + 
+        ['trace_address']
+    ) }} AS traces_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    flatten_traces
+    flatten_traces qualify(ROW_NUMBER() over(PARTITION BY traces_id
+ORDER BY
+    _inserted_timestamp DESC)) = 1
