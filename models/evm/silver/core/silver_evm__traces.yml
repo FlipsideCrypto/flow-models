@@ -1,0 +1,11 @@
+version: 2
+models:
+  - name: silver_evm__traces
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: inserted_timestamp
+          interval: 2
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - traces_id

@@ -130,6 +130,7 @@ sources:
       - name: points_transfers
       - name: minting_assets
       - name: contract_abis
+      - name: evm_traces_v2
 
   - name: crosschain_silver
     database: crosschain

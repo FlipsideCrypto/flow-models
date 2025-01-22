@@ -10,7 +10,7 @@
 ) }}
 
 SELECT
-    block_number,
+    value:"BLOCK_NUMBER"::INT AS block_number,
     partition_key,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
