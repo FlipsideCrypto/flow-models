@@ -5,12 +5,11 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table" :"evm_traces_v2",
         "sql_limit" :"25000",
-        "producer_batch_size" :"5000",
+        "producer_batch_size" :"2000",
         "worker_batch_size" :"1000",
         "sql_source" :"{{this.identifier}}",
         "exploded_key": tojson(["result"])}
     ),
-    enabled = false,
     tags = ['streamline_realtime_evm']
 ) }}
 

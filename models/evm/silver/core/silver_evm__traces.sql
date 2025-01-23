@@ -1,4 +1,5 @@
 -- depends_on: {{ ref('bronze_evm__traces') }}
+-- depends_on: {{ ref('bronze_evm__FR_traces') }}
 
 {{ config (
     materialized = "incremental",
@@ -6,43 +7,40 @@
     unique_key = "block_number",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
-    enabled = false,
     tags = ['evm']
 ) }}
 
 
-WITH base AS (
+WITH bronze_traces AS (
+
         SELECT
             block_number,
             partition_key,
+            value:array_index::INT AS tx_position,
             DATA :result AS full_traces,
             _inserted_timestamp
         FROM 
-            {{ ref('bronze_evm__traces') }}
-    WHERE DATA :result IS NOT NULL 
+
     {% if is_incremental()%}
-    and _inserted_timestamp >= (
-        SELECT
-            COALESCE(MAX(_inserted_timestamp), '1900-01-01') _inserted_timestamp
-        FROM
-            {{ this }}
-    ) 
-{% endif %}
+        {{ ref('bronze_evm__traces') }}
+            WHERE 
+                DATA :result IS NOT NULL 
+            AND _inserted_timestamp >= (
+                SELECT
+                    COALESCE(MAX(_inserted_timestamp), '1900-01-01') _inserted_timestamp
+                FROM
+                    {{ this }}
+            ) 
+    {% else %}
+        {{ ref('bronze_evm__FR_traces') }}
+        WHERE DATA :result IS NOT NULL 
+    {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY block_number ORDER BY _inserted_timestamp DESC)) = 1
+qualify(ROW_NUMBER() over (PARTITION BY block_number, tx_position
+ORDER BY
+    _inserted_timestamp DESC)) = 1
+
 ),
-bronze_traces AS (
-
-select 
-    block_number,
-    partition_key,
-    index as tx_position,
-    value:result as full_traces,
-    _inserted_timestamp
-from base,
-lateral flatten (input=>full_traces)
-),
-
 flatten_traces AS (
     SELECT
         block_number,
