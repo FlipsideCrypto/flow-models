@@ -14,7 +14,7 @@
 WITH bronze_traces AS (
 
         SELECT
-            block_number,
+            value:"BLOCK_NUMBER"::INT AS block_number,
             partition_key,
             value:array_index::INT AS tx_position,
             DATA :result AS full_traces,
