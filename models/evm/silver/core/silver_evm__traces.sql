@@ -1,4 +1,5 @@
 -- depends_on: {{ ref('bronze_evm__traces') }}
+-- depends_on: {{ ref('bronze_evm__FR_traces') }}
 
 {{ config (
     materialized = "incremental",
