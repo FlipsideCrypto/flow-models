@@ -36,8 +36,11 @@ WITH bronze_traces AS (
         WHERE DATA :result IS NOT NULL 
     {% endif %}
 
-),
+qualify(ROW_NUMBER() over (PARTITION BY block_number, tx_position
+ORDER BY
+    _inserted_timestamp DESC)) = 1
 
+),
 flatten_traces AS (
     SELECT
         block_number,
