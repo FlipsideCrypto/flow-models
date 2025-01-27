@@ -97,8 +97,8 @@
     OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_decode_logs_v2(
         json OBJECT
     ) returns ARRAY api_integration = {% if target.name == "prod" %}
-        aws_flow_api_prod AS 'https://quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/bulk_decode_logs'
+        AWS_FLOW_EVM_API_PROD AS 'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/bulk_decode_logs'
     {% else %}
-        aws_flow_api_dev AS'https://sicl8dvvv9.execute-api.us-east-1.amazonaws.com/stg/bulk_decode_logs'
+        AWS_FLOW_EVM_API_DEV AS'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/bulk_decode_logs'
     {%- endif %};
 {% endmacro %}
