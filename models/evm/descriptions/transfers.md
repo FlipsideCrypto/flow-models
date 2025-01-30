@@ -14,6 +14,8 @@ Below are the specific native tokens that correspond to each EVM chain:
 | OPTIMISM   | ETH         |
 | GNOSIS     | xDAI        |
 | KAIA       | KLAY        |
+| BASE       | ETH         |
+| FLOW       | FLOW        |
 
 {% enddocs %}
 
