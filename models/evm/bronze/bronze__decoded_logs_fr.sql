@@ -1,6 +1,6 @@
 {{ config (
     materialized = 'view',
-    tags = ['evm']
+    tags = ['evm', 'evm_decoded_logs']
 ) }}
 
 WITH meta AS (
