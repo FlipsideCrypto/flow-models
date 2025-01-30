@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_evm_daily_silver
 on:
   workflow_dispatch:
   schedule:
-    # Daily at 01:00 UTC (see https://crontab.guru)
-    - cron: "0 1 * * *"
+    # Daily at 02:00 UTC (see https://crontab.guru)
+    - cron: "0 2 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
