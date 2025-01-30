@@ -6,35 +6,20 @@
     tags = ['streamline_non_core']
 ) }}
 
-
-
 WITH points_transfers_raw AS (
 
     SELECT
         partition_key,
         request_date,
-        DATA,
+        from_address,
+        batch_index,
+        batch_id,
+        created_at,
+        batch_status,
+        batch_transfers,
         _inserted_timestamp
     FROM
         {{ ref('silver_api__points_transfers_response') }}
-
-),
-flatten_batches AS (
-    SELECT
-        partition_key,
-        request_date,
-        _inserted_timestamp,
-        DATA :address :: STRING AS from_address,
-        A.index AS batch_index,
-        A.value :createdAt :: TIMESTAMP_NTZ AS created_at,
-        A.value :batchId :: STRING AS batch_id,
-        A.value :status :: STRING AS batch_status,
-        A.value :transfers :: ARRAY AS batch_transfers
-    FROM
-        points_transfers_raw,
-        LATERAL FLATTEN(
-            DATA :transfers :: ARRAY
-        ) A
 
 ),
 flatten_transfers AS (
@@ -52,7 +37,7 @@ flatten_transfers AS (
         A.value :points :: NUMBER AS points,
         A.value :toAddressId :: STRING AS to_address
     FROM
-        flatten_batches,
+        points_transfers_raw,
         LATERAL FLATTEN(batch_transfers) A
 )
 SELECT
@@ -68,7 +53,7 @@ SELECT
     points,
     partition_key,
     {{ dbt_utils.generate_surrogate_key(
-        ['batch_id', 'transfer_index']
+        ['from_address', 'batch_id', 'transfer_index']
     ) }} AS points_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

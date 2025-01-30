@@ -29,11 +29,16 @@
 SELECT
     partition_key,
     TO_TIMESTAMP(partition_key) :: DATE AS request_date,
-    DATA,
+    VALUE :address :: STRING AS from_address,
+    ZEROIFNULL(VALUE :array_index :: INTEGER) AS batch_index,
+    DATA :batchId :: STRING AS batch_id,
+    DATA :createdAt :: TIMESTAMP_NTZ AS created_at,
+    DATA :secondsToFinalize :: INTEGER AS seconds_to_finalize,
+    DATA :status :: STRING AS batch_status,
+    DATA :transfers :: ARRAY AS batch_transfers,
     _inserted_timestamp,
-    ROUND(OCTET_LENGTH(DATA) / 1048576, 2) AS data_mb,
     {{ dbt_utils.generate_surrogate_key(
-        ['file_name', 'data :address :: STRING']
+        ['VALUE :address :: STRING', 'DATA :batchId :: STRING']
     ) }} AS points_transfers_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
