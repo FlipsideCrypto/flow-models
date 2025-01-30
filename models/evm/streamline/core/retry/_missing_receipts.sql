@@ -17,7 +17,6 @@ FROM
     LEFT JOIN {{ ref("silver_evm__receipts") }}
     r USING (
         block_number,
-        block_hash,
         tx_hash
     )
 WHERE
