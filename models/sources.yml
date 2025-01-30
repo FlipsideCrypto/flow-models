@@ -131,6 +131,7 @@ sources:
       - name: minting_assets
       - name: contract_abis
       - name: evm_traces_v2
+      - name: evm_decoded_logs
 
   - name: crosschain_silver
     database: crosschain
@@ -167,3 +168,9 @@ sources:
       - name: ufc_strike_metadata
       - name: espn_nfl_teams
       - name: espn_nfl_athletes
+
+  - name: crosschain_public
+    database: crosschain
+    schema: bronze_public
+    tables:
+      - name: user_abis

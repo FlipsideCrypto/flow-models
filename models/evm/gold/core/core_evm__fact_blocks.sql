@@ -1,83 +1,64 @@
-{{ config(
-    materialized = 'incremental',
-    unique_key = "fact_blocks_id",
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
-    cluster_by = ['inserted_timestamp :: DATE', 'ROUND(block_number, -3)'],
-    persist_docs ={ "relation": true,
-    "columns": true },
+{{ config (
+    materialized = "incremental",
+    incremental_strategy = 'delete+insert',
+    unique_key = "block_number",
+    cluster_by = ['block_timestamp::DATE'],
     tags = ['evm']
 ) }}
 
 SELECT
     block_number,
-    block_timestamp,
+    block_json :hash :: STRING AS block_hash,
+    utils.udf_hex_to_int(
+        block_json :timestamp :: STRING
+    ) :: TIMESTAMP AS block_timestamp,
     'mainnet' AS network,
-    'flow' AS blockchain,
-    transaction_count AS tx_count,
-    difficulty,
-    total_difficulty,
-    extra_data,
-    gas_limit,
-    gas_used,
-    block_hash AS HASH,
-    parent_hash,
-    receipts_root,
-    sha3_uncles,
-    SIZE,
-    uncles AS uncle_blocks,
-    OBJECT_CONSTRUCT(
-        'baseFeePerGas',
-        base_fee_per_gas,
-        'difficulty',
-        difficulty,
-        'extraData',
-        extra_data,
-        'gasLimit',
-        gas_limit,
-        'gasUsed',
-        gas_used,
-        'hash',
-        block_hash,
-        'logsBloom',
-        logs_bloom,
-        'miner',
-        miner,
-        'nonce',
-        nonce,
-        'number',
-        block_number,
-        'parentHash',
-        parent_hash,
-        'receiptsRoot',
-        receipts_root,
-        'sha3Uncles',
-        sha3_uncles,
-        'size',
-        SIZE,
-        'stateRoot',
-        state_root,
-        'timestamp',
-        block_timestamp,
-        'totalDifficulty',
-        total_difficulty,
-        'transactionsRoot',
-        transactions_root,
-        'uncles',
-        uncles
-    ) AS block_header_json,
-    evm_blocks_id AS fact_blocks_id,
-    inserted_timestamp,
-    modified_timestamp
+    ARRAY_SIZE(
+        block_json :transactions
+    ) AS tx_count,
+    utils.udf_hex_to_int(
+        block_json :size :: STRING
+    ) :: bigint AS SIZE,
+    block_json :miner :: STRING AS miner,
+    block_json :mixHash :: STRING AS mix_hash,
+    block_json :extraData :: STRING AS extra_data,
+    block_json :parentHash :: STRING AS parent_hash,
+    utils.udf_hex_to_int(
+        block_json :gasUsed :: STRING
+    ) :: bigint AS gas_used,
+    utils.udf_hex_to_int(
+        block_json :gasLimit :: STRING
+    ) :: bigint AS gas_limit,
+    utils.udf_hex_to_int(
+        block_json :baseFeePerGas :: STRING
+    ) :: bigint AS base_fee_per_gas,
+    utils.udf_hex_to_int(
+        block_json :difficulty :: STRING
+    ) :: bigint AS difficulty,
+    utils.udf_hex_to_int(
+        block_json :totalDifficulty :: STRING
+    ) :: bigint AS total_difficulty,
+    block_json :sha3Uncles :: STRING AS sha3_uncles,
+    block_json :uncles AS uncle_blocks,
+    utils.udf_hex_to_int(
+        block_json :nonce :: STRING
+    ) :: bigint AS nonce,
+    block_json :receiptsRoot :: STRING AS receipts_root,
+    block_json :stateRoot :: STRING AS state_root,
+    block_json :transactionsRoot :: STRING AS transactions_root,
+    block_json :logsBloom :: STRING AS logs_bloom,
+    {{ dbt_utils.generate_surrogate_key(['block_number']) }} AS fact_blocks_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
 FROM
     {{ ref('silver_evm__blocks') }}
+WHERE 1=1
 
 {% if is_incremental() %}
-WHERE
-    modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
+AND modified_timestamp > (
+    SELECT
+        COALESCE(MAX(modified_timestamp), '1970-01-01' :: TIMESTAMP) AS modified_timestamp
+    FROM
+        {{ this }}
     )
 {% endif %}
