@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: core_evm__dim_contract_abis
+    description: '{{ doc("evm_abis_table_doc") }}'
+       
+    columns:
+      - name: CONTRACT_ADDRESS
+        description: '{{ doc("evm_contracts_contract_address") }}'
+      - name: ABI
+        description: '{{ doc("abi") }}'
+      - name: ABI_SOURCE
+        description: '{{ doc("abi_source") }}'
+      - name: BYTECODE
+        description: '{{ doc("bytecode") }}'
