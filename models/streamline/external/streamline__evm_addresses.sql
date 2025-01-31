@@ -29,7 +29,7 @@ onchain AS (
     SELECT
         DISTINCT from_address AS address
     FROM
-        {{ ref('silver_evm__transactions') }}
+        {{ ref('core_evm__fact_transactions') }}
 
 {% if is_incremental() %}
 WHERE

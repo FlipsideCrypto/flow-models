@@ -9,7 +9,8 @@
             "producer_batch_size": "1",
             "worker_batch_size": "1",
             "sql_source": "{{this.identifier}}",
-            "exploded_key": tojson(["result"])
+            "exploded_key": tojson(["transfers"]),
+            "include_top_level_json": tojson(["address"])
         }
     )
 ) }}
@@ -19,7 +20,7 @@ SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        '{Service}/points/dapp/transfer/all',
+        '{Service}points/dapp/transfer/all',
         {
             'Authorization': 'Bearer ' || '{{ env_var("JWT", "") }}',
             'Accept': 'application/json',
@@ -30,4 +31,3 @@ SELECT
         {},
         'Vault/prod/flow/points-api/prod'
     ) AS request
-
