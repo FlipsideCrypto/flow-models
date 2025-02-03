@@ -1,6 +1,6 @@
 {{ config(
     materialized = "view",
-    tags = ['streamline_realtime_evm']
+    tags = ['streamline_realtime_evm', 'streamline_history_evm']
 ) }}
 
 {% if execute %}
