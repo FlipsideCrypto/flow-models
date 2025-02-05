@@ -4,7 +4,7 @@
         func = 'streamline.udf_bulk_decode_logs_v2', 
         target = "{{this.schema}}.{{this.identifier}}", 
         params = {
-            "external_table": "evm_decoded_logs",
+            "external_table": "decoded_logs",
             "sql_limit": 10000000,
             "producer_batch_size": 400000,
             "worker_batch_size": 200000,
