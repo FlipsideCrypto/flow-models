@@ -58,6 +58,16 @@ There is more information on how to use dbt docs in the last section of this doc
 
 - [ez_core_metrics_hourly](#!/model/model.flow_models.stats__ez_core_metrics_hourly)
 
+### EVM Tables (`flow.core_evm`)
+
+- [core_evm__dim_contracts](#!/model/model.flow_models.core_evm__dim_contracts)
+- [core_evm__fact_event_logs](#!/model/model.flow_models.core_evm__fact_event_logs)
+- [core_evm__fact_traces](#!/model/model.flow_models.core_evm__fact_traces)
+- [core_evm__fact_blocks](#!/model/model.flow_models.core_evm__fact_blocks)
+- [core_evm__fact_transactions](#!/model/model.flow_models.core_evm__fact_transactions)
+- [core_evm__ez_native_transfers](#!/model/model.flow_models.core_evm__ez_native_transfers)
+- [core_evm__ez_token_transfers](#!/model/model.flow_models.core_evm__ez_token_transfers)
+
 ## **Data Model Overview**
 
 The FLOW
