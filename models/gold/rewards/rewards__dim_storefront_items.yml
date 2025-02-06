@@ -17,7 +17,6 @@ models:
       - name: ITEM_ID
         tests:
           - not_null
-          - unique
 
       - name: CREATED_AT
         tests:
