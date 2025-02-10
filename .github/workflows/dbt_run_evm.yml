@@ -4,8 +4,8 @@ run-name: dbt_run_evm
 on:
   workflow_dispatch:
   schedule:
-    # Every hour on minute 30(see https://crontab.guru)
-    - cron: "30 * * * *"
+    # Every hour on minutes 8 and 38 (see https://crontab.guru)
+    - cron: "8,38 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

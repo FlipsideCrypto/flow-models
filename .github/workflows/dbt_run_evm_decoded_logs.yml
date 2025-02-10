@@ -4,8 +4,8 @@ run-name: dbt_run_evm_decoded_logs
 on:
   workflow_dispatch:
   schedule:
-    # Every hour on minute 45(see https://crontab.guru)
-    - cron: "45 * * * *"
+    # Every hour on minute 17 and 47 (see https://crontab.guru)
+    - cron: "17,47 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
