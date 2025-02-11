@@ -28,4 +28,4 @@ FROM
         'complete_token_prices'
     ) }}
 WHERE
-    blockchain = 'flow'
+    blockchain in ('flow', 'flow evm')
