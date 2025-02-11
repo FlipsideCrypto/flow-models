@@ -7,6 +7,7 @@
 ) }}
 
 WITH base AS (
+
     SELECT
         block_number,
         block_timestamp,
@@ -30,6 +31,15 @@ WITH base AS (
             )
         ) AS amount_precise,
         amount_precise :: FLOAT AS amount,
+        IFF(
+            C.decimals IS NOT NULL
+            AND price IS NOT NULL,
+            ROUND(
+                amount_precise * price,
+                2
+            ),
+            NULL
+        ) AS amount_usd,
         C.decimals,
         C.symbol,
         C.name,
@@ -44,6 +54,13 @@ WITH base AS (
     FROM
         {{ ref('core_evm__fact_event_logs') }}
         f
+        LEFT JOIN {{ ref('price__ez_prices_hourly') }}
+        p
+        ON DATE_TRUNC(
+            'hour',
+            block_timestamp
+        ) = HOUR
+        AND token_address = contract_address
         LEFT JOIN {{ ref('core_evm__dim_contracts') }} C
         ON contract_address = C.address
         AND (
@@ -86,6 +103,7 @@ SELECT
     raw_amount,
     amount_precise,
     amount,
+    amount_usd,
     origin_function_signature,
     origin_from_address,
     origin_to_address,
@@ -119,8 +137,17 @@ SELECT
             t0.raw_amount_precise,
             c0.decimals
         )
-    ) AS amount_precise,
-    amount_precise :: FLOAT AS amount,
+    ) AS amount_precise_heal,
+    amount_precise_heal :: FLOAT AS amount_heal,
+    IFF(
+        c0.decimals IS NOT NULL
+        AND p0.price IS NOT NULL,
+        ROUND(
+            amount_heal * p0.price,
+            2
+        ),
+        NULL
+    ) AS amount_usd_heal,
     t0.origin_function_signature,
     t0.origin_from_address,
     t0.origin_to_address,
@@ -138,6 +165,13 @@ FROM
         OR c0.symbol IS NOT NULL
         OR c0.name IS NOT NULL
     )
+    LEFT JOIN {{ ref('price__ez_prices_hourly') }}
+    p0
+    ON DATE_TRUNC(
+        'hour',
+        t0.block_timestamp
+    ) = HOUR
+    AND t0.contract_address = p0.token_address
     LEFT JOIN base b USING (ez_token_transfers_id)
 WHERE
     b.ez_token_transfers_id IS NULL
@@ -217,5 +251,36 @@ WHERE
                                         AND c3.name IS NOT NULL
                                         AND t3.contract_address = c3.address)
                                 ) -- Only heal name if new data exists
-        )
-{% endif %}
+                                OR t0.block_number IN (
+                                    SELECT
+                                        DISTINCT t4.block_number
+                                    FROM
+                                        {{ this }}
+                                        t4
+                                    WHERE
+                                        t4.amount_usd IS NULL
+                                        AND t4.modified_timestamp <= (
+                                            SELECT
+                                                MAX(modified_timestamp)
+                                            FROM
+                                                {{ this }}
+                                        )
+                                        AND EXISTS (
+                                            SELECT
+                                                1
+                                            FROM
+                                                {{ ref('price__ez_prices_hourly') }}
+                                                p1
+                                            WHERE
+                                                p1.modified_timestamp > DATEADD('DAY', -14, SYSDATE())
+                                                AND p1.price IS NOT NULL
+                                                AND t4.decimals IS NOT NULL
+                                                AND t4.contract_address = p1.token_address
+                                                AND p1.hour = DATE_TRUNC(
+                                                    'hour',
+                                                    t4.block_timestamp
+                                                )
+                                        )
+                                ) -- Only heal USD if we have price and decimals
+                        )
+                    {% endif %}
