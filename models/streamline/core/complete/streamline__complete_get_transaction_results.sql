@@ -28,6 +28,10 @@ WHERE
         ),
         '1900-01-01' :: timestamp_ntz
     )
+    and block_number not in (
+        101724801,
+        101812478
+    )
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
 WHERE
@@ -41,6 +45,8 @@ AND NOT (
         FROM
             {{ ref('seeds__network_version') }}
     )
-) qualify(ROW_NUMBER() over (PARTITION BY id
+) 
+
+qualify(ROW_NUMBER() over (PARTITION BY id
 ORDER BY
     _inserted_timestamp DESC)) = 1
