@@ -28,9 +28,9 @@ WHERE
         ),
         '1900-01-01' :: timestamp_ntz
     )
-    and block_number not in (
-        101724801,
-        101812478
+    AND id NOT IN (
+        'f31f601728b59a0411b104e6795eb18e32c9b1bea3e52ea1d28a801ed5ceb009',
+        'b68b81b7a2ec9fb4e3789f871f95084ba4fdd9b46bb6c7029efa578a69dba432'
     )
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
