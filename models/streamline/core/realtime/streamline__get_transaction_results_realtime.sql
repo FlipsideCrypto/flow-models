@@ -68,5 +68,10 @@ SELECT
     ) AS request
 FROM
     transactions_to_ingest
+WHERE
+    transaction_id NOT IN (
+        'f31f601728b59a0411b104e6795eb18e32c9b1bea3e52ea1d28a801ed5ceb009',
+        'b68b81b7a2ec9fb4e3789f871f95084ba4fdd9b46bb6c7029efa578a69dba432'
+    )
 ORDER BY
     block_height DESC
