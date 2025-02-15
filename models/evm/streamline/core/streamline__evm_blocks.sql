@@ -3,13 +3,6 @@
     tags = ['streamline_realtime_evm', 'streamline_history_evm']
 ) }}
 
-{% if execute %}
-    {% set height = run_query("SELECT streamline.udf_get_evm_chainhead()") %}
-    {% set block_number = height.columns [0].values() [0] %}
-{% else %}
-    {% set block_number = 0 %}
-{% endif %}
-
 SELECT
     _id AS block_number
 FROM
@@ -18,4 +11,12 @@ FROM
         'number_sequence'
     ) }}
 WHERE
-    _id <= {{ block_number }}
+    _id <= (
+        SELECT
+            COALESCE(
+                block_number,
+                0
+            )
+        FROM
+            {{ ref("streamline__get_evm_chainhead") }}
+    )
