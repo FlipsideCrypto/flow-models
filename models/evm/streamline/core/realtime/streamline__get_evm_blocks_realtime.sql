@@ -63,7 +63,7 @@ SELECT
     ) :: INT AS partition_key,
     {{ target.database }}.live.udf_api(
         'POST',
-        '{Service}',
+        '{Service}/{Authentication}',
         OBJECT_CONSTRUCT(
             'Content-Type',
             'application/json'
@@ -81,7 +81,7 @@ SELECT
                 TRUE -- Include transactions
             )
         ),
-        'Vault/{{ target.name }}/flow/evm/mainnet'
+        'Vault/prod/flow/quicknode/mainnet'
     ) AS request
 FROM
     tbl
