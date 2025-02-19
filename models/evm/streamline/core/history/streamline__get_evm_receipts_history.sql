@@ -41,7 +41,7 @@ SELECT
     ) :: INT AS partition_key,
     {{ target.database }}.live.udf_api(
         'POST',
-        '{Service}',
+        '{Service}/{Authentication}',
         OBJECT_CONSTRUCT(
             'Content-Type',
             'application/json'
@@ -58,7 +58,7 @@ SELECT
                 utils.udf_int_to_hex(block_number)
             )
         ),
-        'Vault/{{ target.name }}/flow/evm/mainnet'
+        'Vault/prod/flow/quicknode/mainnet'
     ) AS request
 FROM
     ready_blocks
