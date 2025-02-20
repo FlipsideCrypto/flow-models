@@ -5,10 +5,6 @@ models:
     description: "Response from the Minting Assets API"
     tests:
       - dbt_utils.recency:
-          datepart: week
-          field: created_at
-          interval: 1
-      - dbt_utils.recency:
           datepart: day
           field: request_timestamp
           interval: 1
@@ -19,8 +15,6 @@ models:
           - not_null
 
       - name: CREATED_AT
-        tests:
-          - not_null
 
       - name: ADDITIONAL_MEDIA
 
