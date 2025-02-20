@@ -116,6 +116,8 @@ models:
 
       - name: WEBSITE_ID  
 
+      - name: RESPONSE_JSON
+
       - name: DIM_STOREFRONT_ITEMS_ID
         tests:
           - not_null
