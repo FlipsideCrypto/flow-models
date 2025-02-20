@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = "storefront_item_id",
+    unique_key = "item_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
