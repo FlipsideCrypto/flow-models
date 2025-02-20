@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = "storefront_item_id",
+    unique_key = "item_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
@@ -30,9 +30,6 @@ WHERE
     )
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY item_id
-ORDER BY
-    _inserted_timestamp DESC)) = 1
 )
 SELECT
     item_id,
@@ -88,7 +85,7 @@ SELECT
     DATA :tokenType :: STRING AS token_type,
     DATA :updatedAt :: timestamp_ntz AS updated_at,
     DATA :websiteId :: STRING AS website_id,
-
+    DATA AS response_json,
     partition_key,
     INDEX,
     _inserted_timestamp,
@@ -100,3 +97,8 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     silver_responses
+
+
+qualify(ROW_NUMBER() over (PARTITION BY item_id
+ORDER BY
+    _inserted_timestamp DESC)) = 1

@@ -57,6 +57,7 @@ SELECT
     token_type,
     updated_at,
     website_id,
+    response_json,
     storefront_item_id AS dim_storefront_items_id,
     inserted_timestamp,
     modified_timestamp,
