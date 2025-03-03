@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: scores__known_event_names
+    description: "This table contains a de-duplicated list of event names mapped to their scoring category. Sourced from curated models."
