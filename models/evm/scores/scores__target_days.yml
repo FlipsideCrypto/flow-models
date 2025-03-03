@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: scores__target_days
+    description: "This table contains the target days for the scores package. It is used to score events for the target days."

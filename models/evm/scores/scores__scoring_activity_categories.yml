@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: scores__scoring_activity_categories
+    description: "This table contains the scoring activity categories for the scores package."

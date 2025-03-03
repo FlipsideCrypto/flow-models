@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: scores__event_sigs
+    description: "This table contains a de-duplicated list of event signatures for EVM chains from the complete_event_abis model."

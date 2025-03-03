@@ -174,3 +174,14 @@ sources:
     schema: bronze_public
     tables:
       - name: user_abis
+
+  - name: data_science_silver
+    database: datascience
+    schema: silver
+    tables:
+      - name: evm_wrapped_assets
+      - name: scoring_activity_categories
+      - name: evm_known_event_sigs
+      - name: evm_known_event_names
+      - name: evm_event_sigs
+      - name: dates
