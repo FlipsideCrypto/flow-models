@@ -41,6 +41,7 @@ WHERE
         FROM
             {{ this }}
     )
+    AND _partition_by_block_id > 107700000
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
 {% endif %}
