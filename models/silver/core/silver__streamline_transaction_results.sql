@@ -13,8 +13,6 @@ SELECT
     block_number,
     id AS tx_id,
     DATA: error_message :: STRING AS error_message,
-    DATA: events :: ARRAY AS events,
-    DATA :status :: INT AS status,
     DATA :status_code :: INT AS status_code,
     _partition_by_block_id,
     _inserted_timestamp,
@@ -41,7 +39,8 @@ WHERE
         FROM
             {{ this }}
     )
-    AND _partition_by_block_id > 107700000
+    -- AND _partition_by_block_id > 107700000 -- march 27th 2025
+    AND _partition_by_block_id > 108000000 -- march 28th 2025
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
 {% endif %}
