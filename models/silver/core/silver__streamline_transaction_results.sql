@@ -13,6 +13,8 @@ SELECT
     block_number,
     id AS tx_id,
     DATA: error_message :: STRING AS error_message,
+    DATA :events :: ARRAY AS events,
+    DATA :status :: INT AS status,
     DATA :status_code :: INT AS status_code,
     _partition_by_block_id,
     _inserted_timestamp,

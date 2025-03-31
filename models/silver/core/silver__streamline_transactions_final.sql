@@ -18,7 +18,7 @@
                     block_height
                 FROM """ ~ this ~ """
                 WHERE
-                    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    modified_timestamp >= SYSDATE() - INTERVAL '7 days'
                     AND (
                         block_timestamp IS NULL
                         OR pending_result_response
