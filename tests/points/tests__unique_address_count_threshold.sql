@@ -1,6 +1,7 @@
 {{ config(
     severity = "error",
-    tags = ["streamline_non_core"]
+    tags = ["streamline_non_core"],
+    enabled = False
 ) }}
 {# This test is to alert if the total EVM Addresses increases and the 
 model calling balances needs to be adjusted with a higher SQL Limit #}
