@@ -5,7 +5,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = {
             "external_table": "reward_points",
-            "sql_limit": "36000",
+            "sql_limit": "50000",
             "producer_batch_size": "3000",
             "worker_batch_size": "1500",
             "sql_source": "{{this.identifier}}"
@@ -19,6 +19,23 @@ WITH evm_addresses AS (
         DISTINCT address AS address
     FROM
         {{ ref('streamline__evm_addresses') }}
+),
+complete_addresses AS (
+    SELECT
+        DISTINCT address
+    FROM
+        {{ ref('streamline__reward_points_complete') }}
+    WHERE
+        request_date = SYSDATE() :: DATE
+),
+addresses_to_query AS (
+    SELECT
+        a.address
+    FROM
+        evm_addresses a
+    LEFT JOIN complete_addresses b on a.address = b.address
+    WHERE 
+        b.address is null       
 )
 SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
@@ -35,4 +52,4 @@ SELECT
         'Vault/prod/flow/points-api/prod'
     ) AS request
 FROM
-    evm_addresses
+    addresses_to_query

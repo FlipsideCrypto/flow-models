@@ -1,14 +1,13 @@
-name: dbt_run_scheduled_reward_points_silver
-run-name: dbt_run_scheduled_reward_points_silver
+name: dbt_run_scheduled_reward_points_realtime_2
+run-name: dbt_run_scheduled_reward_points_realtime_2
 
 on:
   workflow_dispatch:
   schedule:
-    # Daily at 04:00 UTC
-    - cron: "0 4 * * *"
+    # Daily at 02:00 UTC
+    - cron: "0 2 * * *"
 
 env:
-  SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
   USE_VARS: "${{ vars.USE_VARS }}"
   DBT_PROFILES_DIR: "${{ vars.DBT_PROFILES_DIR }}"
   DBT_VERSION: "${{ vars.DBT_VERSION }}"
@@ -20,6 +19,9 @@ env:
   DATABASE: "${{ vars.DATABASE }}"
   WAREHOUSE: "${{ vars.WAREHOUSE }}"
   SCHEMA: "${{ vars.SCHEMA }}"
+  FLOW_POINTS_URL: "${{ secrets.FLOW_POINTS_URL }}"
+  PRIVATE_KEY: "${{ secrets.PRIVATE_KEY }}"
+  PUBLIC_ADDRESS: "${{ secrets.PUBLIC_ADDRESS }}"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -41,18 +43,9 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
-      - name: Run DBT Jobs
+      - name: Request User Points Balances
         run: >
-          dbt run -s tag:streamline_non_core
-
-      - name: Test DBT Models
-        run: >
-          dbt test -s tag:streamline_non_core
-        continue-on-error: true
-
-      - name: Log test results
-        run: |
-          python python/dbt_test_alert.py
+          dbt run -s 1+streamline__reward_points_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Store logs
         uses: actions/upload-artifact@v4
