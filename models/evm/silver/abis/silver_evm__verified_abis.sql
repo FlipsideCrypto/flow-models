@@ -26,6 +26,7 @@ WHERE _inserted_timestamp >= (
             ),
             '1970-01-01'
         )
+        FROM {{ this }}
 )
 {% else %}
     {{ ref('bronze_api__FR_contract_abis') }}
