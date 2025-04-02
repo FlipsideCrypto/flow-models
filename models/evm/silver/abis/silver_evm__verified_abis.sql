@@ -1,3 +1,5 @@
+-- depends_on: {{ ref('bronze_api__contract_abis') }}
+-- depends_on: {{ ref('bronze_api__FR_contract_abis') }}
 {{ config (
     materialized = "incremental",
     unique_key = "contract_address",
