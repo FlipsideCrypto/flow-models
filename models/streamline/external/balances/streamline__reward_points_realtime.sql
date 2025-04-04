@@ -19,6 +19,8 @@ WITH evm_addresses AS (
         DISTINCT address AS address
     FROM
         {{ ref('streamline__evm_addresses') }}
+    WHERE
+        address IS NOT null
 ),
 complete_addresses AS (
     SELECT
