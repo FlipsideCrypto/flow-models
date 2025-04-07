@@ -34,6 +34,9 @@ models:
       - name: POINTS
         description: "The number of points accrued by the account at the time of the request"
         tests:
+          - not_null:
+              where:
+                request_date > '2025-04-07'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
