@@ -1,5 +1,5 @@
-name: dbt_run_scheduled_reward_points_silver
-run-name: dbt_run_scheduled_reward_points_silver
+name: dbt_run_scheduled_streamline_non_core
+run-name: dbt_run_scheduled_streamline_non_core
 
 on:
   workflow_dispatch:
