@@ -1,11 +1,11 @@
-name: dbt_run_scheduled_reward_points_realtime_2
-run-name: dbt_run_scheduled_reward_points_realtime_2
+name: dbt_run_streamline_external_points_balances_realtime
+run-name: dbt_run_streamline_external_points_balances_realtime
 
 on:
   workflow_dispatch:
   schedule:
-    # Daily at 02:00 UTC
-    - cron: "0 2 * * *"
+    # Daily at 0, 1, 2, 3 UTC
+    - cron: "0 0,1,2,3 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"

@@ -1,5 +1,5 @@
-name: dbt_run_scheduled_reward_points_realtime
-run-name: dbt_run_scheduled_reward_points_realtime
+name: dbt_run_streamline_external_realtime
+run-name: dbt_run_streamline_external_realtime
 
 on:
   workflow_dispatch:
@@ -43,9 +43,9 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
-      - name: Request User Points Balances and Storefront Items
+      - name: Request Storefront Items
         run: >
-          dbt run -s 1+streamline__reward_points_realtime streamline__minting_assets_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
+          dbt run -s streamline__minting_assets_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Authenticate with Flow Points API
         run: |
