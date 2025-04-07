@@ -18,7 +18,7 @@
                     block_height
                 FROM """ ~ this ~ """
                 WHERE
-                    modified_timestamp >= SYSDATE() - INTERVAL '{{ var('RETRY_WINDOW', 7) }} days'
+                    modified_timestamp >= SYSDATE() - INTERVAL '""" ~ var('RETRY_WINDOW', 3) ~ """ days'
                     AND (
                         block_timestamp IS NULL
                         OR pending_result_response
@@ -43,7 +43,7 @@
                 )
                 OR -- re-run record if block comes in later than tx records
                 (
-                    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    modified_timestamp >= SYSDATE() - INTERVAL '""" ~ var('RETRY_WINDOW', 3) ~ """ days'
                     AND
                     tx_id IN (
                         SELECT
@@ -81,7 +81,7 @@ tx_results AS (
 
 {% if is_incremental() %}
 WHERE
-    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
+    modified_timestamp >= SYSDATE() - INTERVAL '{{ var('RETRY_WINDOW', 3) }} days'
     AND tx_id IN (
         SELECT
             DISTINCT tx_id
