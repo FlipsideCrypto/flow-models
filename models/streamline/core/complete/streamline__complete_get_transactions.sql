@@ -10,7 +10,6 @@
 
 SELECT
     id,
-    data,
     block_number,
     _partition_by_block_id,
     _inserted_timestamp
