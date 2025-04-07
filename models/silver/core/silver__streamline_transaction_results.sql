@@ -30,6 +30,10 @@ FROM
         {{ ref('bronze__streamline_transaction_results_history') }}
         -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
         -- where inserted timestamp >= max from this where network version = backfill version OR block range between root and end
+{% elif var('MANUAL_FIX', False) %}
+    {{ ref('bronze__streamline_fr_transaction_results') }}
+    WHERE 
+        _partition_by_block_id BETWEEN var('RANGE_START', 0) AND var('RANGE_END', 0)
 {% else %}
 
 {% if is_incremental() %}
