@@ -45,11 +45,15 @@ WHERE
         FROM
             {{ this }}
     )
+    AND 
+        OCTET_LENGTH(DATA) < 16777216
     -- AND _partition_by_block_id > 107700000 -- march 27th 2025
     -- AND _partition_by_block_id > 108000000 -- march 28th 2025
     -- AND _partition_by_block_id > 108800000 -- april 5th 2025
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
+    WHERE 
+        OCTET_LENGTH(DATA) < 16777216
 {% endif %}
 
 {% endif %}
