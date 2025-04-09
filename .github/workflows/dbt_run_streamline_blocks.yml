@@ -45,4 +45,4 @@ jobs:
 
       - name: Run DBT Realtime
         run: |
-          dbt run -s 1+streamline__get_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": True}'
+          dbt run -s 1+streamline__get_blocks_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": False}'

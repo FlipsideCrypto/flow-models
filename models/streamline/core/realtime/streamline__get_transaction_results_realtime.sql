@@ -7,12 +7,17 @@
     tags = ['streamline_realtime']
 ) }}
 
-WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
+WITH last_3_days AS (
+{% if var('STREAMLINE_RUN_HISTORY') %}
 
     SELECT
         MAX(root_height) AS block_height
     FROM
         {{ ref('seeds__network_version') }}
+    {% elif var('STREAMLINE_BACKFILL', False) %}
+    SELECT
+        107600000 AS block_height
+    
     {% else %}
     SELECT
         MAX(block_height) - 210000 AS block_height
