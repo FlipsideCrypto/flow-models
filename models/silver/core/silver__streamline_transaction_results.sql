@@ -34,6 +34,8 @@ FROM
     {{ ref('bronze__streamline_fr_transaction_results') }}
     WHERE 
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
+        and  
+        OCTET_LENGTH(DATA) < 16777216
 {% else %}
 
 {% if is_incremental() %}
