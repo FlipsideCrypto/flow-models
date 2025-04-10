@@ -34,6 +34,8 @@ FROM
     {{ ref('bronze__streamline_fr_transaction_results') }}
     WHERE 
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
+        and  
+        OCTET_LENGTH(DATA) < 16777216
 {% else %}
 
 {% if is_incremental() %}
@@ -50,11 +52,10 @@ WHERE
     -- AND _partition_by_block_id > 107700000 -- march 27th 2025
     -- AND _partition_by_block_id > 108000000 -- march 28th 2025
     -- AND _partition_by_block_id > 108800000 -- april 5th 2025
-{% elif var('MANUAL_FIX', False) %}
+{% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
     WHERE 
-        _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
-        AND OCTET_LENGTH(DATA) < 16777216
+        OCTET_LENGTH(DATA) < 16777216
 {% endif %}
 
 {% endif %}
