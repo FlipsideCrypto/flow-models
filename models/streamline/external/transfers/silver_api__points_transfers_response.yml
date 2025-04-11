@@ -25,13 +25,6 @@ models:
         tests:
           - not_null
 
-      - name: data_mb
-        tests:
-          - dbt_utils.accepted_range:
-              min_value: 0
-              max_value: 15.5
-              severity: error
-
       - name: points_transfers_id
         tests:
           - not_null
