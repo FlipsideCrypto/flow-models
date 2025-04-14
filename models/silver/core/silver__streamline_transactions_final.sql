@@ -100,7 +100,7 @@ blocks AS (
 
 {% if is_incremental() %}
 WHERE
-    modified_timestamp >= SYSDATE() - INTERVAL '3 days'
+    modified_timestamp >= SYSDATE() - INTERVAL '{{ var('RETRY_WINDOW', 3) }} days'
     AND block_number IN (
         SELECT
             DISTINCT block_number
