@@ -14,15 +14,36 @@
         MAX(partition_key)
     FROM
         {{ ref('bronze_api__points_transfers') }}
+    WHERE
+        TYPEOF(data) != 'NULL_VALUE'
 
         {% endset %}
         {% set max_partition_key = run_query(query) [0] [0] %}
+        {% set must_fr = False %}
         {% do log(
             "max_partition_key: " ~ max_partition_key,
             info = True
         ) %}
         {% if max_partition_key == '' or max_partition_key is none %}
-            {% do exceptions.raise_compiler_error("max_partition_key is not set. Aborting model execution.") %}
+            {% do log("No recent data found. Using FR table.", info = True) %}
+            {% set query %}
+
+            SELECT
+                MAX(partition_key)
+            FROM
+                {{ ref('bronze_api__FR_points_transfers') }}
+            WHERE
+                TYPEOF(data) != 'NULL_VALUE'
+
+            {% endset%}
+
+            {% set max_partition_key = run_query(query) [0] [0] %}
+            {% set must_fr = True %}
+            {% do log(
+                "max_partition_key: " ~ max_partition_key,
+                info = True
+            ) %}
+            {# {% do exceptions.raise_compiler_error("max_partition_key is not set. Aborting model execution.") %} #}
         {% endif %}
     {% endif %}
 
@@ -44,6 +65,10 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    {{ ref('bronze_api__points_transfers') }}
+    {% if must_fr %}
+        {{ ref('bronze_api__FR_points_transfers') }}
+    {% else %}
+        {{ ref('bronze_api__points_transfers') }}
+    {% endif %}
 WHERE
     partition_key = {{ max_partition_key }}
