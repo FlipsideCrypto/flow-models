@@ -44,3 +44,10 @@ jobs:
       - name: Update decoded tables
         run: |
           dbt run -s tag:evm_decoded_logs
+
+  notify-failure:
+    needs: [run_dbt_jobs]
+    if: failure()
+    uses: ./.github/workflows/slack_notify.yml
+    secrets:
+      EVM_SLACK_WEBHOOK_URL: ${{ secrets.EVM_SLACK_WEBHOOK_URL }}
