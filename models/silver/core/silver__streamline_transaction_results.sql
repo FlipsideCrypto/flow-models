@@ -53,3 +53,6 @@ WHERE
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
 
+qualify(ROW_NUMBER() over (PARTITION BY tx_id
+ORDER BY
+    _inserted_timestamp DESC)) = 1
