@@ -39,7 +39,7 @@ FROM
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
         and tx_id in ( 
             select id from {{ ref('bronze__streamline_fr_transactions') }}
-            where inserted_timestamp :: DATE > '2025-02-01'
+            where _inserted_timestamp :: DATE > '2025-02-01'
             and id not in (
                 select tx_id from {{ this }}
             )
@@ -57,7 +57,7 @@ WHERE
     )
     AND tx_id in (
         select id from {{ ref('bronze__streamline_transactions') }}
-        where inserted_timestamp :: DATE > '2025-02-01'
+        where _inserted_timestamp :: DATE > '2025-02-01'
         and id not in (
             select tx_id from {{ this }}
         )
@@ -66,7 +66,7 @@ WHERE
     {{ ref('bronze__streamline_fr_transaction_results') }}
         WHERE tx_id in (
             select id from {{ ref('bronze__streamline_fr_transactions') }}
-            where inserted_timestamp :: DATE > '2025-02-01'
+            where _inserted_timestamp :: DATE > '2025-02-01'
             and id not in (
                 select tx_id from {{ this }}
             )
