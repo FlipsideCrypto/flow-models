@@ -25,7 +25,6 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id  
 FROM
-
 {% if var('LOAD_BACKFILL', False) %}
         {{ ref('bronze__streamline_transaction_results_history') }}
         -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
@@ -34,8 +33,6 @@ FROM
     {{ ref('bronze__streamline_fr_transaction_results') }}
     WHERE 
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
-        and  
-        OCTET_LENGTH(DATA) < 16777216
 {% else %}
 
 {% if is_incremental() %}
@@ -47,15 +44,11 @@ WHERE
         FROM
             {{ this }}
     )
-    AND 
-        OCTET_LENGTH(DATA) < 16777216
     -- AND _partition_by_block_id > 107700000 -- march 27th 2025
     -- AND _partition_by_block_id > 108000000 -- march 28th 2025
     -- AND _partition_by_block_id > 108800000 -- april 5th 2025
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
-    WHERE 
-        OCTET_LENGTH(DATA) < 16777216
 {% endif %}
 
 {% endif %}
