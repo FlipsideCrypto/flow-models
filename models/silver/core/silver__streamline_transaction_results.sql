@@ -37,13 +37,13 @@ FROM
     {{ ref('bronze__streamline_fr_transaction_results') }}
     WHERE 
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
-        and tx_id in ( 
-            select id from {{ ref('bronze__streamline_fr_transactions') }}
-            where _inserted_timestamp :: DATE > '2025-02-01'
-            and id not in (
-                select tx_id from {{ this }}
-            )
-        )
+    and tx_id in (
+        select distinct tx_id 
+        from {{ ref('silver__streamline_fr_transaction_results') }} 
+        where inserted_timestamp :: DATE > '2025-02-01'
+        and pending_result_response = TRUE
+        and inserted_timestamp < sysdate() - interval '3 hours'
+    )
 {% else %}
 
 {% if is_incremental() %}
@@ -55,22 +55,13 @@ WHERE
         FROM
             {{ this }}
     )
-    AND tx_id in (
-        select id from {{ ref('bronze__streamline_transactions') }}
-        where _inserted_timestamp :: DATE > '2025-02-01'
-        and id not in (
-            select tx_id from {{ this }}
-        )
-    )
+
+    -- AND _partition_by_block_id > 107700000 -- march 27th 2025
+    -- AND _partition_by_block_id > 108000000 -- march 28th 2025
+    -- AND _partition_by_block_id > 108800000 -- april 5th 2025
 {% else %}
     {{ ref('bronze__streamline_fr_transaction_results') }}
-        WHERE tx_id in (
-            select id from {{ ref('bronze__streamline_fr_transactions') }}
-            where _inserted_timestamp :: DATE > '2025-02-01'
-            and id not in (
-                select tx_id from {{ this }}
-            )
-        )
+
 {% endif %}
 
 {% endif %}
