@@ -24,6 +24,7 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id  
+FROM
 {% if var('LOAD_BACKFILL', False) %}
         {{ ref('bronze__streamline_transaction_results_history') }}
         -- TODO need incremental logic of some sort probably (for those 5800 missing txs)
