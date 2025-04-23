@@ -39,7 +39,7 @@ FROM
         _partition_by_block_id BETWEEN {{ var('RANGE_START', 0) }} AND {{ var('RANGE_END', 0) }}
     and tx_id in (
         select distinct tx_id 
-        from {{ ref('silver__streamline_fr_transaction_results') }} 
+        from {{ ref('silver__streamline_transactions_final') }} 
         where inserted_timestamp :: DATE > '2025-02-01'
         and pending_result_response = TRUE
         and inserted_timestamp < sysdate() - interval '3 hours'
