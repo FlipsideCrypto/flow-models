@@ -8,6 +8,7 @@ models:
           datepart: day
           field: request_timestamp
           interval: 1
+          severity: warn
 
     columns:
       - name: ITEM_ID
