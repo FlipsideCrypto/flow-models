@@ -8,6 +8,7 @@ models:
           datepart: day
           field: request_date
           interval: 1
+          severity: warn
 
     columns:
       - name: BATCH_ID
