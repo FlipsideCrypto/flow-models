@@ -21,7 +21,7 @@ SELECT
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        '{Service}/api/minting/assets' || '?organizationId=' || '{organization_id}' || '&websiteId=' || '{website_id}' || '&limit=' || api_limit || '&includeDeleted=true',
+        '{Service}/api/minting/assets' || '?organizationId=' || '{organization_id}' || '&websiteId=' || '{website_id}' || '&limit=' || api_limit || '&includeDeleted=true' || '&includeMetadata=true',
         { 'x-api-key': '{Authentication}' },
         {},
         'Vault/prod/flow/snag-api'
