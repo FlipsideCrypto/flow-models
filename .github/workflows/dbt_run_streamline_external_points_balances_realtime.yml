@@ -1,5 +1,8 @@
 name: dbt_run_streamline_external_points_balances_realtime
 run-name: dbt_run_streamline_external_points_balances_realtime
+description: |
+  Retrieves points balances from the Flow API on a per-address basis by invoking the "streamline__reward_points_realtime" model.
+  This job runs multiple times per day due to the number of EVM addresses.
 
 on:
   workflow_dispatch:

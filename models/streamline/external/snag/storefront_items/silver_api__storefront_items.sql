@@ -64,7 +64,7 @@ SELECT
     DATA :loyaltyCurrencyId :: STRING AS loyalty_currency_id,
     DATA :metadataUri :: STRING AS metadata_uri,
     DATA :mintStatus :: STRING AS mint_status,
-    DATA :mintingContract :: STRING AS minting_contract,
+    DATA :mintingContract :: VARIANT AS minting_contract,
     DATA :mintingContractAssetMintStatus :: STRING AS minting_contract_asset_mint_status,
     DATA :mintingContractId :: STRING AS minting_contract_id,
     DATA :name :: STRING AS name,
