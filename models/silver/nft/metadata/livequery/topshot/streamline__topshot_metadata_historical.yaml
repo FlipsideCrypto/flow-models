@@ -20,7 +20,7 @@ models:
           url_column: base_url
           timeout: 45  
         target:
-          schema: bronze_streamline
+          schema: FLOW_DEV
           table: moments_minted_metadata_api  
           unique_key:
             - contract
