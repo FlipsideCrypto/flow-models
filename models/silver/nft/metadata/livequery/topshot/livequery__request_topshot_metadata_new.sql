@@ -17,6 +17,7 @@ WITH api_parameters AS (
         contract = 'A.0b2a3299cc857e29.TopShot'
 ),
 
+-- Find all moments that need metadata - focusing on post-August 2024 moments first
 moments_to_fetch AS (
     SELECT
         m.event_contract,
@@ -24,23 +25,32 @@ moments_to_fetch AS (
     FROM
         {{ ref('livequery__topshot_moments_metadata_needed') }} m
     LEFT JOIN (
-        SELECT
+        SELECT 
+            moment_id,
+            COUNT(*) AS failure_count
+        FROM 
+            {{ ref('livequery__null_moments_metadata') }}
+        GROUP BY 
+            moment_id
+    ) null_attempts
+    ON m.moment_id = null_attempts.moment_id
+    LEFT JOIN (
+        SELECT DISTINCT
             nft_id AS moment_id,
-            MAX(price) AS max_price
+            block_timestamp
         FROM
             {{ ref('nft__ez_nft_sales') }}
         WHERE
             nft_collection = 'A.0b2a3299cc857e29.TopShot'
-        GROUP BY
-            moment_id
-        ORDER BY
-            max_price DESC
-        LIMIT 500
-    ) s
-    ON m.moment_id = s.moment_id
+            AND block_timestamp >= '2024-08-01'
+    ) recent_txs
+    ON m.moment_id = recent_txs.moment_id
+    WHERE
+        COALESCE(null_attempts.failure_count, 0) < 3
     ORDER BY
-        s.max_price DESC NULLS LAST
-    LIMIT 100 
+        CASE WHEN recent_txs.moment_id IS NOT NULL THEN 0 ELSE 1 END,
+        recent_txs.block_timestamp DESC NULLS LAST
+    LIMIT 100 -- Process in batches to respect rate limits
 ),
 
 api_calls AS (
@@ -65,10 +75,12 @@ api_calls AS (
         CROSS JOIN moments_to_fetch m
 ),
 
+-- Execute the API calls using the UDF framework
 api_responses AS (
     SELECT
         event_contract,
         moment_id,
+        -- Call the UDF_API function with the prepared parameters
         flow.live.udf_api(
             'POST',
             base_url,
@@ -82,6 +94,7 @@ api_responses AS (
         api_calls
 )
 
+-- Return the results
 SELECT
     event_contract,
     moment_id,
