@@ -1,0 +1,150 @@
+version: 2
+
+models:
+  - name: nft__fact_topshot_buybacks
+    description: |-
+      This table captures NBA TopShot buyback activity - transactions where the TopShot buyback wallet purchases moments from users.
+      The model combines sales from both standard marketplace and Flowty, and includes a running total of amount spent over time.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: block_timestamp
+          interval: 3
+
+    columns:
+      - name: BLOCK_TIMESTAMP
+        description: "Timestamp of the block in Eastern time (America/New_York)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: BLOCK_DAY
+        description: "Date of the transaction, truncated to day"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+                - DATE
+
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: NFT_ID
+        description: "{{ doc('nft_id') }}"
+        tests:
+          - not_null
+
+      - name: PLAYER
+        description: "{{ doc('player') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TEAM
+        description: "{{ doc('team') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SEASON
+        description: "{{ doc('season') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: SET_NAME
+        description: "{{ doc('set_name') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: BUYER
+        description: "{{ doc('buyer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+          - accepted_values:
+              values: ['0xe1f2a091f7bb5245']  # Enforces only the TopShot buyback wallet
+
+      - name: SELLER
+        description: "{{ doc('seller') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PRICE
+        description: "{{ doc('price') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DECIMAL
+
+      - name: Sale
+        description: "Counter field, always 1 representing a single sale transaction"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - INTEGER
+
+      - name: total
+        description: "Running total of all buyback purchases up to this transaction"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+                - DECIMAL
+
+      - name: URL
+        description: "Direct link to the TopShot moment on the website"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TOPSHOT_BUYBACK_ID
+        description: "{{ doc('pk_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
