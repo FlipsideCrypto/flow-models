@@ -1,6 +1,18 @@
-{{ config(
-    materialized = 'view',
-    tags = ['streamline', 'topshot', 'moment_metadata']
+{{ config (
+    materialized = "view",
+    tags = ['streamline', 'topshot', 'moment_metadata'],
+    post_hook = fsc_utils.if_data_call_function_v2(
+        func = '{{this.schema}}.udf_bulk_rest_api_v2',
+        target = "{{this.schema}}.{{this.identifier}}",
+        params = {
+            "external_table": "moments_minted_metadata_api",
+            "sql_limit": "50",
+            "producer_batch_size": "100",
+            "worker_batch_size": "100",
+            "sql_source": "{{this.identifier}}",
+            "async_concurrent_requests": "5"
+        }
+    )
 ) }}
 
 WITH api_parameters AS (
@@ -50,13 +62,25 @@ moments_to_fetch AS (
 )
 
 SELECT
+    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     m.event_contract AS contract,  
-    m.moment_id AS id,            
-    p.base_url,                   
-    OBJECT_CONSTRUCT(
-        'query', p.query,
-        'variables', OBJECT_CONSTRUCT('momentId', m.moment_id)
-    ) AS payload
+    m.moment_id AS id,
+    {{ target.database }}.live.udf_api(
+        'POST',
+        p.base_url,
+        {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip',
+            'Connection': 'keep-alive',
+            'User-Agent': 'Flipside_Flow_metadata/0.1'
+        },
+        {
+            'query': p.query,
+            'variables': {'momentId': m.moment_id}
+        },
+        NULL
+    ) AS request
 FROM
     moments_to_fetch m
     CROSS JOIN api_parameters p
