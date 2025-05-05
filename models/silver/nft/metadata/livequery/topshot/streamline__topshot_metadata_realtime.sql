@@ -9,7 +9,7 @@ WITH api_parameters AS (
         base_url,
         query
     FROM
-        {{ ref('livequery__moments_parameters_new') }}
+        {{ ref('livequery__moments_parameters') }}
     WHERE
         contract = 'A.0b2a3299cc857e29.TopShot'
 ),
