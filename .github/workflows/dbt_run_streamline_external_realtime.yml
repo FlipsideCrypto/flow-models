@@ -1,5 +1,7 @@
 name: dbt_run_streamline_external_realtime
 run-name: dbt_run_streamline_external_realtime
+description: |
+  Runs Streamline jobs that query external APIs.
 
 on:
   workflow_dispatch:
@@ -43,17 +45,9 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
-      - name: Request Storefront Items
+      - name: Request Storefront Items and Transaction Entries from Snag API
         run: >
-          dbt run -s streamline__minting_assets_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
-
-      - name: Authenticate with Flow Points API
-        run: |
-          python python/points/authenticate.py
-
-      - name: Request Points Transfers
-        run: >
-          dbt run -s streamline__points_transfers_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
+          dbt run -s streamline__minting_assets_realtime 1+streamline__transaction_entries_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True}'
 
       - name: Store logs
         uses: actions/upload-artifact@v4
