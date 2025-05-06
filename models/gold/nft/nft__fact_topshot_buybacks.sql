@@ -1,13 +1,13 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    unique_key = "CONCAT_WS('-', tx_id, nft_id)",
-    cluster_by = ['block_timestamp::date'],
+    merge_exclude_columns = ['inserted_timestamp'],
+    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
+    unique_key = "topshot_buyback_id",
     tags = ['nft', 'topshot', 'scheduled'],
     meta = { 'database_tags': { 'table': { 'PURPOSE': 'NFT, TOPSHOT' } } }
 ) }}
-
-{% set test_date = "'2025-05-01'" %} -- i need to comment out later
 
 WITH flowty_sales AS (
   SELECT
@@ -20,7 +20,8 @@ WITH flowty_sales AS (
     'A.3cdbb3d569211ff3.NFTStorefrontV2' as marketplace,
     'FLOWTY' as sale_type,
     EVENT_DATA:nftType :: string as nft_collection,
-    EVENT_DATA:nftID :: string as nft_id
+    EVENT_DATA:nftID :: string as nft_id,
+    modified_timestamp
   FROM
     {{ ref('core__fact_events') }} AS events
   WHERE
@@ -30,10 +31,14 @@ WITH flowty_sales AS (
     AND EVENT_DATA:purchased :: string = 'true'
     AND CAST(EVENT_DATA:"salePrice" AS DECIMAL(18, 2)) > 0
     AND EVENT_DATA:nftType :: string = 'A.0b2a3299cc857e29.TopShot'
-    AND DATE_TRUNC('day', BLOCK_TIMESTAMP) = {{ test_date }}::DATE -- TEST DATE FILTER (i need to comment out later)
     
     {% if is_incremental() %}
-    AND BLOCK_TIMESTAMP >= (SELECT MAX(block_timestamp) FROM {{ this }})
+    AND modified_timestamp > (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
     {% endif %}
 ),
 
@@ -45,13 +50,19 @@ all_sales AS (
         seller AS seller,
         price AS price,
         nft_collection AS nft_collection,
-        nft_id AS nft_id
+        nft_id AS nft_id,
+        modified_timestamp
     FROM {{ ref('nft__ez_nft_sales') }} AS sales
     WHERE nft_collection = 'A.0b2a3299cc857e29.TopShot'
         AND TX_SUCCEEDED = TRUE
-        AND DATE_TRUNC('day', BLOCK_TIMESTAMP) = {{ test_date }}::DATE -- TEST DATE FILTER (i need to comment out later)        
+        
         {% if is_incremental() %}
-        AND BLOCK_TIMESTAMP >= (SELECT MAX(block_timestamp) FROM {{ this }})
+        AND modified_timestamp > (
+            SELECT
+                MAX(modified_timestamp)
+            FROM
+                {{ this }}
+        )
         {% endif %}
     
     UNION ALL
@@ -63,7 +74,8 @@ all_sales AS (
         seller AS seller,
         price AS price,
         nft_collection AS nft_collection,
-        nft_id AS nft_id
+        nft_id AS nft_id,
+        modified_timestamp
     FROM flowty_sales AS fs
 ),
 
@@ -78,7 +90,8 @@ all_sales AS (
             price AS price,
             1 as sale_count,
             ROW_NUMBER() OVER (PARTITION BY tx_id, nft_id ORDER BY block_timestamp) as rn,
-            SUM(price) OVER (ORDER BY block_timestamp ROWS UNBOUNDED PRECEDING) as running_total
+            SUM(price) OVER (ORDER BY block_timestamp ROWS UNBOUNDED PRECEDING) as running_total,
+            modified_timestamp
         FROM all_sales AS asales
         WHERE buyer = '0xe1f2a091f7bb5245'  -- Filtering for TopShot buyback wallet
     )
@@ -109,4 +122,3 @@ all_sales AS (
         ON s.nft_id = mm.nft_id
         AND ts.player IS NULL -- Only pull from moment_metadata if topshot_metadata is empty
     WHERE s.rn = 1  -- Deduplicate if needed
-    LIMIT 1000 -- i need to remove later

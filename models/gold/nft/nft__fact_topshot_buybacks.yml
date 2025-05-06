@@ -5,6 +5,17 @@ models:
     description: |-
       This table captures NBA TopShot buyback activity - transactions where the TopShot buyback wallet purchases moments from users.
       The model combines sales from both standard marketplace and Flowty, and includes a running total of amount spent over time.
+    config:
+      materialized: incremental
+      incremental_strategy: merge
+      merge_exclude_columns: ['inserted_timestamp']
+      cluster_by: ['block_timestamp::date', 'modified_timestamp::date']
+      unique_key: "topshot_buyback_id"
+      tags: ['nft', 'topshot', 'scheduled']
+      meta: 
+        database_tags: 
+          table: 
+            PURPOSE: 'NFT, TOPSHOT'
     tests:
       - dbt_utils.recency:
           datepart: day
@@ -12,7 +23,7 @@ models:
           interval: 3
 
     columns:
-      - name: BLOCK_TIMESTAMP
+      - name: block_timestamp
         description: "Timestamp of the block in Eastern time (America/New_York)"
         tests:
           - not_null
@@ -20,7 +31,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: BLOCK_DAY
+      - name: block_day
         description: "Date of the transaction, truncated to day"
         tests:
           - not_null
@@ -29,18 +40,18 @@ models:
                 - TIMESTAMP_NTZ
                 - DATE
 
-      - name: TX_ID
+      - name: tx_id
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
-      - name: NFT_ID
+      - name: nft_id
         description: "{{ doc('nft_id') }}"
         tests:
           - not_null
 
-      - name: PLAYER
-        description: "{{ doc('player') }}"
+      - name: player
+        description: "Player name from TopShot metadata or moment metadata"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -48,8 +59,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TEAM
-        description: "{{ doc('team') }}"
+      - name: team
+        description: "Team name from TopShot metadata or moment metadata"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -57,8 +68,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: SEASON
-        description: "{{ doc('season') }}"
+      - name: season
+        description: "Season from TopShot metadata or moment metadata"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -66,8 +77,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: SET_NAME
-        description: "{{ doc('set_name') }}"
+      - name: set_name
+        description: "Set name from TopShot metadata or moment metadata"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -75,8 +86,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: BUYER
-        description: "{{ doc('buyer') }}"
+      - name: buyer
+        description: "Buyer address (TopShot buyback wallet)"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -84,10 +95,10 @@ models:
                 - STRING
                 - VARCHAR
           - accepted_values:
-              values: ['0xe1f2a091f7bb5245']  # Enforces only the TopShot buyback wallet
+              values: ['0xe1f2a091f7bb5245']
 
-      - name: SELLER
-        description: "{{ doc('seller') }}"
+      - name: seller
+        description: "Seller address"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -95,8 +106,8 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: PRICE
-        description: "{{ doc('price') }}"
+      - name: price
+        description: "Price of the moment in USD"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -133,18 +144,23 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: TOPSHOT_BUYBACK_ID
-        description: "{{ doc('pk_id') }}"
+      - name: topshot_buyback_id
+        description: "Surrogate key generated from tx_id and nft_id"
         tests:
           - not_null
           - unique
 
-      - name: INSERTED_TIMESTAMP
-        description: "{{ doc('inserted_timestamp') }}"
+      - name: inserted_timestamp
+        description: "Timestamp when the record was inserted"
         tests:
           - not_null
 
-      - name: MODIFIED_TIMESTAMP
-        description: "{{ doc('modified_timestamp') }}"
+      - name: modified_timestamp
+        description: "Timestamp when the record was last modified"
+        tests:
+          - not_null
+
+      - name: _invocation_id
+        description: "Unique identifier for the dbt run that created this record"
         tests:
           - not_null
