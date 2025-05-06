@@ -2,10 +2,10 @@
     materialized = 'view',
     tags = ['streamline', 'topshot', 'moments_metadata', 'backfill'],
     post_hook = fsc_utils.if_data_call_function_v2(
-        func = '{{this.schema}}.udf_bulk_rest_api_v2',
-        target = "{{this.schema}}.{{this.identifier}}",
-        params = {
-            "external_table": "moments_minted_metadata_api",
+        func = 'flow_dev.streamline.udf_bulk_rest_api_v2',
+target = "streamline.flow_dev.{{this.identifier}}",
+params = {
+    "external_table": "streamline.flow_dev.moments_minted_metadata_api",  
             "sql_limit": "100",
             "producer_batch_size": "100",
             "worker_batch_size": "100",
@@ -21,7 +21,7 @@ WITH api_parameters AS (
         base_url,
         query
     FROM
-        {{ ref('livequery__moments_parameters_new') }}
+        {{ ref('livequery__moments_parameters') }}
     WHERE
         contract = 'A.0b2a3299cc857e29.TopShot'
 ),
@@ -72,26 +72,25 @@ moments_to_backfill AS (
      LIMIT {{ var('SQL_LIMIT', 100) }} 
 )
 
-SELECT
-    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
+    SELECT
+    TO_CHAR(TO_TIMESTAMP_NTZ(SYSDATE()), 'YYYY_MM_DD') AS partition_key,
     m.event_contract AS contract,
     m.moment_id AS id,
-    {{ target.database }}.live.udf_api(
-        'POST',
-        p.base_url,
-        {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip',
-            'Connection': 'keep-alive',
-            'User-Agent': 'Flipside_Flow_metadata/0.1'
-        },
-        {
-            'query': p.query,
-            'variables': {'momentId': m.moment_id}
-        },
-        NULL
-    ) AS request
+  {{ target.database }}.live.udf_api(
+    'POST',
+    p.base_url,
+    OBJECT_CONSTRUCT(
+      'Accept', 'application/json',
+      'Accept-Encoding', 'gzip',
+      'Connection', 'keep-alive',
+      'Content-Type', 'application/json',
+      'User-Agent', 'Flipside_Flow_metadata/0.1'
+    ),
+    OBJECT_CONSTRUCT(
+       'query', p.query,
+      'variables', OBJECT_CONSTRUCT('momentId', m.moment_id)
+    )
+) AS api_response
 FROM
     moments_to_backfill m
     CROSS JOIN api_parameters p

@@ -13,6 +13,7 @@ WITH mints AS (
     WHERE
         event_contract = 'A.0b2a3299cc857e29.TopShot'
         AND event_type = 'MomentMinted'
+    AND DATE(block_timestamp) BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE
 ),
 sales AS (
     SELECT
