@@ -3,10 +3,9 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id',
-    tags = ['streamline', 'topshot'],
-    full_refresh = False
+    tags = ['streamline', 'topshot']
 ) }}
-
+-- depends_on: {{ ref('bronze__streamline_topshot_metadata') }}
 WITH metadata_from_streamline AS (
 
     SELECT
@@ -30,8 +29,8 @@ WHERE
 {% endif %}
 )
 SELECT
-    moment_id AS nft_id,
-    contract AS nft_collection,
+    moment_id :: STRING AS nft_id,
+    contract :: STRING AS nft_collection,
     DATA :data :getMintedMoment :data :id :: STRING AS nbatopshot_id,
     DATA :data :getMintedMoment :data :flowSerialNumber :: NUMBER AS serial_number,
     DATA :data :getMintedMoment :data :setPlay :circulationCount :: NUMBER AS total_circulation,
@@ -51,7 +50,7 @@ SELECT
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['nft_id']
-    ) }} AS nft_moment_metadata_topshot_v2_id,
+    ) }} AS nft_topshot_metadata_v2_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
