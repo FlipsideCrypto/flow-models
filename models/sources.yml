@@ -132,6 +132,7 @@ sources:
       - name: contract_abis
       - name: evm_traces_v2
       - name: evm_decoded_logs
+      - name: topshot_metadata
 
   - name: crosschain_silver
     database: crosschain
