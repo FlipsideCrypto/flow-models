@@ -1,12 +1,6 @@
 {{ config (
     materialized = 'view',
-    meta={
-    'database_tags':{
-        'table': {
-            'PURPOSE': 'NFT, TOPSHOT'
-            }
-        }
-    },
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, TOPSHOT' }}},
     tag = ['scheduled']
 ) }}
 
@@ -31,11 +25,11 @@ WITH topshot AS (
         moment_stats_full,
         player_stats_game,
         player_stats_season_to_date,
-        nft_moment_metadata_topshot_id as dim_topshot_metadata_id,
+        nft_moment_metadata_topshot_id AS dim_topshot_metadata_id,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('silver__nft_topshot_metadata') }}
+        {{ ref('silver__nft_topshot_metadata_view') }}
 )
 SELECT
     *

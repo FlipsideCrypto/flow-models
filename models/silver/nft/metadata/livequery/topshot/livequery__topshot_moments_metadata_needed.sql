@@ -1,92 +1,73 @@
 {{ config(
-    materialized = 'view',
-    tags = ['livequery', 'topshot', 'moment_metadata']
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    cluster_by = ['_inserted_timestamp::DATE'],
+    unique_key = 'nft_id',
+    tags = ['livequery', 'topshot'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nbatopshot_id);",
+    full_refresh = False
 ) }}
+{# NFT Metadata from legacy process lives in external table, deleted CTE and set FR=False 
+to limit / avoid unnecessary table scans #}
 
-WITH mints AS (
+WITH metadata_lq AS (
 
     SELECT
-        event_contract,
-        event_data :momentID :: STRING AS moment_id
-    FROM
-        {{ ref('silver__nft_moments_s') }}
-    WHERE
-        event_contract = 'A.0b2a3299cc857e29.TopShot'
-        AND event_type = 'MomentMinted'
-    AND DATE(block_timestamp) BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE
-),
-sales AS (
-    SELECT
-        nft_collection AS event_contract,
-        nft_id AS moment_id
-    FROM
-        {{ ref('silver__nft_sales_s') }}
-    WHERE
-        nft_collection ILIKE '%topshot%'
-),
-all_topshots AS (
-    SELECT
-        event_contract,
-        moment_id
-    FROM
-        mints
-    UNION
-    SELECT
-        event_contract,
-        moment_id
-    FROM
-        sales
-),
-lq_always_null AS (
-    SELECT
+        _res_id,
+        'A.0b2a3299cc857e29.TopShot' AS contract,
         moment_id,
-        event_contract,
-        COUNT(1) AS num_times_null_resp
+        DATA :data :data :: variant AS DATA,
+        _inserted_timestamp
     FROM
-        {{ target.database }}.livequery.null_moments_metadata
-    WHERE
-        event_contract = 'A.0b2a3299cc857e29.TopShot'
-    GROUP BY
-        1,
-        2
-    HAVING
-        num_times_null_resp > 2
+        {{ ref('livequery__request_topshot_metadata') }}
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
 ),
-legacy_always_null AS (
+lq_final AS (
     SELECT
-        id,
-        contract,
-        COUNT(1) AS num_times_null_resp
+        moment_id AS nft_id,
+        contract AS nft_collection,
+        DATA :getMintedMoment :data :id :: STRING AS nbatopshot_id,
+        DATA :getMintedMoment :data :flowSerialNumber :: NUMBER AS serial_number,
+        DATA :getMintedMoment :data :setPlay :circulationCount :: NUMBER AS total_circulation,
+        DATA :getMintedMoment :data :play :description :: VARCHAR AS moment_description,
+        DATA :getMintedMoment :data :play :stats :playerName :: STRING AS player,
+        DATA :getMintedMoment :data :play :stats :teamAtMoment :: STRING AS team,
+        DATA :getMintedMoment :data :play :stats :nbaSeason :: STRING AS season,
+        DATA :getMintedMoment :data :play :stats :playCategory :: STRING AS play_category,
+        DATA :getMintedMoment :data :play :stats :playType :: STRING AS play_type,
+        DATA :getMintedMoment :data :play :stats :dateOfMoment :: TIMESTAMP AS moment_date,
+        DATA :getMintedMoment :data :set :flowName :: STRING AS set_name,
+        DATA :getMintedMoment :data :set :flowSeriesNumber :: NUMBER AS set_series_number,
+        DATA :getMintedMoment :data :play :assets :videos :: ARRAY AS video_urls,
+        DATA :getMintedMoment :data :play :stats :: OBJECT AS moment_stats_full,
+        DATA :getMintedMoment :data :play :statsPlayerGameScores :: OBJECT AS player_stats_game,
+        DATA :getMintedMoment :data :play :statsPlayerSeasonAverageScores :: OBJECT AS player_stats_season_to_date,
+        _inserted_timestamp
     FROM
-        {{ ref('streamline__null_moments_metadata') }}
+        metadata_lq
     WHERE
-        contract = 'A.0b2a3299cc857e29.TopShot'
-    GROUP BY
-        1,
-        2
-    HAVING
-        num_times_null_resp > 2
+        DATA :getMintedMoment :: STRING IS NOT NULL
 )
 SELECT
-    DISTINCT *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+            ['nft_id']
+        ) }} AS nft_moment_metadata_topshot_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id   
 FROM
-    all_topshots
-WHERE
-    moment_id NOT IN (
-        (
-            SELECT
-                nft_id AS moment_id
-            FROM
-                {{ target.database }}.silver.nft_topshot_metadata
-            UNION
-            SELECT
-                id AS moment_id
-            FROM
-                legacy_always_null
-            UNION
-            SELECT
-                moment_id
-            FROM
-                lq_always_null
-        )
-    )
+    lq_final qualify ROW_NUMBER() over (
+        PARTITION BY nft_id
+        ORDER BY
+            _inserted_timestamp DESC
+    ) = 1

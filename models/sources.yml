@@ -186,3 +186,9 @@ sources:
       - name: evm_known_event_names
       - name: evm_event_sigs
       - name: dates
+
+
+  - name: silver
+    schema: silver
+    tables:
+      - name: nft_topshot_metadata
