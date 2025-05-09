@@ -5,7 +5,7 @@
         func = '{{this.schema}}.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table": "topshot_metadata",
-        "sql_limit": "100",
+        "sql_limit": "500",
         "producer_batch_size": "100",
         "worker_batch_size": "100",
         "sql_source": "{{this.identifier}}",
