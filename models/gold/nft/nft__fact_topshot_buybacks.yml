@@ -5,17 +5,6 @@ models:
     description: |-
       This table captures NBA TopShot buyback activity - transactions where the TopShot buyback wallet purchases moments from users.
       The model combines sales from both standard marketplace and Flowty, and includes a running total of amount spent over time.
-    config:
-      materialized: incremental
-      incremental_strategy: merge
-      merge_exclude_columns: ['inserted_timestamp']
-      cluster_by: ['block_timestamp::date', 'modified_timestamp::date']
-      unique_key: "topshot_buyback_id"
-      tags: ['nft', 'topshot', 'scheduled']
-      meta: 
-        database_tags: 
-          table: 
-            PURPOSE: 'NFT, TOPSHOT'
     tests:
       - dbt_utils.recency:
           datepart: day
@@ -31,14 +20,14 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_day
-        description: "Date of the transaction, truncated to day"
+      - name: block_height
+        description: "Height of the block in the blockchain"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - TIMESTAMP_NTZ
-                - DATE
+                - NUMBER
+                - INTEGER
 
       - name: tx_id
         description: "{{ doc('tx_id') }}"
@@ -116,7 +105,7 @@ models:
                 - FLOAT
                 - DECIMAL
 
-      - name: Sale
+      - name: sale
         description: "Counter field, always 1 representing a single sale transaction"
         tests:
           - not_null

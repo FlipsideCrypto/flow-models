@@ -12,7 +12,7 @@
 WITH flowty_sales AS (
   SELECT
     tx_id AS tx_id,
-    CONVERT_TIMEZONE('UTC', 'America/New_York', BLOCK_TIMESTAMP) AS block_timestamp,
+    block_timestamp,
     EVENT_DATA:buyer :: string AS buyer,
     event_data:storefrontAddress :: string AS seller,
     CAST(EVENT_DATA:"salePrice" AS DECIMAL(18, 2)) AS price,
@@ -33,7 +33,7 @@ WITH flowty_sales AS (
     AND EVENT_DATA:nftType :: string = 'A.0b2a3299cc857e29.TopShot'
     
     {% if is_incremental() %}
-    AND modified_timestamp > (
+    AND modified_timestamp >= (
         SELECT
             MAX(modified_timestamp)
         FROM
@@ -57,7 +57,7 @@ all_sales AS (
         AND TX_SUCCEEDED = TRUE
         
         {% if is_incremental() %}
-        AND modified_timestamp > (
+        AND modified_timestamp >= (
             SELECT
                 MAX(modified_timestamp)
             FROM
@@ -98,7 +98,7 @@ all_sales AS (
 
     SELECT
         s.block_timestamp AS block_timestamp,
-        s.block_day AS block_day,
+        s.block_height AS block_height,
         s.tx_id AS tx_id,
         s.nft_id AS nft_id,
         COALESCE(ts.player, mm.metadata:player::string) as player,
@@ -108,7 +108,7 @@ all_sales AS (
         s.buyer AS buyer,
         s.seller AS seller,
         s.price AS price,
-        s.sale_count as "Sale",
+        s.sale_count as sale,
         s.running_total as total,
         CONCAT($$https://nbatopshot.com/moment/$$, s.nft_id) AS URL,
         {{ dbt_utils.generate_surrogate_key(['s.tx_id', 's.nft_id']) }} AS topshot_buyback_id,
