@@ -48,3 +48,10 @@ jobs:
       - name: Kick off decoded logs history, if there are new ABIs from users
         run: |
           dbt run-operation run_decoded_logs_history
+
+  notify-failure:
+    needs: [run_dbt_jobs]
+    if: failure()
+    uses: ./.github/workflows/slack_notify.yml
+    secrets:
+      EVM_SLACK_WEBHOOK_URL: ${{ secrets.EVM_SLACK_WEBHOOK_URL }}
