@@ -2,7 +2,7 @@ name: Slack Notification
 on:
   workflow_call:
     secrets:
-      EVM_SLACK_WEBHOOK_URL:
+      SLACK_WEBHOOK_URL:
         required: true
 
 jobs:
@@ -24,4 +24,4 @@ jobs:
       - name: Send Slack notification
         run: python python/slack_alert.py
         env:
-          EVM_SLACK_WEBHOOK_URL: ${{ secrets.EVM_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
