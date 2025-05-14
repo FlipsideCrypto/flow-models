@@ -46,3 +46,10 @@ jobs:
       - name: Run DBT Realtime
         run: |
           dbt run -s 1+streamline__get_transactions_realtime --vars '{"STREAMLINE_INVOKE_STREAMS": True, "STREAMLINE_RUN_HISTORY": False}'
+
+  notify-failure:
+    needs: [run_dbt_jobs]
+    if: failure()
+    uses: ./.github/workflows/slack_notify.yml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
