@@ -65,10 +65,10 @@ def send_alert(webhook_url):
         sys.exit(1)
 
 if __name__ == '__main__':
-    webhook_url = os.environ.get("EVM_SLACK_WEBHOOK_URL")
+    webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     
     if not webhook_url:
-        print("ERROR: EVM_SLACK_WEBHOOK_URL environment variable is required")
+        print("ERROR: SLACK_WEBHOOK_URL environment variable is required")
         sys.exit(1)
     
     send_alert(webhook_url)
