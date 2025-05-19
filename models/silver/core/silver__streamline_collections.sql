@@ -3,6 +3,7 @@
     materialized = 'incremental',
     unique_key = "collection_id",
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate", "block_number"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE', 'block_number'],
     tags = ['streamline_load', 'core', 'scheduled_core']

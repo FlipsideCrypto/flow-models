@@ -1,7 +1,7 @@
 -- depends_on: {{ ref('bronze__streamline_transaction_results') }}
 {{ config(
     materialized = 'incremental',
-    incremental_predicates = ['DBT_INTERNAL_DEST.block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
+    incremental_predicates = ["dynamic_range_predicate", "_partition_by_block_id"],
     unique_key = "tx_id",
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
