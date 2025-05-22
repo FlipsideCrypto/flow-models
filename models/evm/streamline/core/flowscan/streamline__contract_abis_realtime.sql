@@ -10,19 +10,25 @@
         "sql_source": "{{this.identifier}}" }
     )
 ) }}
-with verified_contracts as (
-    select address_hash AS contract_address from {{ ref('seeds__evm_verified_contracts') }}
+
+WITH verified_contracts AS (
+
+    SELECT
+        contract_address
+    FROM
+        {{ ref('bronze_evm_api__flowscan_verified_contracts') }}
     EXCEPT
-    select contract_address from {{ ref('streamline__complete_contract_abis') }}
+    SELECT
+        contract_address
+    FROM
+        {{ ref('streamline__complete_contract_abis') }}
 )
 SELECT
     contract_address,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
     {{ target.database }}.live.udf_api(
         'GET',
-        'https://evm.flowscan.io/api/v2/smart-contracts/' || contract_address,
-        {},
-        {}
+        'https://evm.flowscan.io/api/v2/smart-contracts/' || contract_address,{},{}
     ) AS request
 FROM
     verified_contracts
