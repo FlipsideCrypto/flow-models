@@ -99,7 +99,6 @@ layerzero_bridge_activity AS (
         m.block_timestamp,
         m.block_number,
         m.contract_address AS bridge_address,
-        -- Use contractAddress from the decoded log where available
         COALESCE(
             m.decoded_log:contractAddress::string,
             m.decoded_log:destinationContractAddress::string
@@ -107,21 +106,15 @@ layerzero_bridge_activity AS (
         t.token_address,
         t.token_symbol,
         t.token_amount,
-        -- Fees from fee events
         f.fee_amount AS amount_fee,
-        -- Use sourceAddress or sender from the decoded log
         COALESCE(
             m.decoded_log:sourceAddress::string,
             m.decoded_log:sender::string,
             tx.origin_from_address
         ) AS source_address,
-        -- Use destinationContractAddress for destination
         m.decoded_log:destinationContractAddress::string AS destination_address,
-        -- Message ID for tracking across chains
         m.decoded_log:messageId::string AS message_id,
-        -- Command ID for additional tracking
         m.decoded_log:commandId::string AS command_id,
-        -- Direction based on event name
         CASE 
             WHEN m.event_name = 'MessageApproved' THEN 'outbound'
             WHEN m.event_name = 'MessageExecuted' THEN 'inbound'
@@ -131,19 +124,15 @@ layerzero_bridge_activity AS (
                 END
             ELSE NULL 
         END AS direction,
-        -- Source chain from decoded log (text format)
         COALESCE(
             m.decoded_log:sourceChain::string,
             CASE WHEN m.event_name = 'MessageApproved' THEN 'flow' ELSE NULL END
         ) AS source_chain_name,
-        -- Destination chain from decoded log (text format)
         COALESCE(
             m.decoded_log:destinationChain::string,
             CASE WHEN m.event_name = 'MessageExecuted' THEN 'flow' ELSE NULL END
         ) AS destination_chain_name,
-        -- Include payload hash for message correlation
         m.decoded_log:payloadHash::string AS payload_hash,
-        -- Platform is always layerzero
         'layerzero' AS platform,
         m.modified_timestamp
     FROM
