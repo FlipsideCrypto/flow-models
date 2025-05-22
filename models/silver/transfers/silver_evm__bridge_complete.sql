@@ -50,8 +50,6 @@ layerzero AS (
     {% endif %}
 )
 
--- Add other bridge types here as they are implemented
--- UNION ALL other bridge sources
 
 SELECT
     tx_id,

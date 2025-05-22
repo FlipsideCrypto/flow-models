@@ -21,14 +21,14 @@ WITH layerzero_message_events AS (
     WHERE
         contract_address = '0xe432150cce91c13a887f7d836923d5597add8e31'
         AND event_name IN ('MessageApproved', 'MessageExecuted', 'ContractCall')
-        {% if is_incremental() %}
-        AND modified_timestamp >= (
-            SELECT
-                COALESCE(MAX(modified_timestamp), '1970-01-01'::timestamp)
-            FROM
-                {{ this }}
-        )
-        {% endif %}
+    {% if is_incremental() %}
+    AND modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+    {% endif %}
 ),
 
 -- Get fee events in the same transactions
@@ -158,7 +158,6 @@ SELECT
     source_address,
     destination_address,
     direction,
-    -- Map chain names to standardized blockchain names
     COALESCE(sc.blockchain, 
              CASE WHEN source_chain_name = 'flow' THEN 'flow_evm' 
                   ELSE source_chain_name 
