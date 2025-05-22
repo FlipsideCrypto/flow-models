@@ -132,6 +132,7 @@ sources:
       - name: contract_abis
       - name: evm_traces_v2
       - name: evm_decoded_logs
+      - name: topshot_metadata
 
   - name: crosschain_silver
     database: crosschain
@@ -185,3 +186,9 @@ sources:
       - name: evm_known_event_names
       - name: evm_event_sigs
       - name: dates
+
+
+  - name: silver
+    schema: silver
+    tables:
+      - name: nft_topshot_metadata

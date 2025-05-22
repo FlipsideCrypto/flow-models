@@ -4,22 +4,23 @@
     cluster_by = ['_inserted_timestamp::DATE'],
     unique_key = 'nft_id',
     tags = ['livequery', 'topshot'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nbatopshot_id);",
-    full_refresh = False
+    full_refresh = False,
+    enabled = false
 ) }}
-{# NFT Metadata from legacy process lives in external table, deleted CTE and set FR=False 
-to limit / avoid unnecessary table scans #}
+{# NFT Metadata from legacy process lives in external table, deleted CTE and set FR=False
+TO
 
-WITH metadata_lq AS (
-
-    SELECT
-        _res_id,
-        'A.0b2a3299cc857e29.TopShot' AS contract,
-        moment_id,
-        DATA :data :data :: variant AS DATA,
-        _inserted_timestamp
-    FROM
-        {{ ref('livequery__request_topshot_metadata') }}
+LIMIT
+    / avoid unnecessary TABLE scans #}
+    WITH metadata_lq AS (
+        SELECT
+            _res_id,
+            'A.0b2a3299cc857e29.TopShot' AS contract,
+            moment_id,
+            DATA :data :data :: variant AS DATA,
+            _inserted_timestamp
+        FROM
+            {{ ref('livequery__request_topshot_metadata') }}
 
 {% if is_incremental() %}
 WHERE
@@ -33,8 +34,8 @@ WHERE
 ),
 lq_final AS (
     SELECT
-        moment_id AS nft_id,
-        contract AS nft_collection,
+        moment_id :: STRING AS nft_id,
+        contract :: STRING AS nft_collection,
         DATA :getMintedMoment :data :id :: STRING AS nbatopshot_id,
         DATA :getMintedMoment :data :flowSerialNumber :: NUMBER AS serial_number,
         DATA :getMintedMoment :data :setPlay :circulationCount :: NUMBER AS total_circulation,
@@ -60,11 +61,11 @@ lq_final AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-            ['nft_id']
-        ) }} AS nft_moment_metadata_topshot_id,
+        ['nft_id']
+    ) }} AS nft_moment_metadata_topshot_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id   
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     lq_final qualify ROW_NUMBER() over (
         PARTITION BY nft_id
