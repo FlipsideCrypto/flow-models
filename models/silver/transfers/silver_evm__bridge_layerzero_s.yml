@@ -1,0 +1,178 @@
+version: 2
+
+models:
+  - name: silver_evm__bridge_layerzero_s
+    description: |-
+      This table parses transactions where tokens are bridged to or from the Flow EVM network using LayerZero messaging protocol.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_hash
+
+    columns:
+      - name: tx_hash
+        description: "Transaction hash"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "Block timestamp"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 3
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: block_number
+        description: "Block number"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: bridge_address
+        description: "The LayerZero endpoint contract address"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: contract_address
+        description: "The contract address involved in the cross-chain message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_address
+        description: "The address of the token being transferred (if applicable)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_symbol
+        description: "The symbol of the token being transferred (if applicable)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: amount
+        description: "The amount of tokens transferred (if applicable)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
+
+      - name: amount_fee
+        description: "The fee paid for this cross-chain message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - DOUBLE
+                - FLOAT
+
+      - name: source_address
+        description: "The address initiating the cross-chain message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: destination_address
+        description: "The destination address for the cross-chain message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: direction
+        description: "Direction of the bridge transaction (inbound or outbound)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: source_chain
+        description: "Source blockchain for the message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: destination_chain
+        description: "Destination blockchain for the message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: platform
+        description: "Bridge platform name (always 'layerzero')"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: message_id
+        description: "LayerZero message ID for cross-chain tracking"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: command_id
+        description: "LayerZero command ID for the message"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: payload_hash
+        description: "Hash of the message payload"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: bridge_layerzero_id
+        description: "Unique identifier for this record"
+        tests:
+          - not_null
+
+      - name: inserted_timestamp
+        description: "Timestamp when this record was inserted"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "Timestamp when this record was last modified"
+        tests:
+          - not_null
+
+      - name: _invocation_id
+        description: "Invocation ID for this dbt run"
