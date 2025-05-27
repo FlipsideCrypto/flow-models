@@ -7,16 +7,16 @@ models:
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - tx_hash
+            - tx_id
 
     columns:
-      - name: tx_hash
-        description: "Transaction hash"
+      - name: tx_id
+        description: "Transaction hash (unique for each bridge event)"
         tests:
           - not_null
 
       - name: block_timestamp
-        description: "Block timestamp"
+        description: "Block timestamp of the event"
         tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
@@ -26,8 +26,8 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_number
-        description: "Block number"
+      - name: block_height
+        description: "Block number of the event"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -44,14 +44,6 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: contract_address
-        description: "The contract address involved in the cross-chain message"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
       - name: token_address
         description: "The address of the token being transferred (if applicable)"
         tests:
@@ -60,16 +52,32 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: token_symbol
-        description: "The symbol of the token being transferred (if applicable)"
+      - name: token_name
+        description: "Name of the token (if available)"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-      - name: amount
-        description: "The amount of tokens transferred (if applicable)"
+      - name: token_symbol
+        description: "Symbol of the token (if available)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: decimals
+        description: "Token decimals (if available)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: gross_amount
+        description: "Gross amount sent or received in the transfer"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -78,7 +86,7 @@ models:
                 - FLOAT
 
       - name: amount_fee
-        description: "The fee paid for this cross-chain message"
+        description: "Fee amount for the transfer (if available)"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -86,24 +94,17 @@ models:
                 - DOUBLE
                 - FLOAT
 
-      - name: source_address
-        description: "The address initiating the cross-chain message"
+      - name: net_amount
+        description: "Net amount received after fees (if available)"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
+                - NUMBER
+                - DOUBLE
+                - FLOAT
 
-      - name: destination_address
-        description: "The destination address for the cross-chain message"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: direction
-        description: "Direction of the bridge transaction (inbound or outbound)"
+      - name: flow_wallet_address
+        description: "Flow wallet address involved in the transfer"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -126,6 +127,14 @@ models:
                 - STRING
                 - VARCHAR
 
+      - name: direction
+        description: "Direction of the bridge transaction (inbound or outbound)"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
       - name: platform
         description: "Bridge platform name (always 'layerzero')"
         tests:
@@ -135,32 +144,23 @@ models:
                 - STRING
                 - VARCHAR
 
-      - name: message_id
-        description: "LayerZero message ID for cross-chain tracking"
+      - name: transfer_guid
+        description: "Unique transfer identifier from LayerZero event logs"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
                 - VARCHAR
 
-      - name: command_id
-        description: "LayerZero command ID for the message"
+      - name: _inserted_timestamp
+        description: "Timestamp when this record was inserted (raw event)"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
-                - STRING
-                - VARCHAR
-
-      - name: payload_hash
-        description: "Hash of the message payload"
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
+                - TIMESTAMP_NTZ
 
       - name: bridge_layerzero_id
-        description: "Unique identifier for this record"
+        description: "Unique identifier for this record (surrogate key)"
         tests:
           - not_null
 

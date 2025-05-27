@@ -1,169 +1,194 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    cluster_by = ['block_timestamp::date'],
-    unique_key = 'tx_hash',
-    tags = ['bridge', 'scheduled']
+    cluster_by = ['_inserted_timestamp::date'],
+    unique_key = 'tx_id',
+    tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
-WITH layerzero_message_events AS (
-    -- Capture message events that indicate cross-chain activity
+WITH events AS (
     SELECT
-        tx_hash,
+        block_number AS block_height,
         block_timestamp,
-        block_number,
-        contract_address,
-        event_name,
-        decoded_log,
-        modified_timestamp
+        tx_hash AS tx_id,
+        event_index,
+        contract_address AS event_contract,
+        event_name AS event_type,
+        decoded_log AS event_data,
+        modified_timestamp,
+        inserted_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core_evm__ez_decoded_event_logs') }}
     WHERE
-        contract_address = '0xe432150cce91c13a887f7d836923d5597add8e31'
-        AND event_name IN ('MessageApproved', 'MessageExecuted', 'ContractCall')
-    {% if is_incremental() %}
+        contract_address = LOWER('0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398')
+        AND event_data IS NOT NULL
+
+{% if is_incremental() %}
     AND modified_timestamp >= (
         SELECT
             MAX(modified_timestamp)
         FROM
             {{ this }}
     )
-    {% endif %}
+{% endif %}
 ),
 
--- Get fee events in the same transactions
-fee_events AS (
+-- Process OFTSent events (outbound transfers)
+oft_sent_events AS (
     SELECT
-        e.tx_hash,
-        e.decoded_log:fee::number AS fee_amount,
-        e.event_name
+        tx_id,
+        block_timestamp,
+        block_height,
+        event_index,
+        event_contract AS bridge_contract,
+        event_data:amountSentLD::DOUBLE AS sent_amount,
+        event_data:amountReceivedLD::DOUBLE AS received_amount,
+        COALESCE(sent_amount - received_amount, 0) AS fee_amount,
+        LOWER(event_data:fromAddress::STRING) AS flow_wallet_address, 
+        event_data:dstEid::NUMBER AS dst_endpoint_id,
+        30362 AS src_endpoint_id,
+        event_data:guid::STRING AS transfer_guid,
+        'outbound' AS direction,
+        'layerzero' AS bridge,
+        _inserted_timestamp
     FROM
-        {{ ref('core_evm__ez_decoded_event_logs') }} e
-    JOIN
-        layerzero_message_events m ON e.tx_hash = m.tx_hash
+        events
     WHERE
-        e.contract_address = '0xe1844c5d63a9543023008d332bd3d2e6f1fe1043'
-        AND e.event_name = 'ExecutorFeePaid'
+        event_type = 'OFTSent'
 ),
 
--- Get token transfers in the same transactions
+-- Process OFTReceived events (inbound transfers)
+oft_received_events AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        event_index,
+        event_contract AS bridge_contract,
+        event_data:amountReceivedLD::DOUBLE AS received_amount,
+        0 AS fee_amount,
+        received_amount AS net_amount,
+        LOWER(event_data:toAddress::STRING) AS flow_wallet_address,
+        NULL AS dst_endpoint_id,
+        event_data:srcEid::NUMBER AS src_endpoint_id,
+        event_data:guid::STRING AS transfer_guid,
+        'inbound' AS direction,
+        'layerzero' AS bridge,
+        _inserted_timestamp
+    FROM
+        events
+    WHERE
+        event_type = 'OFTReceived'
+),
+
+combined_events AS (
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        event_index,
+        bridge_contract,
+        sent_amount AS gross_amount,
+        fee_amount,
+        received_amount AS net_amount,
+        flow_wallet_address,
+        src_endpoint_id,
+        dst_endpoint_id,
+        transfer_guid,
+        direction,
+        bridge,
+        _inserted_timestamp
+    FROM
+        oft_sent_events
+    
+    UNION ALL
+    
+    SELECT
+        tx_id,
+        block_timestamp,
+        block_height,
+        event_index,
+        bridge_contract,
+        received_amount AS gross_amount,
+        fee_amount,
+        net_amount,
+        flow_wallet_address,
+        src_endpoint_id,
+        dst_endpoint_id,
+        transfer_guid,
+        direction,
+        bridge,
+        _inserted_timestamp
+    FROM
+        oft_received_events
+),
+
+-- Join with token transfer data to get token information
 token_transfers AS (
     SELECT
-        t.tx_hash,
-        t.from_address AS token_from_address,
-        t.to_address AS token_to_address,
-        t.contract_address AS token_address,
-        t.symbol AS token_symbol,
-        t.amount AS token_amount,
-        ROW_NUMBER() OVER (PARTITION BY t.tx_hash ORDER BY t.amount DESC) AS rn
+        tx_hash AS tx_id,
+        contract_address AS token_address,
+        name AS token_name,
+        symbol AS token_symbol,
+        decimals,
+        event_index AS token_event_index,
+        ROW_NUMBER() OVER (PARTITION BY tx_hash ORDER BY event_index) AS rn
     FROM
-        {{ ref('core_evm__ez_token_transfers') }} t
-    JOIN
-        layerzero_message_events m ON t.tx_hash = m.tx_hash
-),
-
--- Join with transaction data to get origin addresses
-transactions AS (
-    SELECT
-        tx_hash,
-        from_address AS origin_from_address,
-        to_address AS origin_to_address
-    FROM
-        {{ ref('core_evm__fact_transactions') }}
+        {{ ref('core_evm__ez_token_transfers') }}
     WHERE
-        tx_hash IN (SELECT tx_hash FROM layerzero_message_events)
+        tx_hash IN (SELECT tx_id FROM combined_events)
+        
+{% if is_incremental() %}
+    AND modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
 ),
 
 endpoint_ids AS (
-    SELECT LOWER(blockchain) AS blockchain
+    SELECT endpoint_id, LOWER(blockchain) AS blockchain
     FROM {{ ref('seeds__layerzero_endpoint_ids') }}
 ),
 
--- Consolidate and classify bridge activity
-layerzero_bridge_activity AS (
+final AS (
     SELECT
-        m.tx_hash,
-        m.block_timestamp,
-        m.block_number,
-        m.contract_address AS bridge_address,
-        COALESCE(
-            m.decoded_log:contractAddress::string,
-            m.decoded_log:destinationContractAddress::string
-        ) AS contract_address,
-        t.token_address,
-        t.token_symbol,
-        t.token_amount,
-        f.fee_amount AS amount_fee,
-        COALESCE(
-            m.decoded_log:sourceAddress::string,
-            m.decoded_log:sender::string,
-            tx.origin_from_address
-        ) AS source_address,
-        m.decoded_log:destinationContractAddress::string AS destination_address,
-        m.decoded_log:messageId::string AS message_id,
-        m.decoded_log:commandId::string AS command_id,
+        ce.tx_id,
+        ce.block_timestamp,
+        ce.block_height,
+        ce.bridge_contract AS bridge_address,
+        COALESCE(tt.token_address, NULL) AS token_address,
+        tt.token_name,
+        tt.token_symbol,
+        tt.decimals,
+        ce.gross_amount,
+        ce.fee_amount AS amount_fee,
+        ce.net_amount,
+        ce.flow_wallet_address,
         CASE 
-            WHEN m.event_name = 'MessageApproved' THEN 'outbound'
-            WHEN m.event_name = 'MessageExecuted' THEN 'inbound'
-            WHEN m.event_name = 'ContractCall' THEN 
-                CASE WHEN m.decoded_log:destinationChain::string = 'flow' THEN 'inbound'
-                     ELSE 'outbound' 
-                END
-            ELSE NULL 
-        END AS direction,
-        COALESCE(
-            m.decoded_log:sourceChain::string,
-            CASE WHEN m.event_name = 'MessageApproved' THEN 'flow' ELSE NULL END
-        ) AS source_chain_name,
-        COALESCE(
-            m.decoded_log:destinationChain::string,
-            CASE WHEN m.event_name = 'MessageExecuted' THEN 'flow' ELSE NULL END
-        ) AS destination_chain_name,
-        m.decoded_log:payloadHash::string AS payload_hash,
-        'layerzero' AS platform,
-        m.modified_timestamp
+            WHEN ce.direction = 'outbound' THEN 'flow_evm' 
+            ELSE COALESCE(src.blockchain, 'other_chains')
+        END AS source_chain,
+        CASE 
+            WHEN ce.direction = 'inbound' THEN 'flow_evm' 
+            ELSE COALESCE(dst.blockchain, 'other_chains')
+        END AS destination_chain,
+        ce.direction,
+        ce.bridge AS platform,
+        ce.transfer_guid,
+        ce._inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(['ce.tx_id', 'ce.event_index']) }} AS bridge_layerzero_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
-        layerzero_message_events m
-    JOIN
-        transactions tx ON m.tx_hash = tx.tx_hash
-    LEFT JOIN
-        fee_events f ON m.tx_hash = f.tx_hash
-    LEFT JOIN
-        token_transfers t ON m.tx_hash = t.tx_hash AND t.rn = 1
+        combined_events ce
+        LEFT JOIN token_transfers tt ON ce.tx_id = tt.tx_id AND tt.rn = 1
+        LEFT JOIN endpoint_ids src ON src.endpoint_id = ce.src_endpoint_id
+        LEFT JOIN endpoint_ids dst ON dst.endpoint_id = ce.dst_endpoint_id
 )
 
-SELECT
-    tx_hash,
-    block_timestamp,
-    block_number,
-    bridge_address,
-    contract_address,
-    token_address,
-    token_symbol,
-    token_amount AS amount,
-    amount_fee,
-    source_address,
-    destination_address,
-    direction,
-    COALESCE(src.blockchain, 
-             CASE WHEN source_chain_name = 'flow' THEN 'flow_evm' 
-                  ELSE source_chain_name 
-             END) AS source_chain,
-    COALESCE(dst.blockchain, 
-             CASE WHEN destination_chain_name = 'flow' THEN 'flow_evm' 
-                  ELSE destination_chain_name 
-             END) AS destination_chain,
-    platform,
-    message_id,
-    command_id,
-    payload_hash,
-    {{ dbt_utils.generate_surrogate_key(['tx_hash']) }} AS bridge_layerzero_id,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    '{{ invocation_id }}' AS _invocation_id
-FROM
-    layerzero_bridge_activity lba
-LEFT JOIN
-    endpoint_ids src ON lba.source_chain_name = src.blockchain
-LEFT JOIN
-    endpoint_ids dst ON lba.destination_chain_name = dst.blockchain
+SELECT *
+FROM final
