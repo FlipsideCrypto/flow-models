@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: silver_evm__bridge_layerzero_s
+  - name: silver_evm__bridge_stargate_s
     description: |-
-      This table parses transactions where tokens are bridged to or from the Flow EVM network using LayerZero messaging protocol.
+      This table parses transactions where tokens are bridged to or from the Flow EVM network using the Stargate (LayerZero) messaging protocol.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -36,7 +36,7 @@ models:
                 - FLOAT
 
       - name: bridge_address
-        description: "The LayerZero endpoint contract address"
+        description: "The Stargate endpoint contract address"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -88,7 +88,7 @@ models:
                 - VARCHAR
 
       - name: source_chain
-        description: "Source blockchain for the message, mapped using LayerZero endpoint IDs seed."
+        description: "Source blockchain for the message, mapped using Stargate endpoint IDs seed."
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -96,7 +96,7 @@ models:
                 - VARCHAR
 
       - name: destination_chain
-        description: "Destination blockchain for the message, mapped using LayerZero endpoint IDs seed."
+        description: "Destination blockchain for the message, mapped using Stargate endpoint IDs seed."
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -112,7 +112,7 @@ models:
                 - VARCHAR
 
       - name: platform
-        description: "Bridge platform name (always 'layerzero')"
+        description: "Bridge platform name (always 'stargate')"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
@@ -121,7 +121,7 @@ models:
                 - VARCHAR
 
       - name: transfer_guid
-        description: "Unique transfer identifier from LayerZero event logs"
+        description: "Unique transfer identifier from Stargate event logs"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -135,7 +135,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: bridge_layerzero_id
+      - name: bridge_stargate_id
         description: "Unique identifier for this record (surrogate key)"
         tests:
           - not_null

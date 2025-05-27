@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     cluster_by = ['_inserted_timestamp::date'],
     unique_key = 'tx_id',
-    tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
+    tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core', 'stargate']
 ) }}
 
 {% if execute %}
@@ -69,7 +69,7 @@ oft_sent_events AS (
         30362 AS src_endpoint_id,
         event_data:guid::STRING AS transfer_guid,
         'outbound' AS direction,
-        'layerzero' AS bridge,
+        'stargate' AS bridge,
         _inserted_timestamp
     FROM
         events
@@ -93,7 +93,7 @@ oft_received_events AS (
         event_data:srcEid::NUMBER AS src_endpoint_id,
         event_data:guid::STRING AS transfer_guid,
         'inbound' AS direction,
-        'layerzero' AS bridge,
+        'stargate' AS bridge,
         _inserted_timestamp
     FROM
         events
@@ -197,7 +197,7 @@ final AS (
         '{{ invocation_id }}' AS _invocation_id
     FROM
         combined_events ce
-        LEFT JOIN token_transfers tt ON ce.tx_id = tt.tx_id AND tt.rn = 1
+        LEFT JOIN token_transfers tt ON ce.tx_id = tt.tx_id AND ce.gross_amount = tt.amount
         LEFT JOIN endpoint_ids src ON src.endpoint_id = ce.src_endpoint_id
         LEFT JOIN endpoint_ids dst ON dst.endpoint_id = ce.dst_endpoint_id
 )
