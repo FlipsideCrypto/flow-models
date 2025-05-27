@@ -6,6 +6,26 @@
     tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core']
 ) }}
 
+{% if execute %}
+
+{% if is_incremental() %}
+{% set query %}
+
+SELECT
+    MIN(block_timestamp) :: DATE AS block_timestamp
+FROM
+    {{ ref('core_evm__ez_decoded_event_logs') }}
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp) - INTERVAL '2 hours'
+        FROM
+            {{ this }}
+    ) {% endset %}
+    {% set min_block_date = run_query(query).columns [0].values() [0] %}
+{% endif %}
+{% endif %}
+
 WITH events AS (
     SELECT
         block_number AS block_height,
@@ -139,12 +159,7 @@ token_transfers AS (
         tx_hash IN (SELECT tx_id FROM combined_events)
         
 {% if is_incremental() %}
-    AND modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp)
-        FROM
-            {{ this }}
-    )
+AND block_timestamp :: DATE >= '{{min_block_date}}'
 {% endif %}
 ),
 
@@ -160,9 +175,6 @@ final AS (
         ce.block_height,
         ce.bridge_contract AS bridge_address,
         COALESCE(tt.token_address, NULL) AS token_address,
-        tt.token_name,
-        tt.token_symbol,
-        tt.decimals,
         ce.gross_amount,
         ce.fee_amount AS amount_fee,
         ce.net_amount,
