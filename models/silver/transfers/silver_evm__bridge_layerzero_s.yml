@@ -111,7 +111,7 @@ models:
                 - VARCHAR
 
       - name: source_chain
-        description: "Source blockchain for the message"
+        description: "Source blockchain for the message, mapped using LayerZero endpoint IDs seed."
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -119,7 +119,7 @@ models:
                 - VARCHAR
 
       - name: destination_chain
-        description: "Destination blockchain for the message"
+        description: "Destination blockchain for the message, mapped using LayerZero endpoint IDs seed."
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

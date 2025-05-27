@@ -74,22 +74,9 @@ transactions AS (
         tx_hash IN (SELECT tx_hash FROM layerzero_message_events)
 ),
 
--- Chain mapping based on text names from the decoded logs
-chain_names AS (
-    SELECT * FROM (
-        SELECT 'ethereum' as chain_name, 'ethereum' as blockchain UNION ALL
-        SELECT 'bsc' as chain_name, 'bnb' as blockchain UNION ALL
-        SELECT 'avalanche' as chain_name, 'avalanche' as blockchain UNION ALL
-        SELECT 'polygon' as chain_name, 'polygon' as blockchain UNION ALL
-        SELECT 'arbitrum' as chain_name, 'arbitrum' as blockchain UNION ALL
-        SELECT 'optimism' as chain_name, 'optimism' as blockchain UNION ALL
-        SELECT 'fantom' as chain_name, 'fantom' as blockchain UNION ALL
-        SELECT 'flow' as chain_name, 'flow_evm' as blockchain UNION ALL
-        SELECT 'celo' as chain_name, 'celo' as blockchain UNION ALL
-        SELECT 'gnosis' as chain_name, 'gnosis' as blockchain UNION ALL
-        SELECT 'core' as chain_name, 'core' as blockchain UNION ALL
-        SELECT 'base' as chain_name, 'base' as blockchain
-    )
+endpoint_ids AS (
+    SELECT LOWER(blockchain) AS blockchain
+    FROM {{ ref('seeds__layerzero_endpoint_ids') }}
 ),
 
 -- Consolidate and classify bridge activity
@@ -158,11 +145,11 @@ SELECT
     source_address,
     destination_address,
     direction,
-    COALESCE(sc.blockchain, 
+    COALESCE(src.blockchain, 
              CASE WHEN source_chain_name = 'flow' THEN 'flow_evm' 
                   ELSE source_chain_name 
              END) AS source_chain,
-    COALESCE(dc.blockchain, 
+    COALESCE(dst.blockchain, 
              CASE WHEN destination_chain_name = 'flow' THEN 'flow_evm' 
                   ELSE destination_chain_name 
              END) AS destination_chain,
@@ -177,6 +164,6 @@ SELECT
 FROM
     layerzero_bridge_activity lba
 LEFT JOIN
-    chain_names sc ON lba.source_chain_name = sc.chain_name
+    endpoint_ids src ON lba.source_chain_name = src.blockchain
 LEFT JOIN
-    chain_names dc ON lba.destination_chain_name = dc.chain_name
+    endpoint_ids dst ON lba.destination_chain_name = dst.blockchain
