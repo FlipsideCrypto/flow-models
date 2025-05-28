@@ -209,8 +209,8 @@ FINAL AS (
         ce.block_height,
         ce.bridge_contract AS bridge_address,
         COALESCE(
-            tt.token_address,
             ce.token_address,
+            tt.token_address,
             NULL
         ) AS token_address,
         ce.gross_amount,
