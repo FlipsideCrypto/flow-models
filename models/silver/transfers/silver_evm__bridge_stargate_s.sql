@@ -28,22 +28,36 @@ WHERE
 {% endif %}
 {% endif %}
 
-WITH events AS (
+WITH pools AS (
+
+    SELECT
+        pool_address,
+        LOWER(token_address) AS token_address
+    FROM
+        {{ ref('silver_evm__bridge_stargate_create_pool') }}
+),
+
+events AS (
     SELECT
         block_number AS block_height,
         block_timestamp,
         tx_hash AS tx_id,
         event_index,
         contract_address AS event_contract,
+        p.token_address,
         event_name AS event_type,
         decoded_log AS event_data,
         modified_timestamp,
         inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('core_evm__ez_decoded_event_logs') }}
+        {{ ref('core_evm__ez_decoded_event_logs') }} e
+        INNER JOIN pools p
+        ON e.contract_address = p.pool_address
+
     WHERE
         contract_address = LOWER('0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398')
         AND event_data IS NOT NULL
+        and block_timestamp >= '2025-05-26'
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
@@ -54,6 +68,7 @@ AND modified_timestamp >= (
 )
 {% endif %}
 ),
+
 -- Process OFTSent events (outbound transfers)
 oft_sent_events AS (
     SELECT
@@ -71,6 +86,7 @@ oft_sent_events AS (
         LOWER(
             event_data :fromAddress :: STRING
         ) AS flow_wallet_address,
+        token_address,
         event_data :dstEid :: NUMBER AS dst_endpoint_id,
         30362 AS src_endpoint_id,
         event_data :guid :: STRING AS transfer_guid,
@@ -96,6 +112,7 @@ oft_received_events AS (
         LOWER(
             event_data :toAddress :: STRING
         ) AS flow_wallet_address,
+        token_address,
         NULL AS dst_endpoint_id,
         event_data :srcEid :: NUMBER AS src_endpoint_id,
         event_data :guid :: STRING AS transfer_guid,
@@ -118,6 +135,7 @@ combined_events AS (
         fee_amount,
         received_amount AS net_amount,
         flow_wallet_address,
+        token_address,
         src_endpoint_id,
         dst_endpoint_id,
         transfer_guid,
@@ -137,6 +155,7 @@ combined_events AS (
         fee_amount,
         net_amount,
         flow_wallet_address,
+        token_address,
         src_endpoint_id,
         dst_endpoint_id,
         transfer_guid,
@@ -182,6 +201,7 @@ endpoint_ids AS (
     FROM
         {{ ref('seeds__layerzero_endpoint_ids') }}
 ),
+
 FINAL AS (
     SELECT
         ce.tx_id,
@@ -190,6 +210,7 @@ FINAL AS (
         ce.bridge_contract AS bridge_address,
         COALESCE(
             tt.token_address,
+            ce.token_address,
             NULL
         ) AS token_address,
         ce.gross_amount,
