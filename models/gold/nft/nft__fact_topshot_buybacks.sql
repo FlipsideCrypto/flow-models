@@ -21,7 +21,8 @@ WITH flowty_sales AS (
     'FLOWTY' as sale_type,
     EVENT_DATA:nftType :: string as nft_collection,
     EVENT_DATA:nftID :: string as nft_id,
-    modified_timestamp
+    modified_timestamp,
+    block_height
   FROM
     {{ ref('core__fact_events') }} AS events
   WHERE
@@ -51,7 +52,8 @@ all_sales AS (
         price AS price,
         nft_collection AS nft_collection,
         nft_id AS nft_id,
-        modified_timestamp
+        modified_timestamp,
+        block_height
     FROM {{ ref('nft__ez_nft_sales') }} AS sales
     WHERE nft_collection = 'A.0b2a3299cc857e29.TopShot'
         AND TX_SUCCEEDED = TRUE
@@ -75,7 +77,8 @@ all_sales AS (
         price AS price,
         nft_collection AS nft_collection,
         nft_id AS nft_id,
-        modified_timestamp
+        modified_timestamp,
+        block_height
     FROM flowty_sales AS fs
 ),
 
@@ -88,6 +91,7 @@ all_sales AS (
             buyer AS buyer,
             seller AS seller,
             price AS price,
+            block_height AS block_height,
             1 as sale_count,
             ROW_NUMBER() OVER (PARTITION BY tx_id, nft_id ORDER BY block_timestamp) as rn,
             SUM(price) OVER (ORDER BY block_timestamp ROWS UNBOUNDED PRECEDING) as running_total,
