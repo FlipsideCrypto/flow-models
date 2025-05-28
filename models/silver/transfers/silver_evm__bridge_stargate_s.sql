@@ -57,7 +57,6 @@ events AS (
     WHERE
         contract_address = LOWER('0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398')
         AND event_data IS NOT NULL
-        and block_timestamp >= '2025-05-26'
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
