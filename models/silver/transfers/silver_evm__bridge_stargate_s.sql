@@ -7,27 +7,7 @@
     unique_key = 'tx_id',
     tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core', 'stargate']
 ) }}
-{# {% if execute %}
 
-{% if is_incremental() %}
-{% set query %}
-
-SELECT
-    MIN(block_timestamp) :: DATE AS block_timestamp
-FROM
-    {{ ref('core_evm__ez_decoded_event_logs') }}
-WHERE
-    modified_timestamp >= (
-        SELECT
-            MAX(modified_timestamp) - INTERVAL '2 hours'
-        FROM
-            {{ this }}
-    ) {% endset %}
-    {% set min_block_date = run_query(query).columns [0].values() [0] %}
-{% endif %}
-{% endif %}
-
-#}
 WITH pools AS (
     SELECT
         pool_address,
@@ -59,6 +39,7 @@ events AS (
             'OFTReceived'
         )
         AND event_data IS NOT NULL
+        
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
@@ -68,6 +49,7 @@ AND modified_timestamp >= (
         {{ this }}
 )
 {% endif %}
+
 ),
 -- Process OFTSent events (outbound transfers)
 oft_sent_events AS (
@@ -165,37 +147,7 @@ combined_events AS (
     FROM
         oft_received_events
 ),
-{#
--- Join with token transfer data to get token information
-token_transfers AS (
-    SELECT
-        tx_hash AS tx_id,
-        contract_address AS token_address,
-        raw_amount AS amount,
-        NAME AS token_name,
-        symbol AS token_symbol,
-        decimals,
-        event_index AS token_event_index,
-        ROW_NUMBER() over (
-            PARTITION BY tx_hash
-            ORDER BY
-                event_index
-        ) AS rn
-    FROM
-        {{ ref('core_evm__ez_token_transfers') }}
-    WHERE
-        tx_hash IN (
-            SELECT
-                tx_id
-            FROM
-                combined_events
-        )
 
-{% if is_incremental() %}
-AND block_timestamp :: DATE >= '{{min_block_date}}'
-{% endif %}
-),
-#}
 endpoint_ids AS (
     SELECT
         endpoint_id,
@@ -236,9 +188,7 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    combined_events ce {# LEFT JOIN token_transfers tt
-    ON ce.tx_id = tt.tx_id
-    AND ce.gross_amount = tt.amount #}
+    combined_events ce 
     LEFT JOIN endpoint_ids src
     ON src.endpoint_id = ce.src_endpoint_id
     LEFT JOIN endpoint_ids dst
