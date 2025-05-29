@@ -7,8 +7,7 @@
     unique_key = 'tx_id',
     tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core', 'stargate']
 ) }}
-
-{% if execute %}
+{# {% if execute %}
 
 {% if is_incremental() %}
 {% set query %}
@@ -28,15 +27,14 @@ WHERE
 {% endif %}
 {% endif %}
 
+#}
 WITH pools AS (
-
     SELECT
         pool_address,
         LOWER(token_address) AS token_address
     FROM
         {{ ref('silver_evm__bridge_stargate_create_pool') }}
 ),
-
 events AS (
     SELECT
         block_number AS block_height,
@@ -50,12 +48,16 @@ events AS (
         modified_timestamp,
         inserted_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('core_evm__ez_decoded_event_logs') }} e
+        {{ ref('core_evm__ez_decoded_event_logs') }}
+        e
         INNER JOIN pools p
         ON e.contract_address = p.pool_address
-
     WHERE
-        contract_address = LOWER('0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398')
+        block_timestamp :: DATE >= '2025-01-29' -- first date of Stargate events
+        AND event_name IN (
+            'OFTSent',
+            'OFTReceived'
+        )
         AND event_data IS NOT NULL
 
 {% if is_incremental() %}
@@ -67,7 +69,6 @@ AND modified_timestamp >= (
 )
 {% endif %}
 ),
-
 -- Process OFTSent events (outbound transfers)
 oft_sent_events AS (
     SELECT
@@ -164,6 +165,7 @@ combined_events AS (
     FROM
         oft_received_events
 ),
+{#
 -- Join with token transfer data to get token information
 token_transfers AS (
     SELECT
@@ -193,62 +195,51 @@ token_transfers AS (
 AND block_timestamp :: DATE >= '{{min_block_date}}'
 {% endif %}
 ),
+#}
 endpoint_ids AS (
     SELECT
         endpoint_id,
         LOWER(blockchain) AS blockchain
     FROM
         {{ ref('seeds__layerzero_endpoint_ids') }}
-),
-
-FINAL AS (
-    SELECT
-        ce.tx_id,
-        ce.block_timestamp,
-        ce.block_height,
-        ce.bridge_contract AS bridge_address,
-        COALESCE(
-            ce.token_address,
-            tt.token_address,
-            NULL
-        ) AS token_address,
-        ce.gross_amount,
-        ce.fee_amount AS amount_fee,
-        ce.net_amount,
-        ce.flow_wallet_address,
-        CASE
-            WHEN ce.direction = 'outbound' THEN 'flow_evm'
-            ELSE COALESCE(
-                src.blockchain,
-                'other_chains'
-            )
-        END AS source_chain,
-        CASE
-            WHEN ce.direction = 'inbound' THEN 'flow_evm'
-            ELSE COALESCE(
-                dst.blockchain,
-                'other_chains'
-            )
-        END AS destination_chain,
-        ce.direction,
-        ce.bridge AS platform,
-        ce.transfer_guid,
-        ce._inserted_timestamp,
-        {{ dbt_utils.generate_surrogate_key(['ce.tx_id', 'ce.event_index']) }} AS bridge_layerzero_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
-    FROM
-        combined_events ce
-        LEFT JOIN token_transfers tt
-        ON ce.tx_id = tt.tx_id
-        AND ce.gross_amount = tt.amount
-        LEFT JOIN endpoint_ids src
-        ON src.endpoint_id = ce.src_endpoint_id
-        LEFT JOIN endpoint_ids dst
-        ON dst.endpoint_id = ce.dst_endpoint_id
 )
 SELECT
-    *
+    ce.tx_id,
+    ce.block_timestamp,
+    ce.block_height,
+    ce.bridge_contract AS bridge_address,
+    ce.token_address,
+    ce.gross_amount,
+    ce.fee_amount AS amount_fee,
+    ce.net_amount,
+    ce.flow_wallet_address,
+    CASE
+        WHEN ce.direction = 'outbound' THEN 'flow_evm'
+        ELSE COALESCE(
+            src.blockchain,
+            'other_chains'
+        )
+    END AS source_chain,
+    CASE
+        WHEN ce.direction = 'inbound' THEN 'flow_evm'
+        ELSE COALESCE(
+            dst.blockchain,
+            'other_chains'
+        )
+    END AS destination_chain,
+    ce.direction,
+    ce.bridge AS platform,
+    ce.transfer_guid,
+    ce._inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(['ce.tx_id', 'ce.event_index']) }} AS bridge_startgate_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    combined_events ce {# LEFT JOIN token_transfers tt
+    ON ce.tx_id = tt.tx_id
+    AND ce.gross_amount = tt.amount #}
+    LEFT JOIN endpoint_ids src
+    ON src.endpoint_id = ce.src_endpoint_id
+    LEFT JOIN endpoint_ids dst
+    ON dst.endpoint_id = ce.dst_endpoint_id

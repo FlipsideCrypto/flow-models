@@ -87,12 +87,12 @@ contract_reads AS (
         live.udf_api(
             'POST',
             CONCAT(
-                '{service}',
+                '{Service}',
                 '/',
                 '{Authentication}'
             ),{},
             rpc_request,
-            'Vault/prod/ethereum/quicknode/mainnet'
+            'Vault/prod/flow/quicknode/mainnet'
         ) AS read_output,
         SYSDATE() AS _inserted_timestamp
     FROM
