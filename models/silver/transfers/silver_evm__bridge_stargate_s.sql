@@ -4,7 +4,7 @@
     merge_exclude_columns = ['inserted_timestamp'],
     incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
     cluster_by = ['modified_timestamp::date'],
-    unique_key = 'tx_id',
+    unique_key = 'bridge_startgate_id',
     tags = ['bridge', 'scheduled', 'streamline_scheduled', 'scheduled_non_core', 'stargate']
 ) }}
 
