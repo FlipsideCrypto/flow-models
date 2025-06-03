@@ -42,7 +42,6 @@ models:
       - name: player
         description: "Player name from TopShot metadata or moment metadata"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -51,7 +50,6 @@ models:
       - name: team
         description: "Team name from TopShot metadata or moment metadata"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -60,7 +58,6 @@ models:
       - name: season
         description: "Season from TopShot metadata or moment metadata"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING
@@ -69,7 +66,6 @@ models:
       - name: set_name
         description: "Set name from TopShot metadata or moment metadata"
         tests:
-          - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - STRING

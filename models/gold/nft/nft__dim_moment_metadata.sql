@@ -39,7 +39,7 @@ WHERE
     AND metadata IS NOT NULL
 
 qualify ROW_NUMBER() over (
-    PARTITION BY dim_moment_metadata_id
+    PARTITION BY nft_id
     ORDER BY
         inserted_timestamp DESC
 ) = 1
