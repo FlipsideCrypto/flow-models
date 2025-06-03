@@ -126,4 +126,3 @@ all_sales AS (
         ON s.nft_id = mm.nft_id
         AND ts.player IS NULL -- Only pull from moment_metadata if topshot_metadata is empty
     WHERE s.rn = 1  -- Deduplicate if needed
-    and DIM_TOPSHOT_METADATA_ID is not null
