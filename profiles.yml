@@ -3,26 +3,26 @@ flow:
   outputs:
     dev:
       type: snowflake
-      account: "{{ env_var('ACCOUNT') }}"
-      user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
-      role: "{{ env_var('ROLE') }}"
-      schema: "{{ env_var('SCHEMA') }}"
-      region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE') }}"
-      warehouse: "{{ env_var('WAREHOUSE') }}"
+      account: vna27887.us-east-1
+      role: INTERNAL_DEV
+      user: sairaj@flipsidecrypto.com
+      authenticator: externalbrowser
+      region: us-east-1
+      database: FLOW_DEV
+      warehouse: DBT
+      schema: SILVER
       threads: 8
       client_session_keep_alive: False
     prod:
       type: snowflake
-      account: "{{ env_var('ACCOUNT') }}"
-      user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
-      role: "{{ env_var('ROLE') }}"
-      schema: "{{ env_var('SCHEMA') }}"
-      region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE') }}"
-      warehouse: "{{ env_var('WAREHOUSE') }}"
+      account: vna27887.us-east-1
+      role: DBT_CLOUD_FLOW
+      user: sairaj@flipsidecrypto.com
+      authenticator: externalbrowser
+      region: us-east-1
+      database: flow
+      warehouse: DBT
+      schema: SILVER
       threads: 8
       client_session_keep_alive: False
   config:
