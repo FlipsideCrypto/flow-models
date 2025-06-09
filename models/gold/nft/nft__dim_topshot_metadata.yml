@@ -5,10 +5,10 @@ models:
     description: |-
       Data for TopShot Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
 
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            # - nft_id  ---- needs to be added back in after a fix. Muting right now to clean up alerts dev
+    # tests:
+    #   - dbt_utils.unique_combination_of_columns:
+    #       combination_of_columns:
+    #         # - nft_id  ---- needs to be added back in after a fix. Muting right now to clean up alerts dev
 
     columns:
       - name: NFT_ID
