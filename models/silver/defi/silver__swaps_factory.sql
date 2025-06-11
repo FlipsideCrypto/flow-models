@@ -30,7 +30,6 @@ events AS (
     WHERE
         event_contract IN (SELECT pair_contract FROM increment_pairs)
         AND event_type = 'Swap'
-    AND block_timestamp >= CURRENT_DATE() - 1
 
     {% if is_incremental() %}
     AND modified_timestamp >= (

@@ -40,14 +40,13 @@ WHERE
 ),
 
 swaps_from_increment_factory AS (
-    -- Add your new increment swaps factory model
     SELECT
         block_height,
         block_timestamp,
         tx_id,
         swap_index,
         swap_contract,
-        'IncrementFi-CPAMM' AS platform, -- Set platform name for Increment Factory swaps
+        NULL AS platform,
         trader,
         token_in_amount,
         token_in_contract,
@@ -58,7 +57,7 @@ swaps_from_increment_factory AS (
         modified_timestamp AS _modified_timestamp,
         2 AS _priority -- Priority between aggregator and regular swaps
     FROM
-        {{ ref('silver__increment_swaps') }}
+        {{ ref('silver__swaps_factory') }}
 
 {% if is_incremental() %}
 WHERE
