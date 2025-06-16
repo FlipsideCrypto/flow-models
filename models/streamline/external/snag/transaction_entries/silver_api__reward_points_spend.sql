@@ -5,7 +5,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
     post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(user_wallet_address)" ],
-    tags = ['rewards_points_spend']
+    tags = ['rewards_points_spend', 'streamline_non_core']
 ) }}
 
 WITH silver_responses AS (
