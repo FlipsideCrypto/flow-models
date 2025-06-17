@@ -18,4 +18,4 @@ SELECT
 FROM
     distinct_count
 WHERE
-    ct > 110000
+    ct > 150000

@@ -192,3 +192,10 @@ sources:
     schema: silver
     tables:
       - name: nft_topshot_metadata
+
+  - name: flow_seeds
+    database: |
+      {{ "FLOW" if target.database == 'FLOW' else "FLOW_DEV" }}
+    schema: seeds
+    tables:
+      - name: transaction_entries

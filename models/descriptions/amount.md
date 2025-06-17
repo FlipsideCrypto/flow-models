@@ -1,5 +1,5 @@
 {% docs amount %}
 
-The amount of the asset involved in the transaction.
+Number of points transferred in the transaction.
 
 {% enddocs %}

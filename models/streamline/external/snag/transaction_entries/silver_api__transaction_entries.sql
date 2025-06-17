@@ -6,9 +6,33 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
-    tags = ['rewards_points_spend']
+    tags = ['rewards_points_spend', 'streamline_non_core']
 ) }}
 
+{% if var('STOREFRONT_INITIAL_RUN', false) %}
+
+SELECT
+    partition_key,
+    NULL AS entry_count,
+    NULL AS starting_after,
+    NULL AS api_limit,
+    NULL AS first_entry_id,
+    NULL AS last_entry_id,
+    TRY_PARSE_JSON(DATA) :createdAt :: timestamp_ntz AS created_at,
+    TRY_PARSE_JSON(DATA) :id :: STRING AS entry_id,
+    index_in_batch :: INTEGER AS INDEX,
+    TRY_PARSE_JSON(DATA) AS DATA,
+    _inserted_timestamp :: timestamp_ntz AS _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['entry_id', 'partition_key']
+    ) }} AS transaction_entries_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
+FROM
+    {{ source('flow_seeds', 'transaction_entries') }}
+
+{% else %}
 WITH bronze AS (
 
     SELECT
@@ -61,3 +85,4 @@ FROM
         input => DATA :data :: ARRAY
     ) 
 
+{% endif %}

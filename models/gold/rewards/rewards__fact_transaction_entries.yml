@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: rewards__fact_transaction_entries
+    description: "individual flow points transfer events flattened from responses from the snag transaction entries endpoint"
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: INSERTED_TIMESTAMP
+          interval: 1
+
+    columns:
+      - name: ENTRY_ID
+        description: '{{ doc("entry_id") }}'
+      - name: CREATED_AT
+        description: '{{ doc("created_at") }}'
+      - name: DIRECTION
+        description: '{{ doc("direction") }}'
+      - name: AMOUNT
+        description: '{{ doc("amount") }}'
+      - name: AMOUNT_START
+        description: '{{ doc("amount_start") }}'
+      - name: AMOUNT_END
+        description: '{{ doc("amount_end") }}'
+      - name: ACCOUNT_ID
+        description: '{{ doc("account_id") }}'
+      - name: USER_ID
+        description: '{{ doc("user_id") }}'
+      - name: USER_WALLET_ADDRESS
+        description: '{{ doc("user_wallet_address") }}'
+      - name: TRANSACTION_ID
+        description: '{{ doc("transaction_id") }}'
+      - name: DATA
+        description: '{{ doc("DATA") }}'
+      - name: PARTITION_KEY
+        description: '{{ doc("partition_key") }}'
+      - name: INDEX
+        description: '{{ doc("INDEX") }}'
+      - name: _INSERTED_TIMESTAMP
+        description: '{{ doc("_inserted_timestamp") }}'
+      - name: FACT_TRANSACTION_ENTRIES_ID
+        description: '{{ doc("pk_id") }}'
+      - name: INSERTED_TIMESTAMP
+        description: '{{ doc("inserted_timestamp") }}'
+      - name: MODIFIED_TIMESTAMP
+        description: '{{ doc("modified_timestamp") }}'

@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled_streamline_non_core
 on:
   workflow_dispatch:
   schedule:
-    # Daily at 04:00 UTC
-    - cron: "0 4 * * *"
+    # Daily at 06:00 UTC
+    - cron: "0 6 * * *"
 
 env:
   SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
