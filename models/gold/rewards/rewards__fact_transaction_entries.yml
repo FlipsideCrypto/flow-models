@@ -22,12 +22,6 @@ models:
         description: '{{ doc("amount_start") }}'
       - name: AMOUNT_END
         description: '{{ doc("amount_end") }}'
-      - name: IDEMPOTENCY_KEY
-        description: '{{ doc("idempotency_key") }}'
-      - name: ORGANIZATION_ID
-        description: '{{ doc("organization_id") }}'
-      - name: WEBSITE_ID
-        description: '{{ doc("website_id") }}'
       - name: ACCOUNT_ID
         description: '{{ doc("account_id") }}'
       - name: USER_ID
@@ -36,20 +30,6 @@ models:
         description: '{{ doc("user_wallet_address") }}'
       - name: TRANSACTION_ID
         description: '{{ doc("transaction_id") }}'
-      - name: TRANSACTION_DESCRIPTION
-        description: '{{ doc("transaction_description") }}'
-      - name: TRANSACTION_TYPE
-        description: '{{ doc("transaction_type") }}'
-      - name: RULE_ID
-        description: '{{ doc("rule_id") }}'
-      - name: RULE_TYPE
-        description: '{{ doc("rule_type") }}'
-      - name: RULE_NAME
-        description: '{{ doc("rule_name") }}'
-      - name: RULE_DESCRIPTION
-        description: '{{ doc("rule_description") }}'
-      - name: RULE_METADATA
-        description: '{{ doc("rule_metadata") }}'
       - name: DATA
         description: '{{ doc("DATA") }}'
       - name: PARTITION_KEY
