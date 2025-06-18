@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: silver__swaps_factory
+    description: |-
+      This table records asset swaps on the Flow blockchain parsed from Swap events emitted by Increment SwapPair contracts (via the SwapFactory contract).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - tx_id
+            - swap_index
+
+    columns:
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+
+      - name: swap_index
+        description: "{{ doc('swap_index') }}"
+
+      - name: swap_contract
+        description: "{{ doc('swap_contract') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: platform
+        description: "The platform or protocol for the swap. (Always NULL for Increment pairs)"
+
+      - name: trader
+        description: "{{ doc('trader') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_in_amount
+        description: "{{ doc('token_in_amount') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_in_contract
+        description: "{{ doc('token_in_contract') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: token_out_amount
+        description: "{{ doc('token_out_amount') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: token_out_contract
+        description: "{{ doc('token_out_contract') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: increment_swaps_id
+        description: "A surrogate key for the row, generated from tx_id and event_index."
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "The timestamp when the row was inserted."
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "The timestamp when the row was last modified."
+        tests:
+          - not_null
+
+      - name: _invocation_id
+        description: "The dbt invocation ID for the run that produced this row." 
