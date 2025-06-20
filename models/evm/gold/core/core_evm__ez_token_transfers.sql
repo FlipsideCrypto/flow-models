@@ -85,7 +85,10 @@ AND f.modified_timestamp > (
         {{ this }}
 )
 {% endif %}
-)
+),
+
+final AS (
+
 SELECT
     block_number,
     block_timestamp,
@@ -284,3 +287,30 @@ WHERE
                                 ) -- Only heal USD if we have price and decimals
                         )
                     {% endif %}
+)
+select 
+    block_number,
+    block_timestamp,
+    tx_hash,
+    tx_position,
+    event_index,
+    from_address,
+    to_address,
+    contract_address,
+    token_standard,
+    NAME,
+    symbol,
+    decimals,
+    raw_amount_precise,
+    raw_amount,
+    amount_precise,
+    amount,
+    amount_usd,
+    origin_function_signature,
+    origin_from_address,
+    origin_to_address,
+    ez_token_transfers_id,
+    inserted_timestamp,
+    modified_timestamp
+from final 
+qualify row_number() over (partition by ez_token_transfers_id order by modified_timestamp desc, amount_usd desc nulls last) = 1
