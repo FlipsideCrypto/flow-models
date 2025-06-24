@@ -235,6 +235,7 @@ select
     to_address,
     contract_address,
     token_standard,
+    token_is_verified,
     NAME,
     symbol,
     decimals,
