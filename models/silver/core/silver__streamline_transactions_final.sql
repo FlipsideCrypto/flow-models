@@ -3,6 +3,7 @@
     materialized = 'incremental',
     unique_key = "tx_id",
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate", "_partition_by_block_id"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "block_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,proposer,payer,authorizers);",
