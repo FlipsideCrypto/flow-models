@@ -1,6 +1,34 @@
 {% docs evm_blocks_table_doc %}
 
-This table contains block level data for this EVM blockchain. This table can be used to analyze trends at a block level, for example gas fees vs. total transactions over time. For more information, please see [Etherscan Resources](https://etherscan.io/directory/Learning_Resources/Ethereum) or [The Ethereum Organization](https://ethereum.org/en/developers/docs/blocks/)
+## Description
+
+A comprehensive fact table containing block-level data for EVM-compatible blockchains. This table serves as the foundation for blockchain analysis, providing detailed information about each block including metadata, gas usage, mining information, and blockchain state. The table supports analysis of blockchain performance, gas economics, and network health across multiple EVM chains. Each record represents a single block with complete header information and aggregated transaction data.
+
+## Key Use Cases
+
+- **Blockchain Performance Analysis**: Monitoring block production rates, gas usage patterns, and network efficiency
+- **Gas Economics**: Analyzing gas prices, fee structures, and economic incentives across different EVM chains
+- **Network Health Monitoring**: Tracking block difficulty, mining rewards, and network security metrics
+- **Cross-Chain Comparison**: Comparing performance and characteristics across different EVM-compatible blockchains
+- **Mining Analysis**: Understanding validator/miner behavior and reward distribution patterns
+- **Blockchain State Tracking**: Monitoring blockchain progression and state changes over time
+
+## Important Relationships
+
+- **core_evm__fact_transactions**: Links to transaction data within each block
+- **core_evm__fact_event_logs**: May link to event logs emitted in blocks
+- **core_evm__fact_traces**: May link to execution traces for block analysis
+- **core__fact_blocks**: May provide comparison data with native Flow blocks
+- **price__ez_prices_hourly**: May link to native token prices for economic analysis
+
+## Commonly-used Fields
+
+- **BLOCK_NUMBER**: Essential for block identification and chronological analysis
+- **BLOCK_TIMESTAMP**: Critical for time-series analysis and temporal data aggregation
+- **GAS_USED/GAS_LIMIT**: Key for gas economics and network efficiency analysis
+- **TX_COUNT**: Important for transaction volume and network activity analysis
+- **MINER**: Critical for mining analysis and validator behavior studies
+- **BASE_FEE_PER_GAS**: Essential for EIP-1559 fee mechanism analysis
 
 {% enddocs %}
 

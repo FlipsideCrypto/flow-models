@@ -7,7 +7,36 @@ This table contains labels for addresses on this EVM blockchain.
 
 {% docs evm_table_dim_labels %}
 
-The labels table is a store of one-to-one address identifiers, or an address name. Labels are broken out into a "type" (such as cex, dex, dapp, games, etc.) and a "subtype" (ex: contract_deployer, hot_wallet, token_contract, etc.) in order to help classify each address name into similar groups. Our labels are sourced from many different places, but can primarily be grouped into two categories: automatic and manual. Automatic labels are continuously labeled based on certain criteria, such as a known contract deploying another contract, behavior-based algorithms for finding deposit wallets, and consistent data pulls of custom protocol APIs. Manual labels are done periodically to find addresses that cannot be found programmatically such as finding new protocol addresses, centralized exchange hot wallets, or trending addresses. Labels can also be added by our community by using our add-a-label tool (https://science.flipsidecrypto.xyz/add-a-label/) or on-chain with near (https://near.social/lord1.near/widget/Form) and are reviewed by our labels team. A label can be removed by our labels team if it is found to be incorrect or no longer relevant; this generally will only happen for mislabeled deposit wallets.
+## Description
+
+A dimensional table containing address labels and categorization data for EVM-compatible blockchains. This table serves as the foundation for address identification and categorization, providing human-readable names and labels for addresses including contracts, users, and protocols. The table supports address analysis, user identification, and ecosystem understanding across multiple EVM chains. Each record represents a labeled address with comprehensive categorization and metadata.
+
+## Key Use Cases
+
+- **Address Identification**: Providing human-readable names for blockchain addresses
+- **User Analysis**: Identifying and categorizing user addresses and their activities
+- **Protocol Analysis**: Understanding protocol addresses and their roles in the ecosystem
+- **Contract Categorization**: Labeling and categorizing smart contract addresses
+- **Cross-Chain Labeling**: Maintaining consistent labels across different EVM-compatible blockchains
+- **Ecosystem Mapping**: Understanding the relationships and roles of different addresses
+
+## Important Relationships
+
+- **core_evm__fact_transactions**: Links to transactions involving labeled addresses
+- **core_evm__fact_event_logs**: Links to events involving labeled addresses
+- **core_evm__dim_contracts**: Links to contract metadata for labeled contract addresses
+- **core_evm__ez_token_transfers**: Links to token transfers involving labeled addresses
+- **core_evm__ez_native_transfers**: Links to native transfers involving labeled addresses
+- **core__dim_labels**: May provide comparison data with native Flow labels
+
+## Commonly-used Fields
+
+- **ADDRESS**: Essential for address identification and cross-table joins
+- **ADDRESS_NAME**: Critical for human-readable address identification
+- **LABEL_TYPE**: Important for address categorization and filtering
+- **LABEL_SUBTYPE**: Key for detailed address categorization and analysis
+- **LABEL**: Essential for address labeling and user interface display
+- **BLOCKCHAIN**: Critical for cross-chain analysis and chain-specific labeling
 
 {% enddocs %}
 
