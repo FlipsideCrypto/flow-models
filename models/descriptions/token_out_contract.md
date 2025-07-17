@@ -1,6 +1,3 @@
 {% docs token_out_contract %}
-
-The smart contract address for the token that is being swapped out of the traders wallet.
-Token OUT / IN is from the perspective of the trader. So, an out token is leaving the wallet while the in token is being deposited to the wallet. This perspective is not changing for multi-pool trades - think of it directionally, the tokens continue flowing from out to in. Out of wallet, into pool, out of pool, into (another pool / wallet), with the final movement being tokens into final wallet.
-
+The smart contract address for the token being swapped out of the trader's wallet (or previous pool) in a DEX swap. Data type: STRING. Used to identify the specific token being sent out, supporting token-level analytics and swap path tracing. Example: 'A.1654653399040a61.FlowToken'. Directionality is always from the trader to the pool or next hop in multi-pool swaps.
 {% enddocs %}

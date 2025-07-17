@@ -106,7 +106,7 @@ Dimension tables (`dim_`) provide reference data and entity mappings. Fact table
 <llm>
 <blockchain>Flow</blockchain>
 <aliases>FLOW</aliases>
-<ecosystem>Layer 1, Cadence, EVM (via bridge)</ecosystem>
+<ecosystem>Layer 1, Cadence</ecosystem>
 <description>Flow is a high-throughput, developer-friendly Layer 1 blockchain designed for consumer applications, NFTs, and gaming. It uses a unique multi-role architecture and Cadence smart contract language to optimize for scalability and usability. Flow powers major NFT projects (NBA Top Shot, NFL All Day) and supports both native and EVM-compatible assets via bridges. Its architecture enables fast, low-cost transactions and a rich ecosystem for developers and users.</description>
 <external_resources>
     <block_scanner>https://flowscan.org/</block_scanner>

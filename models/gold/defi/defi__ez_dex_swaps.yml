@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__ez_dex_swaps
-    description: |-
-      This table records asset swaps on the Flow blockchain, with price and label information.
+    description: "{{ doc('defi__ez_dex_swaps') }}"
 
     columns:
       - name: TX_ID

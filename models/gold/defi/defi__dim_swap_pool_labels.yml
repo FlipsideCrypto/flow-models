@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: defi__dim_swap_pool_labels
-    description: |-
-      This table takes swap pool/pair creation events and models out the relevant info, such as contracts for the token pairs, when it was deployed, and the address of the vault where tokens seem to be held.
+    description: "{{ doc('defi__dim_swap_pool_labels') }}"
 
     columns:
       - name: TX_ID

@@ -1,5 +1,3 @@
 {% docs label_subtype %}
-
-The type of address, within the higher order label_type, such as hot wallet, deposit wallet, validator, etc.
-
+A more granular classification within the primary `label_type`, specifying the role or function of the address or contract (e.g., 'hot wallet', 'deposit wallet', 'validator', 'marketplace'). Data type: STRING. Used for detailed segmentation, filtering, and analytics. Example: 'hot wallet' under 'CEX', or 'validator' under 'Operator'. Important for fine-grained entity analysis and reporting.
 {% enddocs %}

@@ -1,5 +1,3 @@
 {% docs event_data %}
-
-The raw event data from the event.
-
+The raw payload or data emitted by the event during transaction execution. Data type: STRING (JSON-encoded or structured). This field contains event-specific information such as addresses, amounts, or custom fields defined in the contract. Used for auditing, analytics, and extracting business logic from on-chain activity. Example: '{"amount": "100.0", "to": "0x1cf0e2f2f715450"}'. Essential for event-driven analytics and contract monitoring.
 {% enddocs %}

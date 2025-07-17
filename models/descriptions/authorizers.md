@@ -1,5 +1,3 @@
 {% docs authorizers %}
-
-Address(es) authorizing the transaction.
-
+A list of Flow addresses that authorized the transaction. Data type: ARRAY<STRING> or STRING (comma-separated). Authorizers are accounts whose keys are required to sign the transaction, enabling multi-party authorization. This field is used to analyze participant roles, multi-sig patterns, and access control in Flow's transaction model. Example: ['0x1cf0e2f2f715450', '0x2a2e1b2c3d4e5f6']. Important for understanding transaction security and collaborative workflows.
 {% enddocs %}

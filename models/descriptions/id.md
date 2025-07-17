@@ -1,5 +1,3 @@
 {% docs id %}
-
-The block hash.
-
+A unique identifier for the record. In the context of blocks, this is the block hash—a cryptographic string that uniquely identifies a block on the Flow blockchain. Data type: STRING. Used for verifying block integrity, referencing blocks in other tables, and supporting chain reorganization analysis. Example: 'a1b2c3d4...'. For other models, 'id' may refer to a unique row identifier.
 {% enddocs %}

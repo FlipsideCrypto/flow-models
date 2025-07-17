@@ -1,5 +1,3 @@
 {% docs parent_id %}
-
-The block hash for the parent block.
-
+The hash of the parent block for the current block on the Flow blockchain. Data type: STRING. This field establishes the chain structure by linking each block to its predecessor, enabling chain traversal and reorganization analysis. Example: 'a1b2c3d4...' (the block hash of the previous block). Used for lineage analysis, fork detection, and chain integrity verification.
 {% enddocs %}

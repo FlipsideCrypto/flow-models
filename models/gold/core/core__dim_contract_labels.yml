@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__dim_contract_labels
-    description: |-
-      This table extracts all contract labels referenced in the events item of a Flow transaction.
+    description: "{{ doc('core__dim_contract_labels') }}"
 
     tests:
       - dbt_utils.unique_combination_of_columns:

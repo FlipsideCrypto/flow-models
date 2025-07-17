@@ -1,5 +1,3 @@
 {% docs token_in_destination %}
-
-The destination address of the token in for the swap index. If this is the initial withdraw/deposit event interaction, it is likely to be the pool address for the swap. If this is the final destination for the token, this is likely to be the trader's address.
-
+The address receiving the token being swapped in ("token in") during a DEX swap. Data type: STRING. For the initial deposit, this is typically the pool address; for the final swap, it is usually the trader's address. Used to trace token flow, swap completion, and participant roles. Example: pool address for intermediate hops, trader address for final destination. Important for swap path analysis and wallet attribution.
 {% enddocs %}

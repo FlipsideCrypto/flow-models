@@ -1,5 +1,22 @@
 {% docs table_dim_labels %}
+## Description
+This table provides a comprehensive mapping of Flow addresses to human-readable labels, supporting entity identification and classification across the blockchain. Each row represents a unique address and its associated label, with additional metadata such as label type, subtype, and creator. Labels are sourced from both automated algorithms and manual curation, enabling robust address classification for analytics and reporting. The table is continuously updated to reflect new addresses, protocol deployments, and community contributions.
 
-The labels table is a store of one-to-one address identifiers, or an address name. Labels are broken out into a "type" (such as cex, dex, dapp, games, etc.) and a "subtype" (ex: contract_deployer, hot_wallet, token_contract, etc.) in order to help classify each address name into similar groups. Our labels are sourced from many different places, but can primarily be grouped into two categories: automatic and manual. Automatic labels are continuously labeled based on certain criteria, such as a known contract deploying another contract, behavior based algorithms for finding deposit wallets, and consistent data pulls of custom protocol APIs. Manual labels are done periodically to find addresses that cannot be found programmatically such as finding new protocol addresses, centralized exchange hot wallets, or trending addresses. Labels can also be added by our community by using our add-a-label tool (https://science.flipsidecrypto.xyz/add-a-label/) or on-chain with near (https://near.social/lord1.near/widget/Form) and are reviewed by our labels team. A label can be removed by our labels team if it is found to be incorrect or no longer relevant; this generally will only happen for mislabeled deposit wallets.
+## Key Use Cases
+- Enriching transaction, event, and contract data with human-readable labels for dashboards and analytics
+- Segmenting addresses by type (e.g., CEX, DEX, dApp, game) and subtype (e.g., contract_deployer, hot_wallet)
+- Supporting compliance, risk analysis, and wallet attribution
+- Powering entity-level analytics for DeFi, NFT, and governance applications
 
+## Important Relationships
+- Can be joined to `core.fact_transactions`, `core.fact_events`, and other gold models via `address` for entity enrichment
+- Used by curated models in DeFi, NFT, and rewards domains to provide address context and segmentation
+- Label type and subtype fields enable advanced filtering and grouping in analytics workflows
+
+## Commonly-used Fields
+- `address`: The Flow blockchain address being labeled
+- `label`: The human-readable name or tag for the address
+- `label_type`: The primary category of the address (e.g., CEX, NFT, DeFi)
+- `label_subtype`: The secondary classification (e.g., hot_wallet, validator)
+- `creator`: The source or contributor of the label
 {% enddocs %}
