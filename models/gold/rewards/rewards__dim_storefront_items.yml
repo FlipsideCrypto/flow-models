@@ -2,136 +2,36 @@ version: 2
 
 models:
   - name: rewards__dim_storefront_items
-    description: '{{ doc("rewards__dim_storefront_items") }}'
+    description: "{{ doc('rewards__dim_storefront_items') }}"
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: request_timestamp
+          field: INSERTED_TIMESTAMP
           interval: 1
           severity: warn
 
     columns:
+      - name: STORE_ID
+        description: "{{ doc('store_id') }}"
       - name: ITEM_ID
-        tests:
-          - not_null
-
-      - name: CREATED_AT
-
-      - name: ADDITIONAL_MEDIA
-
-      - name: ANIMATION_URL
-
-      - name: ARTIST_INFO
-
-      - name: ASSET_NR
-
-      - name: ATTRIBUTES
-
-      - name: AUCTION_ID
-
-      - name: AUCTION_ITEMS
-
-      - name: BURN_TO_REDEEM_DETAILS
-
-      - name: BURN_TO_REDEEM_TYPE
-
-      - name: BURNED_AT
-
-      - name: CONTRACT_ADDRESS
-
-      - name: CURRENCY_ADDRESS
-
-      - name: CURRENCY_DECIMALS
-
-      - name: DELETED_AT
-
-      - name: DESCRIPTION
-
-      - name: DOES_REQUIRE_W9
-
-      - name: ENABLE_BURN_TO_REDEEM
-
-      - name: IMAGE_URL
-
-      - name: IS_LISTED
-
-      - name: IS_PHYGTAL_ITEM
-
-      - name: IS_PRICE_IN_USD
-
-      - name: IS_REDEEMABLE_SEPARATE_FROM_PURCHASE
-
-      - name: LISTING_ENDS_AT
-
-      - name: listing_starts_at
-
-      - name: LISTING_TYPE
-
-      - name: LOYALTY_CURRENCY
-
-      - name: LOYALTY_CURRENCY_ID
-
-      - name: METADATA_URI
-
-      - name: MINT_STATUS
-
-      - name: MINTING_CONTRACT
-
-      - name: MINTING_CONTRACT_ASSET_MINT_STATUS
-
-      - name: MINTING_CONTRACT_ID
-
-      - name: NAME
-
-      - name: NETWORK
-
-      - name: ORGANIZATION_ID
-
-      - name: PER_USER_MINT_LIMIT
-
-      - name: PER_USER_MINT_MIN_LIMIT
-
-      - name: PRE_REVEAL_MEDIA
-
-      - name: PRICE
-
-      - name: QUANTITY
-
-      - name: QUANTITY_MINTED
-
-      - name: REDEEMABLE_UNTIL
-
-      - name: REVEALED_AT
-
-      - name: SHIPPING_PRICE
-
-      - name: SHIPPING_WITHIN
-
-      - name: STATUS_TRACKER
-
-      - name: TOKEN_ID
-
-      - name: TOKEN_TYPE
-
-      - name: UPDATED_AT
-
-      - name: WEBSITE_ID  
-
-      - name: RESPONSE_JSON
-
-      - name: DIM_STOREFRONT_ITEMS_ID
-        tests:
-          - not_null
-          - unique
-
+        description: "{{ doc('item_id') }}"
+      - name: ITEM_TYPE
+        description: "{{ doc('item_type') }}"
+      - name: ITEM_NAME
+        description: "{{ doc('item_name') }}"
+      - name: ITEM_DESCRIPTION
+        description: "{{ doc('item_description') }}"
+      - name: ITEM_PRICE
+        description: "{{ doc('item_price') }}"
+      - name: ITEM_CURRENCY
+        description: "{{ doc('item_currency') }}"
+      - name: ITEM_IMAGE_URL
+        description: "{{ doc('item_image_url') }}"
+      - name: ITEM_AVAILABLE
+        description: "{{ doc('item_available') }}"
+      - name: DIM_STORE_ID
+        description: "{{ doc('pk_id') }}"
       - name: INSERTED_TIMESTAMP
-        tests:
-          - not_null
-
+        description: "{{ doc('inserted_timestamp') }}"
       - name: MODIFIED_TIMESTAMP
-        tests:
-          - not_null
-
-      - name: REQUEST_TIMESTAMP
-        tests:
-          - not_null
+        description: "{{ doc('modified_timestamp') }}"

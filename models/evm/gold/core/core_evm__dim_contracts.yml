@@ -1,28 +1,30 @@
 version: 2
 models:
   - name: core_evm__dim_contracts
-    description: '{{ doc("evm_contracts_table_doc") }}'
+    description: "{{ doc('evm_contracts_table_doc') }}"
       
     columns:
       - name: ADDRESS
-        description: '{{ doc("evm_contracts_contract_address") }}'
-      - name: SYMBOL
-        description: '{{ doc("evm_contracts_symbol") }}'
+        description: "{{ doc('evm_contract_address') }}"
       - name: NAME
-        description: '{{ doc("evm_contracts_name") }}'
+        description: "{{ doc('evm_contracts_name') }}"
+      - name: SYMBOL
+        description: "{{ doc('evm_contracts_symbol') }}"
       - name: DECIMALS
-        description: '{{ doc("evm_decimals") }}'
-      - name: CREATED_BLOCK_NUMBER
-        description: '{{ doc("evm_contracts_block_number") }}'
-      - name: CREATED_BLOCK_TIMESTAMP
-        description: '{{ doc("evm_contracts_block_time") }}'
-      - name: CREATED_TX_HASH
-        description: '{{ doc("evm_contracts_created_tx_hash") }}'
+        description: "{{ doc('evm_decimals') }}"
+      - name: TOTAL_SUPPLY
+        description: "{{ doc('evm_total_supply') }}"
+      - name: BLOCK_NUMBER
+        description: "{{ doc('evm_block_number') }}"
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('evm_block_timestamp') }}"
+      - name: TX_HASH
+        description: "{{ doc('evm_tx_hash') }}"
       - name: CREATOR_ADDRESS
-        description: '{{ doc("evm_creator_address") }}'
+        description: "{{ doc('evm_creator_address') }}"
       - name: DIM_CONTRACTS_ID
-        description: '{{ doc("evm_pk") }}'
+        description: "{{ doc('evm_pk') }}"
       - name: INSERTED_TIMESTAMP
-        description: '{{ doc("evm_inserted_timestamp") }}'
+        description: "{{ doc('evm_inserted_timestamp') }}"
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("evm_modified_timestamp") }}'
+        description: "{{ doc('evm_modified_timestamp') }}"

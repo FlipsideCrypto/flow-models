@@ -2,5 +2,5 @@ version: 2
 
 models:
   - name: beta__dim_nfl_teams
-    description: '{{ doc("beta__dim_nfl_teams") }}'
+    description: "{{ doc('beta__dim_nfl_teams') }}"
 

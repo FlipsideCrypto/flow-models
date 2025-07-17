@@ -1,28 +1,28 @@
 version: 2
+
 models:
   - name: price__ez_asset_metadata
-    description: '{{ doc("price__ez_asset_metadata") }}'
-
+    description: "{{ doc('price__ez_asset_metadata') }}"
     columns:
-      - name: ASSET_ID
-        description: '{{ doc("prices_asset_id") }}'
-      - name: NAME
-        description: '{{ doc("prices_name") }}'
-      - name: SYMBOL
-        description: '{{ doc("prices_symbol") }}'
-      - name: TOKEN_ADDRESS
-        description: '{{ doc("prices_token_address") }}'
-      - name: IS_DEPRECATED
-        description: '{{ doc("prices_is_deprecated") }}'
-      - name: BLOCKCHAIN
-        description: '{{ doc("prices_blockchain") }}'
-      - name: DECIMALS
-        description: '{{ doc("prices_decimals") }}'
-      - name: IS_NATIVE
-        description: '{{ doc("prices_is_native") }}'
-      - name: EZ_ASSET_METADATA_ID
-        description: '{{ doc("pk_id") }}'
+      - name: PRICES_ASSET_ID
+        description: "{{ doc('prices_asset_id') }}"
+      - name: PRICES_NAME
+        description: "{{ doc('prices_name') }}"
+      - name: PRICES_SYMBOL
+        description: "{{ doc('prices_symbol') }}"
+      - name: PRICES_TOKEN_ADDRESS
+        description: "{{ doc('prices_token_address') }}"
+      - name: PRICES_IS_DEPRECATED
+        description: "{{ doc('prices_is_deprecated') }}"
+      - name: PRICES_BLOCKCHAIN
+        description: "{{ doc('prices_blockchain') }}"
+      - name: PRICES_DECIMALS
+        description: "{{ doc('prices_decimals') }}"
+      - name: PRICES_IS_NATIVE
+        description: "{{ doc('prices_is_native') }}"
+      - name: PK_ID
+        description: "{{ doc('pk_id') }}"
       - name: INSERTED_TIMESTAMP
-        description: '{{ doc("inserted_timestamp") }}'
+        description: "{{ doc('inserted_timestamp') }}"
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("modified_timestamp") }}'
+        description: "{{ doc('modified_timestamp') }}"

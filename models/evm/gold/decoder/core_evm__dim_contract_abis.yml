@@ -1,14 +1,20 @@
 version: 2
 models:
   - name: core_evm__dim_contract_abis
-    description: '{{ doc("evm_abis_table_doc") }}'
-       
+    description: "{{ doc('evm_abis_table_doc') }}"
+      
     columns:
       - name: CONTRACT_ADDRESS
-        description: '{{ doc("evm_contracts_contract_address") }}'
+        description: "{{ doc('evm_contract_address') }}"
       - name: ABI
-        description: '{{ doc("abi") }}'
+        description: "{{ doc('evm_abi') }}"
       - name: ABI_SOURCE
-        description: '{{ doc("abi_source") }}'
+        description: "{{ doc('evm_abi_source') }}"
       - name: BYTECODE
-        description: '{{ doc("bytecode") }}'
+        description: "{{ doc('evm_bytecode') }}"
+      - name: DIM_CONTRACT_ABIS_ID
+        description: "{{ doc('evm_pk') }}"
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('evm_inserted_timestamp') }}"
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('evm_modified_timestamp') }}"

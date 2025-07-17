@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: gov__ez_staking_actions
-    description: '{{ doc("gov__ez_staking_actions") }}'
+    description: "{{ doc('gov__ez_staking_actions') }}"
 
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -11,12 +11,12 @@ models:
             - event_index
 
     columns:
-      - name: tx_id
+      - name: TX_ID
         description: "{{ doc('tx_id') }}"
         tests:
           - not_null
 
-      - name: block_timestamp
+      - name: BLOCK_TIMESTAMP
         description: "{{ doc('block_timestamp') }}"
         tests:
           - not_null
@@ -27,7 +27,7 @@ models:
               column_type_list:
                 - TIMESTAMP_NTZ
 
-      - name: block_height
+      - name: BLOCK_HEIGHT
         description: "{{ doc('block_height') }}"
         tests:
           - not_null
@@ -36,7 +36,7 @@ models:
                 - NUMBER
                 - FLOAT
 
-      - name: tx_succeeded
+      - name: TX_SUCCEEDED
         description: "{{ doc('tx_succeeded') }}"
         tests:
           - not_null
@@ -44,7 +44,7 @@ models:
               column_type_list:
                 - BOOLEAN
 
-      - name: delegator
+      - name: DELEGATOR
         description: "{{ doc('delegator') }}"
         tests:
           - not_null:
@@ -54,10 +54,10 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: delegator_id
+      - name: DELEGATOR_ADDRESS
         description: "{{ doc('delegator') }}"
 
-      - name: action
+      - name: ACTION
         description: "{{ doc('action') }}"
         tests:
           - not_null
@@ -66,7 +66,7 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: amount
+      - name: AMOUNT
         description: "{{ doc('amount') }}"
         tests:
           - not_null
@@ -76,7 +76,7 @@ models:
                 - FLOAT
                 - DOUBLE
 
-      - name: node_id
+      - name: NODE_ID
         description: "{{ doc('node_id') }}"
         tests:
           - not_null
@@ -85,7 +85,7 @@ models:
                 - VARCHAR
                 - STRING
 
-      - name: EZ_STAKING_ACTIONS_ID
+      - name: PK_ID
         description: "{{ doc('pk_id') }}"
 
       - name: INSERTED_TIMESTAMP

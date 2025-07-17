@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: gov__dim_validator_labels
-    description: '{{ doc("gov__dim_validator_labels") }}'
+    description: "{{ doc('gov__dim_validator_labels') }}"
       
     tests:
       - dbt_utils.unique_combination_of_columns:

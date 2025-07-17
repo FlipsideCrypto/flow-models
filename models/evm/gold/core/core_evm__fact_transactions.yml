@@ -1,68 +1,44 @@
 version: 2
 models:
   - name: core_evm__fact_transactions
-    description: '{{ doc("evm_tx_table_doc") }}'
+    description: "{{ doc('evm_transactions_table_doc') }}"
       
     columns:
       - name: BLOCK_NUMBER
-        description: '{{ doc("evm_block_number") }}'
+        description: "{{ doc('evm_block_number') }}"
       - name: BLOCK_TIMESTAMP
-        description: '{{ doc("evm_block_timestamp") }}'
+        description: "{{ doc('evm_block_timestamp') }}"
       - name: TX_HASH
-        description: '{{ doc("evm_tx_hash") }}'
-      - name: FROM_ADDRESS
-        description: '{{ doc("evm_from_address") }}'
-      - name: TO_ADDRESS
-        description: '{{ doc("evm_to_address") }}'
-      - name: ORIGIN_FUNCTION_SIGNATURE
-        description: '{{ doc("evm_tx_origin_sig") }}'
-      - name: VALUE
-        description: '{{ doc("evm_value") }}'
-      - name: VALUE_PRECISE_RAW
-        description: '{{ doc("evm_precise_amount_unadjusted") }}'
-      - name: VALUE_PRECISE
-        description: '{{ doc("evm_precise_amount_adjusted") }}'
-      - name: TX_FEE
-        description: '{{ doc("evm_tx_fee") }}'
-      - name: TX_FEE_PRECISE
-        description: '{{ doc("evm_tx_fee_precise") }}'
-      - name: TX_SUCCEEDED
-        description: '{{ doc("evm_tx_succeeded") }}'
-      - name: TX_TYPE
-        description: '{{ doc("evm_tx_type") }}'
-      - name: NONCE
-        description: '{{ doc("evm_tx_nonce") }}'
+        description: "{{ doc('evm_tx_hash') }}"
       - name: TX_POSITION
-        description: '{{ doc("evm_tx_position") }}'
-      - name: INPUT_DATA
-        description: '{{ doc("evm_tx_input_data") }}'
+        description: "{{ doc('evm_tx_position') }}"
+      - name: FROM_ADDRESS
+        description: "{{ doc('evm_from_address') }}"
+      - name: TO_ADDRESS
+        description: "{{ doc('evm_to_address') }}"
+      - name: VALUE
+        description: "{{ doc('evm_value') }}"
+      - name: VALUE_PRECISE_RAW
+        description: "{{ doc('evm_precise_amount_unadjusted') }}"
+      - name: VALUE_PRECISE
+        description: "{{ doc('evm_precise_amount_adjusted') }}"
+      - name: VALUE_HEX
+        description: "{{ doc('evm_value_hex') }}"
+      - name: GAS
+        description: "{{ doc('evm_gas') }}"
       - name: GAS_PRICE
-        description: '{{ doc("evm_tx_gas_price") }}'
+        description: "{{ doc('evm_gas_price') }}"
       - name: GAS_USED
-        description: '{{ doc("evm_tx_gas_used") }}'
-      - name: GAS_LIMIT
-        description: '{{ doc("evm_tx_gas_limit") }}'
-      - name: CUMULATIVE_GAS_USED
-        description: '{{ doc("evm_cumulative_gas_used") }}'
-      - name: EFFECTIVE_GAS_PRICE
-        description: '{{ doc("evm_effective_gas_price") }}'
-      - name: R
-        description: '{{ doc("evm_r") }}'
-      - name: S
-        description: '{{ doc("evm_s") }}'
-      - name: V
-        description: '{{ doc("evm_v") }}'
-      - name: MAX_FEE_PER_GAS
-        description: '{{ doc("evm_max_fee_per_gas") }}'
-      - name: MAX_PRIORITY_FEE_PER_GAS
-        description: '{{ doc("evm_max_priority_fee_per_gas") }}'
-      - name: Y_PARITY
-        description: '{{ doc("evm_y_parity") }}'
-      - name: ACCESS_LIST
-        description: '{{ doc("evm_access_list") }}'
+        description: "{{ doc('evm_gas_used') }}"
+      - name: NONCE
+        description: "{{ doc('evm_nonce') }}"
+      - name: INPUT
+        description: "{{ doc('evm_input') }}"
+      - name: TX_SUCCEEDED
+        description: "{{ doc('evm_tx_succeeded') }}"
       - name: FACT_TRANSACTIONS_ID
-        description: '{{ doc("evm_pk") }}'
+        description: "{{ doc('evm_pk') }}"
       - name: INSERTED_TIMESTAMP
-        description: '{{ doc("evm_inserted_timestamp") }}'
+        description: "{{ doc('evm_inserted_timestamp') }}"
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("evm_modified_timestamp") }}'
+        description: "{{ doc('evm_modified_timestamp') }}"

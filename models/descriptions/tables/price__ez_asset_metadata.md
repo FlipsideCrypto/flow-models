@@ -1,31 +1,21 @@
-# price__ez_asset_metadata
-
+{% docs price__ez_asset_metadata %}
 ## Description
-
-A curated and deduplicated asset metadata table that provides a single source of truth for asset information across different blockchain networks. This table consolidates data from multiple price providers, resolving conflicts and maintaining one record per unique asset per blockchain. It serves as the primary dimension table for asset identification in price analytics and provides clean, reliable metadata for reporting and analysis. The table prioritizes data quality and consistency over raw data preservation.
+Easy-to-use curated asset metadata table providing deduplicated and cleaned asset information. This table aggregates asset metadata from multiple providers and presents a unified view of assets across different blockchains with business-friendly formatting.
 
 ## Key Use Cases
-
-- **Asset Reference**: Primary lookup table for asset metadata in price analytics and reporting
-- **Portfolio Management**: Providing consistent asset information for multi-asset portfolio tracking
-- **Price Analysis**: Joining with price fact tables for comprehensive asset price analysis
-- **Cross-Chain Analytics**: Understanding asset distribution and characteristics across blockchain networks
-- **Reporting and Dashboards**: Providing clean, consistent asset names and symbols for user interfaces
-- **Data Quality Assurance**: Ensuring consistent asset representation across different data sources
+- Asset lookup and identification
+- Cross-blockchain asset analysis
+- Price data correlation
+- Asset reporting and dashboards
 
 ## Important Relationships
-
-- **price__dim_asset_metadata**: Raw source data that feeds into this curated table
-- **price__fact_prices_ohlc_hourly**: Links to raw price data through asset_id
-- **price__ez_prices_hourly**: Primary price table that uses this for asset metadata
-- **core__dim_contract_labels**: Provides additional labeling for contract-based assets
-- **evm/core_evm__dim_contracts**: For EVM tokens, provides additional contract-level metadata
+- Links to `price__dim_asset_metadata` for raw provider data
+- Connects to `price__ez_prices_hourly` for price information
+- Supports asset-based analytics
 
 ## Commonly-used Fields
-
-- **TOKEN_ADDRESS**: Primary identifier for blockchain-specific operations and smart contract interactions
-- **SYMBOL**: Most commonly used field for asset identification in reports and dashboards
-- **NAME**: Human-readable asset name for display and user interfaces
-- **BLOCKCHAIN**: Essential for cross-chain analysis and blockchain-specific filtering
-- **DECIMALS**: Critical for accurate price calculations and token amount conversions
-- **IS_NATIVE**: Important for distinguishing native blockchain tokens from smart contract tokens 
+- `prices_asset_id`: Unique asset identifier
+- `prices_symbol`: Asset symbol for identification
+- `prices_token_address`: Contract address for tokens
+- `prices_blockchain`: Blockchain where asset exists
+{% enddocs %} 
