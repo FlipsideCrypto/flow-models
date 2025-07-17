@@ -1,26 +1,6 @@
-{% docs price__dim_asset_metadata %}
 
-{{ doc("tables/price__dim_asset_metadata") }}
 
-{% enddocs %}
 
-{% docs price__ez_asset_metadata %}
-
-{{ doc("tables/price__ez_asset_metadata") }}
-
-{% enddocs %}
-
-{% docs price__fact_prices_ohlc_hourly %}
-
-{{ doc("tables/price__fact_prices_ohlc_hourly") }}
-
-{% enddocs %}
-
-{% docs price__ez_prices_hourly %}
-
-{{ doc("tables/price__ez_prices_hourly") }}
-
-{% enddocs %}
 
 {% docs prices_provider %}
 

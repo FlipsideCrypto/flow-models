@@ -1,4 +1,4 @@
-# gov__dim_validator_labels
+{% docs gov__dim_validator_labels %}
 
 ## Description
 
@@ -26,3 +26,5 @@ A dimensional table containing validator node metadata and labeling information 
 - **NODE_ID**: Primary identifier for validator nodes and staking operations
 - **VALIDATOR_TYPE**: Essential for understanding validator roles and network architecture
 - **PROJECT_NAME**: Important for governance transparency and validator operator identification 
+
+{% enddocs %}

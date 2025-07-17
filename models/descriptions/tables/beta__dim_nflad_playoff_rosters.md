@@ -1,3 +1,4 @@
+{% docs beta__dim_nflad_playoff_rosters %}
 # beta__dim_nflad_playoff_rosters
 
 ## Description
@@ -24,4 +25,5 @@ A temporary dimensional table containing official rosters for the Flipside x NFL
 - **Roster identification fields**: For roster identification and challenge management
 - **Player association fields**: For roster-player relationship analysis
 - **Team association fields**: For roster-team relationship analysis
-- **Playoff-specific fields**: For playoff challenge and seasonal analysis 
+- **Playoff-specific fields**: For playoff challenge and seasonal analysis
+{% enddocs %} 

@@ -1,8 +1,3 @@
-{% docs stats__ez_core_metrics_hourly %}
-
-{{ doc("tables/stats__ez_core_metrics_hourly") }}
-
-{% enddocs %}
 
 {% docs block_timestamp_hour %}
 

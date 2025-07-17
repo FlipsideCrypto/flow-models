@@ -1,3 +1,4 @@
+{% docs beta__dim_nfl_teams %}
 # beta__dim_nfl_teams
 
 ## Description
@@ -23,4 +24,5 @@ A beta-dimensional table containing NFL team metadata from the ESPN Teams Endpoi
 
 - **Team identification fields**: For team identification and analysis
 - **League association fields**: For team-league relationship analysis
-- **Metadata fields**: For team information and categorization 
+- **Metadata fields**: For team information and categorization
+{% enddocs %} 

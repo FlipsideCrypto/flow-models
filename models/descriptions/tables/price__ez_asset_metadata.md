@@ -1,3 +1,4 @@
+{% docs price__ez_asset_metadata %}
 # price__ez_asset_metadata
 
 ## Description
@@ -28,4 +29,5 @@ A curated and deduplicated asset metadata table that provides a single source of
 - **NAME**: Human-readable asset name for display and user interfaces
 - **BLOCKCHAIN**: Essential for cross-chain analysis and blockchain-specific filtering
 - **DECIMALS**: Critical for accurate price calculations and token amount conversions
-- **IS_NATIVE**: Important for distinguishing native blockchain tokens from smart contract tokens 
+- **IS_NATIVE**: Important for distinguishing native blockchain tokens from smart contract tokens
+{% enddocs %} 

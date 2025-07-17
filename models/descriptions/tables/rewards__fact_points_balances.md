@@ -1,3 +1,4 @@
+{% docs rewards__fact_points_balances %}
 # rewards__fact_points_balances
 
 ## Description
@@ -28,4 +29,5 @@ A fact table containing point-in-time balances for user reward accounts from the
 - **BOXES**: Special reward item balance for gamification analysis
 - **KEYS**: Special reward item balance for access control analysis
 - **REQUEST_DATE**: Temporal reference for balance snapshots and time-series analysis
-- **BOXES_OPENED**: Historical metric for user engagement and reward consumption 
+- **BOXES_OPENED**: Historical metric for user engagement and reward consumption
+{% enddocs %} 

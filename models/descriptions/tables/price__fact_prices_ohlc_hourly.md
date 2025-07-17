@@ -1,3 +1,4 @@
+{% docs price__fact_prices_ohlc_hourly %}
 # price__fact_prices_ohlc_hourly
 
 ## Description
@@ -28,4 +29,5 @@ A comprehensive fact table containing raw OHLC (Open, High, Low, Close) price da
 - **OPEN**: Starting price for the hour, used in OHLC analysis and trend calculations
 - **HIGH**: Maximum price during the hour, important for resistance level analysis
 - **LOW**: Minimum price during the hour, important for support level analysis
-- **CLOSE**: Ending price for the hour, most commonly used for price trend analysis 
+- **CLOSE**: Ending price for the hour, most commonly used for price trend analysis
+{% enddocs %} 

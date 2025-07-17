@@ -1,3 +1,4 @@
+{% docs beta__dim_nfl_athletes %}
 # beta__dim_nfl_athletes
 
 ## Description
@@ -23,4 +24,5 @@ A beta-dimensional table containing NFL athlete metadata from the ESPN Athletes 
 
 - **Athlete identification fields**: For player identification and analysis
 - **Team association fields**: For athlete-team relationship analysis
-- **Metadata fields**: For athlete information and categorization 
+- **Metadata fields**: For athlete information and categorization
+{% enddocs %} 

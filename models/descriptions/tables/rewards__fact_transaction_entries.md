@@ -1,3 +1,4 @@
+{% docs rewards__fact_transaction_entries %}
 # rewards__fact_transaction_entries
 
 ## Description
@@ -29,4 +30,5 @@ A fact table containing individual Flow points transfer events flattened from re
 - **DIRECTION**: Transaction direction (credit/debit) for understanding reward flows
 - **AMOUNT**: Transaction value for financial analysis and volume tracking
 - **AMOUNT_START/AMOUNT_END**: Balance state information for transaction validation and audit
-- **CREATED_AT**: Temporal reference for transaction timing and chronological analysis 
+- **CREATED_AT**: Temporal reference for transaction timing and chronological analysis
+{% enddocs %} 

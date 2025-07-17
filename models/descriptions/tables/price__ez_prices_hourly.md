@@ -1,3 +1,4 @@
+{% docs price__ez_prices_hourly %}
 # price__ez_prices_hourly
 
 ## Description
@@ -28,4 +29,5 @@ A curated and deduplicated hourly price table that provides a single source of t
 - **SYMBOL**: Most commonly used field for asset identification in reports and dashboards
 - **PRICE**: Core price field used for valuation, analysis, and reporting
 - **BLOCKCHAIN**: Essential for cross-chain analysis and blockchain-specific filtering
-- **IS_IMPUTED**: Important for data quality assessment and filtering potentially unreliable prices 
+- **IS_IMPUTED**: Important for data quality assessment and filtering potentially unreliable prices
+{% enddocs %} 

@@ -1,3 +1,4 @@
+{% docs rewards__dim_storefront_items %}
 # rewards__dim_storefront_items
 
 ## Description
@@ -28,4 +29,5 @@ A comprehensive dimensional table containing storefront item metadata from the M
 - **PRICE**: Item cost in reward points or currency for purchase analysis
 - **QUANTITY**: Available inventory for supply management and availability tracking
 - **MINT_STATUS**: Current minting status for understanding item availability
-- **IS_LISTED**: Flag indicating whether item is currently available for purchase 
+- **IS_LISTED**: Flag indicating whether item is currently available for purchase
+{% enddocs %} 

@@ -1,4 +1,4 @@
-# stats__ez_core_metrics_hourly
+{% docs stats__ez_core_metrics_hourly %}
 
 ## Description
 
@@ -29,3 +29,5 @@ A comprehensive metrics table that aggregates core blockchain performance indica
 - **UNIQUE_FROM_COUNT/PAYER_COUNT**: Important for user activity and network participation analysis
 - **TOTAL_FEES_NATIVE/USD**: Key for network economics and revenue analysis
 - **BLOCK_COUNT**: Fundamental metric for blockchain throughput and performance 
+
+{% enddocs %}

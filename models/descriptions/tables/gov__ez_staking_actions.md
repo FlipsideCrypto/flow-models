@@ -1,3 +1,4 @@
+{% docs gov__ez_staking_actions %}
 # gov__ez_staking_actions
 
 ## Description
@@ -28,4 +29,5 @@ A fact table containing transaction-level information on FLOW staking activities
 - **NODE_ID**: Validator node identifier for validator-specific analysis
 - **ACTION**: Staking operation type for transaction categorization and analysis
 - **AMOUNT**: Staking amount for value analysis and volume tracking
-- **BLOCK_TIMESTAMP**: Temporal reference for chronological analysis and time-series tracking 
+- **BLOCK_TIMESTAMP**: Temporal reference for chronological analysis and time-series tracking
+{% enddocs %} 

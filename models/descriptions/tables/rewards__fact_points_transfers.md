@@ -1,3 +1,4 @@
+{% docs rewards__fact_points_transfers %}
 # rewards__fact_points_transfers
 
 ## Description
@@ -29,4 +30,5 @@ A fact table containing reward points transfer transactions from the Reward Poin
 - **POINTS**: Core reward currency transferred for value analysis
 - **BOXES**: Special reward items transferred for gamification analysis
 - **KEYS**: Special reward items transferred for access control analysis
-- **CREATED_AT**: Temporal reference for transfer timing and chronological analysis 
+- **CREATED_AT**: Temporal reference for transfer timing and chronological analysis
+{% enddocs %} 

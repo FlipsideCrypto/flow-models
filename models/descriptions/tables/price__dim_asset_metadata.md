@@ -1,3 +1,4 @@
+{% docs price__dim_asset_metadata %}
 # price__dim_asset_metadata
 
 ## Description
@@ -28,4 +29,5 @@ A comprehensive dimensional table containing raw asset metadata from multiple pr
 - **TOKEN_ADDRESS**: Critical for blockchain-specific operations and smart contract interactions
 - **BLOCKCHAIN**: Key for cross-chain analysis and blockchain-specific filtering
 - **SYMBOL**: Commonly used for asset identification in reports and dashboards
-- **NAME**: Human-readable asset name for display and reporting purposes 
+- **NAME**: Human-readable asset name for display and reporting purposes
+{% enddocs %} 
