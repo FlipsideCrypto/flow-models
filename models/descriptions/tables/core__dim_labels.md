@@ -1,4 +1,4 @@
-{% docs table_dim_labels %}
+{% docs core__dim_labels %}
 ## Description
 This table provides a comprehensive mapping of Flow addresses to human-readable labels, supporting entity identification and classification across the blockchain. Each row represents a unique address and its associated label, with additional metadata such as label type, subtype, and creator. Labels are sourced from both automated algorithms and manual curation, enabling robust address classification for analytics and reporting. The table is continuously updated to reflect new addresses, protocol deployments, and community contributions.
 

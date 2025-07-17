@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: core__dim_labels
-    description: '{{ doc("table_dim_labels") }}'
+    description: '{{ doc("core__dim_labels") }}'
     columns:
       - name: BLOCKCHAIN
         description: '{{ doc("blockchain") }}'
