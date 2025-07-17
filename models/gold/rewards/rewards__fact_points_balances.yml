@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: rewards__fact_points_balances
-    description: "Response from the Reward Points API with point-in-time balances. Note, this API only returns balances at the time the request was made, so early data is patchy."
+    description: '{{ doc("rewards__fact_points_balances") }}'
     tests:
       - dbt_utils.recency:
           datepart: day

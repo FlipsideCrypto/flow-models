@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: rewards__fact_transaction_entries
-    description: "individual flow points transfer events flattened from responses from the snag transaction entries endpoint"
+    description: '{{ doc("rewards__fact_transaction_entries") }}'
     tests:
       - dbt_utils.recency:
           datepart: day

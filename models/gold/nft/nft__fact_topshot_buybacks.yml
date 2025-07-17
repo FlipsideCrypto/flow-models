@@ -2,9 +2,7 @@ version: 2
 
 models:
   - name: nft__fact_topshot_buybacks
-    description: |-
-      This table captures NBA TopShot buyback activity - transactions where the TopShot buyback wallet purchases moments from users.
-      The model combines sales from both standard marketplace and Flowty, and includes a running total of amount spent over time.
+    description: "{{ doc('nft__fact_topshot_buybacks') }}"
     tests:
       - dbt_utils.recency:
           datepart: day
