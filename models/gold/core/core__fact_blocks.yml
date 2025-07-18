@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__fact_blocks
-    description: Information about blocks on the FLOW network and corresponding metadata.
+    description: "{{ doc('core__fact_blocks') }}"
     tests:
       - sequence_gaps:
           column_name: block_height

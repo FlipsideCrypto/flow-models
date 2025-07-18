@@ -1,0 +1,3 @@
+{% docs label_source %}
+The origin or provenance of the label assigned to an address, contract, or entity. Data type: STRING. Indicates whether the label was assigned by Flipside, a community contributor, an external provider, or derived from on-chain data. Used for auditing, trust assessment, and understanding label reliability. Example: 'Flipside', 'Community', 'On-chain'. Important for data quality and transparency in analytics.
+{% enddocs %} 

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__dim_ufc_strike_metadata
-    description: |-
-      UFC Strike NFT Metadata
+    description: "{{ doc('nft__dim_ufc_strike_metadata') }}"
 
     columns:
       - name: NFT_ID

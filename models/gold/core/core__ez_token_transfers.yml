@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__ez_token_transfers
-    description: |-
-      This table records all token transfers on the FLOW blockchain.
+    description: "{{ doc('core__ez_token_transfers') }}"
     tests:
       - dbt_utils.recency:
           datepart: hour

@@ -1,5 +1,3 @@
 {% docs event_index %}
-
-The index of the event within the transaction, i.e. in what order the events occurred.
-
+The zero-based position of the event within the list of events emitted by a transaction. Data type: INTEGER. This field indicates the order in which events occurred during transaction execution. Used for reconstructing event sequences, debugging, and analyzing event-driven workflows. Example: 0 (first event), 1 (second event), etc. Important for event ordering and traceability.
 {% enddocs %}

@@ -1,5 +1,3 @@
 {% docs address %}
-
-The on-chain address. See more in the Flow docs on accounts and addresses: https://developers.flow.com/build/basics/accounts and https://developers.flow.com/evm/accounts
-
+The unique on-chain address representing an account or contract on the Flow blockchain. Data type: STRING. Addresses are used to identify participants, contracts, and assets in all Flow transactions and events. Example: '0x1cf0e2f2f715450'. Used for joins, analytics, and entity mapping. For more details, see [Flow Accounts and Addresses](https://developers.flow.com/build/basics/accounts).
 {% enddocs %}

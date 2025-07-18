@@ -1,5 +1,3 @@
 {% docs network_version %}
-
-The version of the Blockchain that cooresponds with the block height. For more information on Flow's network upgrades (Sporks), see https://developers.flow.com/nodes/node-operation/spork
-
+The version identifier of the Flow blockchain network at the time the block was produced. Data type: STRING. This value changes when the network undergoes a protocol upgrade ("spork"). Useful for tracking changes in protocol behavior, analyzing the impact of upgrades, and debugging issues related to network versioning. Example: 'spork-22'. For more information on Flow's network upgrades (Sporks), see https://developers.flow.com/nodes/node-operation/spork
 {% enddocs %}

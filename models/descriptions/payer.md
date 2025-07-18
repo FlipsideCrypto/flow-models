@@ -1,5 +1,3 @@
 {% docs payer %}
-
-Address of the wallet paying for the transaction.
-
+The Flow address of the account responsible for paying the transaction fees. Data type: STRING. The payer may be different from the proposer or authorizers. This field is used to analyze fee attribution, sponsorship patterns, and participant roles in Flow's multi-signer transaction model. Example: '0x1cf0e2f2f715450'. Important for understanding who bears the cost of transaction execution.
 {% enddocs %}

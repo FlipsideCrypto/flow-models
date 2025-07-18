@@ -1,21 +1,35 @@
 {% docs evm_tx_table_doc %}
 
-This table contains transaction level data for this EVM blockchain. Each transaction will have a unique transaction hash, along with transaction fees and a value transferred in the native asset when applicable. Transactions may be native asset transfers or interactions with contract addresses. For more information, please see [The Ethereum Organization - Transactions](https://ethereum.org/en/developers/docs/transactions/)
+## Description
 
-Below are the specific native tokens that correspond to each EVM chain:
+A comprehensive fact table containing transaction-level data for EVM-compatible blockchains. This table serves as the primary source for transaction analysis, providing detailed information about each transaction including sender/receiver addresses, values, gas usage, fees, and execution status. The table supports analysis of transaction patterns, user behavior, and network activity across multiple EVM chains. Each record represents a single transaction with complete execution details and metadata.
 
-| Status     | Description |
-|------------|-------------|
-| ETHEREUM   | ETH         |
-| BINANCE    | BNB         |
-| POLYGON    | POL         |
-| AVALANCHE  | AVAX        |
-| ARBITRUM   | ETH         |
-| OPTIMISM   | ETH         |
-| GNOSIS     | xDAI        |
-| KAIA       | KLAY        |
-| SEI        | SEI         |
-| CORE       | CORE        |
+## Key Use Cases
+
+- **Transaction Analysis**: Tracking transaction volumes, success rates, and execution patterns
+- **User Behavior Analysis**: Understanding transaction patterns and user activity across EVM chains
+- **Gas Analysis**: Monitoring gas usage, fee structures, and transaction economics
+- **Cross-Chain Activity**: Comparing transaction patterns across different EVM-compatible blockchains
+- **Contract Interaction Analysis**: Understanding smart contract usage and interaction patterns
+- **Network Performance**: Monitoring transaction processing efficiency and network health
+
+## Important Relationships
+
+- **core_evm__fact_blocks**: Links to block data containing each transaction
+- **core_evm__fact_event_logs**: Links to event logs emitted by transactions
+- **core_evm__fact_traces**: Links to execution traces for detailed transaction analysis
+- **core_evm__dim_contracts**: Links to contract metadata for contract interactions
+- **core_evm__dim_labels**: Links to address labels for user identification
+- **core__fact_transactions**: May provide comparison data with native Flow transactions
+
+## Commonly-used Fields
+
+- **TX_HASH**: Essential for transaction identification and blockchain verification
+- **FROM_ADDRESS/TO_ADDRESS**: Critical for transaction flow analysis and user behavior studies
+- **VALUE**: Important for transaction value analysis and economic activity tracking
+- **GAS_USED/GAS_PRICE**: Key for gas economics and transaction cost analysis
+- **TX_SUCCEEDED**: Critical for success rate analysis and error tracking
+- **BLOCK_TIMESTAMP**: Essential for time-series analysis and temporal data aggregation
 
 {% enddocs %}
 

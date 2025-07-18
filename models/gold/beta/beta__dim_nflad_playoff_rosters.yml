@@ -2,5 +2,4 @@ version: 2
 
 models:
   - name: beta__dim_nflad_playoff_rosters
-    description: |-
-      A temporary table containing official rosters for the Flipside x NFL AllDay Playoff Challenge.
+    description: '{{ doc("beta__dim_nflad_playoff_rosters") }}'

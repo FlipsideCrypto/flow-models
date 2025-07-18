@@ -1,5 +1,3 @@
 {% docs transaction_result %}
-
-Outcome of the transaction, including events that were called.
-
+The outcome of the transaction execution, including status (success/failure), error messages, and any events emitted. Data type: STRING (JSON-encoded or structured). This field is used to analyze transaction success rates, debug failures, and audit on-chain activity. Example: '{"status": "success", "events": [...]}'. Essential for understanding transaction lifecycle, error handling, and event-driven analytics on Flow.
 {% enddocs %}

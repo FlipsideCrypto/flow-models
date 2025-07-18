@@ -1,5 +1,3 @@
 {% docs label_type %}
-
-Predominant label categorization, such as CEX, Operator, NFT, etc.
-
+The primary category or classification assigned to an address, contract, or entity (e.g., 'CEX', 'Operator', 'NFT', 'DeFi', 'Game'). Data type: STRING. Used for grouping, filtering, and analyzing entities by type in dashboards and reports. Example: 'CEX' for centralized exchanges, 'NFT' for non-fungible token contracts. Important for segmentation and entity-level analytics.
 {% enddocs %}

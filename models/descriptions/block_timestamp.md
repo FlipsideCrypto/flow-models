@@ -1,5 +1,3 @@
 {% docs block_timestamp %}
-
-The date and time for when the block was written.
-
+The timestamp (in UTC) when the block or transaction was recorded on the Flow blockchain. Data type: TIMESTAMP_NTZ. This field is essential for time-series analysis, ordering events, and joining with other tables by time. For example, a block with block_height 100,000 may have a block_timestamp of '2023-01-01 12:00:00'. Used for analytics on network activity, transaction throughput, and historical state reconstruction.
 {% enddocs %}

@@ -1,5 +1,3 @@
 {% docs gas_limit %}
-
-Upper gas limit attached to the transaction.
-
+The maximum amount of computational resources (gas) allocated for executing the transaction on the Flow blockchain. Data type: INTEGER. If the transaction exceeds this limit, it will fail. This field is used to analyze resource usage, transaction costs, and execution constraints. Example: 1000. Important for understanding transaction execution, fee estimation, and optimizing smart contract operations.
 {% enddocs %}

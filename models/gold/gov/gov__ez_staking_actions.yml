@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: gov__ez_staking_actions
-    description: |-
-      This table provides transaction-level info on FLOW staking activities.
+    description: '{{ doc("gov__ez_staking_actions") }}'
 
     tests:
       - dbt_utils.unique_combination_of_columns:

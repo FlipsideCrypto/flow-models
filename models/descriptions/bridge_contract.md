@@ -1,5 +1,3 @@
 {% docs bridge_contract %}
-
-The contract address for the bridge used to move tokens to or from Flow.
-
+The Flow contract address for the bridge protocol used to transfer tokens to or from the Flow blockchain. Data type: STRING. Identifies the specific bridge (e.g., Blocto Teleport, Celer) facilitating cross-chain transfers. Used for protocol attribution, analytics, and filtering bridge activity. Example: '0xabcdef1234567890'. Important for cross-chain analytics and monitoring bridge usage.
 {% enddocs %}

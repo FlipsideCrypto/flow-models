@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: rewards__dim_storefront_items
-    description: "Response from the Minting Assets API"
+    description: '{{ doc("rewards__dim_storefront_items") }}'
     tests:
       - dbt_utils.recency:
           datepart: day

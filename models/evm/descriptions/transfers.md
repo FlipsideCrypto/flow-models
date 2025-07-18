@@ -36,14 +36,72 @@ This fact-based table contains emitted event logs for ERC-20 Token Transfers (e.
 
 {% docs evm_ez_token_transfers_table_doc %}
 
-This convenience table contains emitted event logs for ERC-20 Token Transfers (e.g. `Transfer`: topic_0 = `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`), including decimal adjusted values, USD values, and other helpful token metadata where available for each transfer event. The contract address is the token transferred, and the raw amount field is the amount of tokens transferred. Note, this table does not contain ERC-721 and ERC-1155 token transfers, instead please use `nft.ez_nft_transfers`. Additionally, this table does not contain transfers of the chain's native asset, instead please use `core.ez_native_transfers`.
+## Description
+
+A curated and enriched table containing token transfer events across EVM-compatible blockchains. This table consolidates token transfer data from event logs, providing a comprehensive view of all token movements including ERC-20, ERC-721, and other token standards. The table includes enriched metadata such as token names, symbols, decimals, and USD values, making it the primary source for token transfer analysis. Each record represents a single token transfer with complete context and enriched data.
+
+## Key Use Cases
+
+- **Token Transfer Analysis**: Tracking token movements and transfer patterns across EVM chains
+- **Portfolio Tracking**: Monitoring token holdings and transfer activities for specific addresses
+- **Token Economics**: Analyzing token distribution, circulation, and economic activity
+- **DeFi Analysis**: Understanding token flows in DeFi protocols and yield farming activities
+- **Cross-Chain Token Analysis**: Comparing token transfer patterns across different EVM-compatible blockchains
+- **Token Performance**: Monitoring token usage, adoption, and transfer volume trends
+
+## Important Relationships
+
+- **core_evm__fact_event_logs**: Links to underlying event logs that generated these transfers
+- **core_evm__fact_transactions**: Links to transactions that triggered these transfers
+- **core_evm__dim_contracts**: Links to token contract metadata for transfer analysis
+- **core_evm__dim_labels**: Links to address labels for user and contract identification
+- **price__ez_prices_hourly**: Links to token prices for USD value calculations
+- **core__ez_token_transfers**: May provide comparison data with native Flow token transfers
+
+## Commonly-used Fields
+
+- **FROM_ADDRESS/TO_ADDRESS**: Essential for transfer flow analysis and user behavior studies
+- **CONTRACT_ADDRESS**: Critical for token identification and contract-specific analysis
+- **AMOUNT/AMOUNT_USD**: Important for transfer value analysis and economic activity tracking
+- **TOKEN_STANDARD**: Key for token type categorization and standard-specific analysis
+- **SYMBOL/NAME**: Critical for token identification and user interface display
+- **BLOCK_TIMESTAMP**: Essential for time-series analysis and temporal transfer tracking
 
 {% enddocs %}
 
 
 {% docs evm_ez_native_transfers_table_doc %}
 
-This convenience table contains all transfers for the chain's native asset, sourced from internal traces (`core.fact_traces`), and includes decimal adjusted and USD values where available. The origin addresses correspond to the to and from addresses in the `core.fact_transactions` table. Note, this table does not contain ERC-721 and ERC-1155 token transfers, instead please use `nft.ez_nft_transfers`.
+## Description
+
+A curated and enriched table containing native token transfer events across EVM-compatible blockchains. This table consolidates native token (e.g., ETH, BNB, AVAX) transfer data from execution traces, providing a comprehensive view of all native token movements. The table includes enriched metadata such as USD values and transfer context, making it the primary source for native token transfer analysis. Each record represents a single native token transfer with complete context and enriched data.
+
+## Key Use Cases
+
+- **Native Token Analysis**: Tracking native token movements and transfer patterns across EVM chains
+- **Value Flow Analysis**: Understanding how native tokens flow through the ecosystem
+- **Gas Economics**: Analyzing gas fee payments and native token usage for transaction costs
+- **Cross-Chain Native Analysis**: Comparing native token transfer patterns across different EVM-compatible blockchains
+- **User Behavior Analysis**: Understanding how users transfer native tokens for various purposes
+- **Network Economics**: Monitoring native token distribution and economic activity
+
+## Important Relationships
+
+- **core_evm__fact_traces**: Links to underlying execution traces that generated these transfers
+- **core_evm__fact_transactions**: Links to transactions that triggered these transfers
+- **core_evm__dim_labels**: Links to address labels for user and contract identification
+- **price__ez_prices_hourly**: Links to native token prices for USD value calculations
+- **core_evm__ez_token_transfers**: May provide comparison data with token transfers
+- **core__ez_token_transfers**: May provide comparison data with native Flow transfers
+
+## Commonly-used Fields
+
+- **FROM_ADDRESS/TO_ADDRESS**: Essential for transfer flow analysis and user behavior studies
+- **AMOUNT/AMOUNT_USD**: Important for transfer value analysis and economic activity tracking
+- **TYPE**: Critical for transfer type categorization and analysis
+- **TRACE_INDEX**: Key for transfer ordering and execution sequence analysis
+- **TX_HASH**: Essential for transaction linking and blockchain verification
+- **BLOCK_TIMESTAMP**: Critical for time-series analysis and temporal transfer tracking
 
 {% enddocs %}
 

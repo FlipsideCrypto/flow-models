@@ -1,6 +1,35 @@
 {% docs evm_traces_table_doc %}
 
-This table contains flattened trace data for internal contract calls. User-defined functions (UDFs) are available to decode hex encoded fields, including `utils.udf_hex_to_int()`.
+## Description
+
+A comprehensive fact table containing execution trace data for transactions on EVM-compatible blockchains. This table provides detailed information about the internal execution of transactions, including contract calls, value transfers, and execution paths. The table supports deep transaction analysis, debugging, and understanding complex contract interactions across multiple EVM chains. Each record represents a single execution step with complete trace information and execution context.
+
+## Key Use Cases
+
+- **Transaction Debugging**: Understanding why transactions failed or behaved unexpectedly
+- **Contract Interaction Analysis**: Tracking complex multi-contract interactions and call chains
+- **Value Flow Tracking**: Following native token and value transfers through complex transactions
+- **Gas Usage Analysis**: Understanding detailed gas consumption patterns in contract execution
+- **Security Analysis**: Identifying potential security issues and attack patterns
+- **Cross-Chain Trace Analysis**: Comparing execution patterns across different EVM-compatible blockchains
+
+## Important Relationships
+
+- **core_evm__fact_transactions**: Links to transactions that generated these traces
+- **core_evm__fact_blocks**: Links to blocks containing trace data
+- **core_evm__dim_contracts**: Links to contract metadata for trace analysis
+- **core_evm__ez_native_transfers**: May link to curated native transfer events
+- **core_evm__fact_event_logs**: May link to events emitted during trace execution
+- **core__fact_transactions**: May provide comparison data with native Flow transactions
+
+## Commonly-used Fields
+
+- **TRACE_INDEX**: Essential for trace ordering and execution sequence analysis
+- **FROM_ADDRESS/TO_ADDRESS**: Critical for call flow analysis and contract interaction tracking
+- **TYPE**: Important for trace categorization and execution type analysis
+- **VALUE**: Key for value transfer tracking and economic analysis
+- **GAS_USED**: Critical for gas consumption analysis and optimization studies
+- **TRACE_SUCCEEDED**: Essential for execution success analysis and error tracking
 
 {% enddocs %}
 

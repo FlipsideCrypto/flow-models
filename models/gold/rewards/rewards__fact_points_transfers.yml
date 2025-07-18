@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: rewards__fact_points_transfers
-    description: "Response from the Reward Points API Transfers Endpoint."
+    description: '{{ doc("rewards__fact_points_transfers") }}'
     tests:
       - dbt_utils.recency:
           datepart: day

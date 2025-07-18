@@ -1,0 +1,3 @@
+{% docs label_priority %}
+A numeric or categorical value indicating the precedence of a label when multiple labels are assigned to the same address, contract, or entity. Data type: INTEGER or STRING. Higher priority labels are preferred for analytics and reporting. Used for conflict resolution, deduplication, and ensuring consistent labeling. Example: 1 (highest priority), 2, 3, etc. Important for maintaining data quality and clarity in dashboards.
+{% enddocs %} 

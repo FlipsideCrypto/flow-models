@@ -1,5 +1,3 @@
 {% docs proposer %}
-
-Address of the transaction proposer.
-
+The Flow address of the account that proposed the transaction. Data type: STRING. The proposer is responsible for submitting the transaction to the network and paying the proposal fee. This field is used to analyze transaction origination, proposer activity, and fee attribution. Example: '0x1cf0e2f2f715450'. Important for understanding transaction lifecycle and participant roles in Flow's multi-signer model.
 {% enddocs %}

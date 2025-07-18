@@ -1,7 +1,3 @@
 {% docs script %}
-
-The Cadence script executed in this transaction.
-
-https://developers.flow.com/tooling/fcl-js/scripts
-
+The Cadence smart contract code or script executed as part of the transaction. Data type: STRING. This field contains the source code that defines the transaction's logic, including function calls, arguments, and contract interactions. Used for auditing, debugging, and analyzing smart contract usage on Flow. Example: a Cadence script for transferring tokens. For more details, see [Flow Cadence Scripts](https://developers.flow.com/tooling/fcl-js/scripts).
 {% enddocs %}

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__dim_allday_metadata
-    description: |-
-      Data for NFL AllDay Moments, including player, team, stats and more. This is produced via API and may differ in structure from metadata available on-chain in the `dim_moment_metadata` table.
+    description: "{{ doc('nft__dim_allday_metadata') }}"
 
     columns:
       - name: NFT_ID
