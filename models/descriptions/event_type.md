@@ -1,6 +1,3 @@
 {% docs event_type %}
-
-The type of method called on the event_contract. In the fact_events table, this represents the method called on a contract. This may also reference the full user-defined event type from the event object. See more on this in the Flow docs: https://developers.flow.com/build/basics/events#user-defined-events.  
-
-
+The name or identifier of the event emitted by a contract during transaction execution. Data type: STRING. In the `fact_events` table, this field represents the user-defined or system event type, such as 'A.0ae53cb6e3f42a79.FlowToken.TokensDeposited'. Used for filtering, categorizing, and analyzing on-chain events. Example: 'A.0ae53cb6e3f42a79.FlowToken.TokensWithdrawn'. For more details, see [Flow User-Defined Events](https://developers.flow.com/build/basics/events#user-defined-events).
 {% enddocs %}

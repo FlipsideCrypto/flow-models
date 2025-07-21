@@ -1,5 +1,3 @@
 {% docs tx_id %}
-
-ID for the transaction.
-
+The unique identifier (hash) for a transaction on the Flow blockchain. Data type: STRING. Each transaction is assigned a cryptographic hash that ensures its uniqueness and immutability. Used for joining transaction data across tables, tracing transaction execution, and verifying transaction integrity. Example: 'e3f1c2d4...'. Essential for transaction-level analytics, debugging, and cross-referencing with block and event data.
 {% enddocs %}

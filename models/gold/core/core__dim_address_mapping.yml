@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__dim_address_mapping
-    description: -|
-      A table that maps EVM addresses to Flow addresses based on COA Creation events. A single Flow address may have multiple EVM addresses associated with it.
+    description: "{{ doc('core__dim_address_mapping') }}"
     tests:
       - dbt_utils.recency:
           datepart: hours

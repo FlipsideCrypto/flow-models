@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: |-
-      This table records all the transactions of the FLOW blockchain.
+    description: "{{ doc('core__fact_transactions') }}"
 
     columns:
       - name: TX_ID

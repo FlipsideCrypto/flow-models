@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_events
-    description: |-
-      This table records events from each transaction on the FLOW blockchain.
+    description: "{{ doc('core__fact_events') }}"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

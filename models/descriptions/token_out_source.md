@@ -1,5 +1,3 @@
 {% docs token_out_source %}
-
-The source address of the token out in the swap record. If this is the first token withdraw in a swap, then the address is likely to be the trader. This could also be the address of a pool if this swap index is later in the transaction.
-
+The address from which the token is withdrawn ("token out") in a DEX swap. Data type: STRING. For the first swap in a transaction, this is typically the trader's address; for subsequent swaps in a multi-hop route, it may be a pool address. Used to trace token flow and participant roles in swaps. Example: '0x1cf0e2f2f715450' (trader) or a pool address for later hops. Important for swap path analysis and wallet attribution.
 {% enddocs %}

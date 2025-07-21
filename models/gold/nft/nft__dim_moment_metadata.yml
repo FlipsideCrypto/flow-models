@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: nft__dim_moment_metadata
-    description: |-
-      NFT Moment Metadata scraped from on-chain activity, where available. This should be joinable on sales or mints using the nft_collection (event_contract) and nft id.
+    description: "{{ doc('nft__dim_moment_metadata') }}"
 
     columns:
       - name: NFT_COLLECTION

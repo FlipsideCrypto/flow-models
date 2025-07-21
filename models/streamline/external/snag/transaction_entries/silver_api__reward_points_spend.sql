@@ -5,7 +5,7 @@
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ['_inserted_timestamp :: DATE'],
     post_hook = [ "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(user_wallet_address)" ],
-    tags = ['rewards_points_spend']
+    tags = ['rewards_points_spend', 'streamline_non_core']
 ) }}
 
 WITH silver_responses AS (
@@ -43,38 +43,13 @@ SELECT
     DATA :loyaltyAccountStartAmount :: NUMBER AS amount_start,
     DATA :loyaltyAccountEndAmount :: NUMBER AS amount_end,
 
-    DATA :idempotencyKey :: STRING AS idempotency_key,
-    DATA :organizationId :: STRING AS organization_id,
-    DATA :websiteId :: STRING AS website_id,
-
     DATA :loyaltyAccountId :: STRING AS account_id,
     DATA :loyaltyAccount :user :id :: STRING AS user_id,
     DATA :loyaltyAccount :user :walletAddress :: STRING AS user_wallet_address,
 
     DATA :loyaltyTransactionId :: STRING AS transaction_id,
-    DATA :loyaltyTransaction :description :: STRING AS transaction_description,
-    DATA :loyaltyTransaction :type :: STRING AS transaction_type,
 
-    DATA :loyaltyTransaction :loyaltyRule :id :: STRING AS rule_id,
-    DATA :loyaltyTransaction :loyaltyRule :type :: STRING AS rule_type,
-    DATA :loyaltyTransaction :loyaltyRule :name :: STRING AS rule_name,
-    DATA :loyaltyTransaction :loyaltyRule :description :: STRING AS rule_description,
-    DATA :loyaltyTransaction :loyaltyRule :metadata :: variant AS rule_metadata,
-
-    OBJECT_DELETE(
-        DATA,
-        'amount',
-        'createdAt',
-        'direction',
-        'idempotencyKey',
-        'loyaltyAccount',
-        'loyaltyAccountId',
-        'loyaltyAccountEndAmount',
-        'loyaltyAccountStartAmount',
-        'loyaltyTransactionId',
-        'organizationId',
-        'websiteId'
-    ) AS DATA,
+    DATA,
     partition_key,
     INDEX,
     _inserted_timestamp,

@@ -1,5 +1,3 @@
 {% docs event_contract %}
-
-The contract called for this event. This is equivalent to the Contract column on Flowscan and is a concatenation of the contract's account address and primary name.
-
+The Flow contract that emitted the event. Data type: STRING. This value is a concatenation of the contract's account address and its primary name (e.g., 'A.0ae53cb6e3f42a79.FlowToken'). Used for identifying the source of events, joining with contract metadata, and analyzing contract activity. Example: 'A.0ae53cb6e3f42a79.FlowToken'. Equivalent to the 'Contract' column on Flowscan.
 {% enddocs %}

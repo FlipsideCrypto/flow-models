@@ -1,5 +1,5 @@
 {% docs _inserted_timestamp %}
 
-Time the record was inserted into snowflake
+Time the record was inserted into the warehouse.
 
 {% enddocs %}

@@ -1,6 +1,35 @@
 {% docs evm_logs_table_doc %}
 
-This table contains flattened event logs from transactions on this EVM blockchain. Transactions may have multiple events, which are denoted by the event index for a transaction hash. Therefore, this table is unique on the combination of transaction hash and event index. Please see `fact_decoded_event_logs` or `ez_decoded_event_logs` for the decoded event logs.
+## Description
+
+A comprehensive fact table containing event log data emitted by smart contracts on EVM-compatible blockchains. This table serves as the foundation for smart contract analysis, providing detailed information about events including contract addresses, topics, data, and execution context. The table supports analysis of DeFi protocols, NFT marketplaces, and other smart contract applications across multiple EVM chains. Each record represents a single event log with complete emission details and metadata.
+
+## Key Use Cases
+
+- **Smart Contract Analysis**: Understanding contract behavior and event emission patterns
+- **DeFi Protocol Analysis**: Tracking DeFi events, swaps, liquidity changes, and yield farming activities
+- **NFT Analytics**: Monitoring NFT transfers, sales, and marketplace activities
+- **Event Tracking**: Following specific event types across different contracts and chains
+- **Contract Interaction Analysis**: Understanding how users interact with smart contracts
+- **Cross-Chain Event Analysis**: Comparing event patterns across different EVM-compatible blockchains
+
+## Important Relationships
+
+- **core_evm__fact_transactions**: Links to transactions that emitted these events
+- **core_evm__fact_blocks**: Links to blocks containing event logs
+- **core_evm__dim_contracts**: Links to contract metadata for event source identification
+- **core_evm__dim_labels**: Links to address labels for contract and user identification
+- **core_evm__ez_token_transfers**: May link to curated token transfer events
+- **core__fact_events**: May provide comparison data with native Flow events
+
+## Commonly-used Fields
+
+- **CONTRACT_ADDRESS**: Essential for contract identification and event source analysis
+- **TOPIC_0**: Critical for event type identification and event categorization
+- **TOPICS**: Important for event parameter analysis and filtering
+- **DATA**: Key for event data extraction and parameter analysis
+- **TX_HASH**: Essential for linking events to their originating transactions
+- **BLOCK_TIMESTAMP**: Critical for time-series analysis and temporal event tracking
 
 {% enddocs %}
 

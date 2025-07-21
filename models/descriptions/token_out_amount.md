@@ -1,6 +1,3 @@
 {% docs token_out_amount %}
-
-The amount of the token being swapped that the trader is sending to the pool (selling).
-Token OUT / IN is from the perspective of the trader. So, an out token is leaving the wallet while the in token is being deposited to the wallet. This perspective is not changing for multi-pool trades - think of it directionally, the tokens continue flowing from out to in. Out of wallet, into pool, out of pool, into (another pool / wallet), with the final movement being tokens into final wallet.
-
+The amount of tokens sent out from the trader's wallet (or previous pool) in a DEX swap. Data type: NUMBER (decimal adjusted). Represents the quantity of the "out" token in the swap, from the trader's perspective. Used for volume analysis, price impact, and swap path tracing. Example: 50.0 (for 50 tokens swapped out). Directionality is always from the trader to the pool or next hop in multi-pool swaps.
 {% enddocs %}

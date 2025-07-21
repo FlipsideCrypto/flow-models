@@ -1,6 +1,35 @@
 {% docs evm_contracts_table_doc %}
 
-This table contains contract details for contracts deployed on this EVM blockchain.
+## Description
+
+A dimensional table containing metadata for smart contracts deployed on EVM-compatible blockchains. This table serves as the foundation for contract identification and analysis, providing information about contract addresses, names, symbols, decimals, and creation details. The table supports contract analysis, token identification, and smart contract ecosystem understanding across multiple EVM chains. Each record represents a unique contract with comprehensive metadata and deployment information.
+
+## Key Use Cases
+
+- **Contract Identification**: Identifying and categorizing smart contracts across EVM chains
+- **Token Analysis**: Understanding token contracts, their properties, and metadata
+- **Contract Creation Tracking**: Monitoring new contract deployments and creation patterns
+- **Contract Ecosystem Analysis**: Understanding the distribution and types of contracts
+- **Cross-Chain Contract Analysis**: Comparing contracts across different EVM-compatible blockchains
+- **Contract Attribution**: Identifying contract creators and deployment patterns
+
+## Important Relationships
+
+- **core_evm__fact_transactions**: Links to transactions involving these contracts
+- **core_evm__fact_event_logs**: Links to events emitted by these contracts
+- **core_evm__fact_traces**: Links to execution traces involving these contracts
+- **core_evm__dim_labels**: Links to contract labels for additional categorization
+- **core_evm__ez_token_transfers**: Links to token transfers involving these contracts
+- **core__dim_contract_labels**: May provide comparison data with native Flow contracts
+
+## Commonly-used Fields
+
+- **ADDRESS**: Essential for contract identification and cross-table joins
+- **NAME**: Important for contract identification and user interface display
+- **SYMBOL**: Critical for token contracts and trading interface support
+- **DECIMALS**: Key for token amount calculations and precision handling
+- **CREATED_BLOCK_NUMBER**: Important for contract creation tracking and temporal analysis
+- **CREATOR_ADDRESS**: Critical for contract attribution and creator analysis
 
 {% enddocs %}
 
