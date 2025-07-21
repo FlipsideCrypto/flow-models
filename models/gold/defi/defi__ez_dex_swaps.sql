@@ -1,7 +1,6 @@
 {{ config (
     materialized = 'view',
-    tags = ['ez', 'scheduled'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'SWAPS' }} }
+    tags = ['ez', 'scheduled']
 ) }}
 WITH prices AS (
 

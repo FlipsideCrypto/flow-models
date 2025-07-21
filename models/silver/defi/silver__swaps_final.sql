@@ -38,6 +38,38 @@ WHERE
     )
 {% endif %}
 ),
+
+swaps_from_increment_factory AS (
+    SELECT
+        block_height,
+        block_timestamp,
+        tx_id,
+        swap_index,
+        swap_contract,
+        NULL AS platform,
+        trader,
+        token_in_amount,
+        token_in_contract,
+        NULL AS token_in_destination,
+        token_out_amount,
+        token_out_contract,
+        NULL AS token_out_source,
+        modified_timestamp AS _modified_timestamp,
+        2 AS _priority -- Priority between aggregator and regular swaps
+    FROM
+        {{ ref('silver__increment_swaps') }}
+
+{% if is_incremental() %}
+WHERE
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+
 swaps AS (
     SELECT
         block_height,
@@ -59,10 +91,13 @@ swaps AS (
         {{ ref('silver__swaps_s') }}
     WHERE
         tx_id NOT IN (
-            SELECT
-                DISTINCT tx_id
-            FROM
-                swaps_from_aggregator
+            SELECT DISTINCT tx_id 
+            FROM swaps_from_aggregator
+            
+            UNION ALL
+            
+            SELECT DISTINCT tx_id 
+            FROM swaps_from_increment_factory
         )
 
 {% if is_incremental() %}
@@ -79,6 +114,11 @@ swaps_union AS (
         *
     FROM
         swaps_from_aggregator
+    UNION ALL
+    SELECT 
+        * 
+    FROM 
+        swaps_from_increment_factory
     UNION ALL
     SELECT
         *
