@@ -57,7 +57,7 @@ swaps_from_increment_factory AS (
         modified_timestamp AS _modified_timestamp,
         2 AS _priority -- Priority between aggregator and regular swaps
     FROM
-        {{ ref('silver__swaps_factory') }}
+        {{ ref('silver__increment_swaps') }}
 
 {% if is_incremental() %}
 WHERE
