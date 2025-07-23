@@ -5,6 +5,7 @@
     materialized = 'incremental',
     unique_key = "block_number",
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate", "_partition_by_block_id"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "block_timestamp::date",
     tags = ['streamline_load', 'core', 'scheduled_core']

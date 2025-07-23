@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
+    incremental_predicates = ["dynamic_range_predicate", "block_timestamp::DATE"],
     cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     unique_key = "ez_token_transfers_id",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,sender,recipient,token_contract);",

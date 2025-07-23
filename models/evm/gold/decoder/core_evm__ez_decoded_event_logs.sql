@@ -1,5 +1,6 @@
 {{ config (
     materialized = "incremental",
+    incremental_predicates = ["dynamic_range_predicate", "block_timestamp::DATE"],
     unique_key = "ez_decoded_event_logs_id",
     incremental_strategy = 'delete+insert',
     cluster_by = "block_timestamp::date",
