@@ -1,5 +1,6 @@
 {{ config (
     materialized = 'incremental',
+    incremental_predicates = ["dynamic_range_predicate", "block_timestamp_associated::DATE"],
     incremental_strategy = 'merge',
     merge_exclude_columns = ['inserted_timestamp'],
     unique_key = 'dim_address_mapping_id',
