@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: silver__increment_deployed_pairs
+    description: |-
+      This table records newly deployed SwapPair contracts on the Flow blockchain, as detected from PairCreated events emitted by the SwapFactory contract.
+
+    columns:
+      - name: pairAddress
+        description: "The address of the newly created pair contract."
+        tests:
+          - not_null
+
+      - name: event_contract
+        description: "The fully qualified contract name for the SwapPair."
+        tests:
+          - not_null
+
+      - name: token0_contract
+        description: "The contract address/key for token0 in the pair."
+        tests:
+          - not_null
+
+      - name: token1_contract
+        description: "The contract address/key for token1 in the pair."
+        tests:
+          - not_null
+
+      - name: increment_deployed_pairs_id
+        description: "A surrogate key for the row, generated from event_contract."
+        tests:
+          - not_null
+          - unique
+
+      - name: inserted_timestamp
+        description: "The timestamp when the row was inserted."
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "The timestamp when the row was last modified."
+        tests:
+          - not_null 
