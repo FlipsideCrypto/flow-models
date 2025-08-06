@@ -2,6 +2,7 @@
     materialized = 'incremental',
     unique_key = 'event_id',
     incremental_strategy = 'merge',
+    incremental_predicates = ["dynamic_range_predicate", "block_timestamp::date"],
     merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "block_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_id,event_id,event_contract,event_type);",
