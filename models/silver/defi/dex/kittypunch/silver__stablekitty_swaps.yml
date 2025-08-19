@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: silver__stablekitty_swaps
+    description: "StableKitty swap transactions with proper filtering to exclude mint/burn operations"
+    columns:
+      - name: stablekitty_swaps_id
+        description: "Primary key for stablekitty swaps"
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_id
+        description: "Transaction hash"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "Timestamp of the block containing the swap"
+        tests:
+          - not_null
+
+      - name: block_height
+        description: "Block number"
+        tests:
+          - not_null
+
+      - name: event_index
+        description: "Index of the swap event within the transaction"
+        tests:
+          - not_null
+
+      - name: pool_address
+        description: "Address of the StableKitty pool contract"
+        tests:
+          - not_null
+
+      - name: platform
+        description: "Platform identifier (stablekitty)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['stablekitty']
+
+      - name: platform_version
+        description: "Platform version (stable)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['stable']
+
+      - name: user_address
+        description: "Address that initiated the swap"
+        tests:
+          - not_null
+
+      - name: token0_address
+        description: "Address of the first token (typically LP token)"
+        tests:
+          - not_null
+
+      - name: token1_address
+        description: "Address of the second token"
+        tests:
+          - not_null
+
+      - name: token0_amount
+        description: "Amount of token0 in the swap (raw)"
+
+      - name: token1_amount
+        description: "Amount of token1 in the swap (raw)"
+
+      - name: swap_amount
+        description: "Swap amount from event data (raw)"
+
+      - name: raw_data
+        description: "Raw event data"
+
+      - name: inserted_timestamp
+        description: "Timestamp when record was inserted"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "Timestamp when record was last modified"
+        tests:
+          - not_null

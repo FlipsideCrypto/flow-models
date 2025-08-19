@@ -1,0 +1,103 @@
+version: 2
+models:
+  - name: silver__kittypunch_v3_swaps
+    description: "KittyPunch V3 swap events extracted from pool contract event logs. This model captures swap transactions executed on KittyPunch DEX V3 concentrated liquidity pools, using Transfer events to determine swap amounts."
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+      - name: swap_contract
+        description: "Contract address of the V3 pool where the swap was executed"
+        tests:
+          - not_null
+      - name: trader
+        description: "Address that initiated the swap transaction"
+        tests:
+          - not_null
+      - name: recipient_address
+        description: "Address that received the output tokens (may differ from trader)"
+      - name: platform
+        description: "DEX platform identifier, always 'kittypunch' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kittypunch']
+      - name: platform_version
+        description: "Platform version, always 'v3' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['v3']
+      - name: token_in_contract
+        description: "Contract address of the token being sold (derived from Transfer events)"
+        tests:
+          - not_null
+      - name: token_out_contract
+        description: "Contract address of the token being bought (derived from Transfer events)"
+        tests:
+          - not_null
+      - name: token_in_amount
+        description: "Raw amount of tokens provided by the trader (aggregated from Transfer events)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: token_out_amount
+        description: "Raw amount of tokens received by the trader (aggregated from Transfer events)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+      - name: swap_direction
+        description: "Direction of the swap: token0_to_token1, token1_to_token0, or unknown"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['token0_to_token1', 'token1_to_token0', 'unknown']
+      - name: fee_tier
+        description: "Fee tier of the V3 pool in basis points"
+        tests:
+          - not_null
+      - name: tick
+        description: "Current tick after the swap execution"
+      - name: sqrt_price_x96
+        description: "Square root price after swap in Q64.96 format"
+      - name: liquidity
+        description: "Pool liquidity after the swap"
+      - name: contains_wflow
+        description: "Boolean indicating if the swap involves WFLOW token"
+        tests:
+          - not_null
+      - name: raw_data
+        description: "Raw data field from the Swap event"
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
+      - name: kittypunch_v3_swaps_id
+        description: "Unique identifier for each swap record"
+        tests:
+          - not_null
+          - unique
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 48

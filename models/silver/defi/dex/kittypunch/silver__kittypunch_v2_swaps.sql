@@ -127,7 +127,7 @@ swap_details AS (
         amount0 IS NOT NULL AND amount1 IS NOT NULL 
         AND (amount0 > 0 OR amount1 > 0)
 ),
-FINAL (
+FINAL AS (
     SELECT
         tx_hash AS tx_id,
         block_timestamp,
