@@ -57,6 +57,7 @@ parsed_swaps AS (
         tx_position,
         event_index,
         contract_address AS pair_contract,
+        data,
         TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 3, 64)) AS NUMBER) AS amount0,
         TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 67, 64)) AS NUMBER) AS amount1
     FROM
@@ -73,11 +74,12 @@ swap_with_tokens AS (
         s.tx_position,
         s.event_index,
         s.pair_contract,
+        s.data,
         t.from_address AS sender_address,
         s.amount0,
         s.amount1,
         p.token0_address,
-        p.token1_address,
+        p.token1_address
     FROM
         parsed_swaps s
     INNER JOIN
@@ -98,6 +100,7 @@ swap_details AS (
         tx_position,
         event_index,
         pair_contract,
+        data,
         sender_address,
         token0_address,
         token1_address,
@@ -120,7 +123,7 @@ swap_details AS (
         CASE 
             WHEN amount0 > 0 THEN token1_address
             ELSE token0_address
-        END AS token_out_contract,
+        END AS token_out_contract
     FROM
         swap_with_tokens
     WHERE
@@ -153,7 +156,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'event_index']
+        ['tx_id', 'event_index']
     ) }} AS kittypunch_v2_swaps_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
