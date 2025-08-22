@@ -1,0 +1,82 @@
+version: 2
+models:
+  - name: silver__kittypunch_v2_contracts
+    description: "PunchSwap V2 pair contracts registry extracted from Factory PairCreated events. This model captures all trading pairs created on the KittyPunch DEX V2 protocol."
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+      - name: factory_address
+        description: "Address of the PunchSwap V2 Factory contract that created the pair"
+        tests:
+          - not_null
+      - name: platform
+        description: "DEX platform identifier, always 'kittypunch' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kittypunch']
+      - name: platform_version
+        description: "Platform version, always 'v2' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['v2']
+      - name: token0_address
+        description: "Contract address of the first token in the pair (as determined by the factory)"
+        tests:
+          - not_null
+      - name: token1_address
+        description: "Contract address of the second token in the pair (as determined by the factory)"
+        tests:
+          - not_null
+      - name: pair_address
+        description: "Contract address of the created pair/pool"
+        tests:
+          - not_null
+          - unique
+      - name: pair_id
+        description: "Sequential ID assigned by the factory to this pair"
+        tests:
+          - not_null
+      - name: contains_wflow
+        description: "Boolean indicating if the pair contains WFLOW token"
+        tests:
+          - not_null
+      - name: pair_name
+        description: "Standardized pair name with tokens in alphabetical order"
+        tests:
+          - not_null
+      - name: raw_data
+        description: "Raw data field from the PairCreated event"
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
+      - name: kittypunch_v2_contracts_id
+        description: "Unique identifier for each pair creation record"
+        tests:
+          - not_null
+          - unique
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 48
