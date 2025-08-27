@@ -3,9 +3,7 @@ run-name: dbt_run_scheduled_streamline_non_core
 
 on:
   workflow_dispatch:
-  schedule:
-    # Daily at 06:00 UTC
-    - cron: "0 6 * * *"
+    # Disabled 2025-08-27 due to no responses from the points (snag) API
 
 env:
   SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
