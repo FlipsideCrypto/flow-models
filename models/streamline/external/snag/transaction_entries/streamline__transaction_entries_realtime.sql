@@ -23,13 +23,13 @@
                 SELECT
                     entry_id,
                     ROW_NUMBER() over (
+                        PARTITION BY partition_key
                         ORDER BY
-                            partition_key DESC,
-                            INDEX ASC
+                            INDEX DESC
                     ) AS rn
                 FROM
                     {{ ref('silver_api__transaction_entries') }}
-                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '10 days'
             )
             SELECT
                 entry_id
