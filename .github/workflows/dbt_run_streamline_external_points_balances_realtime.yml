@@ -8,8 +8,7 @@ on:
   workflow_dispatch:
   schedule:
     # Daily at 0, 1, 2, 3, 4 UTC
-    # Disabled 2025-08-27 due to no responses from the points (snag) API
-    # - cron: "0 0,1,2,3,4 * * *"
+    - cron: "0 0,1,2,3,4 * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
