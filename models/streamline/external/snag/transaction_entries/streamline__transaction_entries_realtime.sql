@@ -29,7 +29,7 @@
                     ) AS rn
                 FROM
                     {{ ref('silver_api__transaction_entries') }}
-                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '10 days'
+                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
             )
             SELECT
                 entry_id
