@@ -6,7 +6,8 @@
     cluster_by = ['block_timestamp::date', 'modified_timestamp::date'],
     unique_key = "topshot_buyback_id",
     tags = ['nft', 'topshot', 'scheduled'],
-    meta = { 'database_tags': { 'table': { 'PURPOSE': 'NFT, TOPSHOT' } } }
+    meta = { 'database_tags': { 'table': { 'PURPOSE': 'NFT, TOPSHOT' } } },
+    enabled = false
 ) }}
 
 WITH flowty_sales AS (
