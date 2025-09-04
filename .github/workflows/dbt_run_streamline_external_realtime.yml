@@ -6,8 +6,8 @@ description: |
 on:
   workflow_dispatch:
   schedule:
-    # Runs hourly
-    - cron: "0 * * * *"
+    # Runs every 15 minutes
+    - cron: "0,15,30,45 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
