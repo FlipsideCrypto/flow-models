@@ -49,7 +49,7 @@
 SELECT
     {{ var(
         'API_LIMIT',
-        1000
+        100
     ) }} AS api_limit,
     '{{ starting_after }}' AS starting_after,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,
