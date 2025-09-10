@@ -88,7 +88,7 @@
     {% if target.name == "prod" %}
         aws_flow_evm_api_prod AS 'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_rest_api'
     {% else %}
-        aws_flow_evm_api_dev AS 'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_rest_api'
+        aws_flow_evm_api_dev AS 'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_rest_api'
     {%- endif %};
 {% endmacro %}
 

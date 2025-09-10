@@ -41,8 +41,8 @@
         {% do run_query(sql) %}
 
         {% set sql %}
-        CREATE api integration IF NOT EXISTS aws_flow_evm_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/flow-api-stg-rolesnowflakeudfsAF733095-tPEdygwPC6IV' api_allowed_prefixes = (
-            'https://pfv9lhg3kg.execute-api.us-east-1.amazonaws.com/stg/'
+        CREATE api integration IF NOT EXISTS aws_flow_evm_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/flow-api-stg-rolesnowflakeudfsAF733095-ybejBONVMTd4' api_allowed_prefixes = (
+            'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/'
         ) enabled = TRUE;
         {% endset %}
         {% do run_query(sql) %}
