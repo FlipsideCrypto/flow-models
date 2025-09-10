@@ -14,12 +14,9 @@ WITH pool_deployed_events AS (
         tx_position,
         event_index,
         contract_address,
-        topics,
-        topic_0,
-        topic_1,
-        topic_2,
-        topic_3,
-        data,
+        decoded_log,
+        full_decoded_log,
+        event_name,
         inserted_timestamp,
         modified_timestamp,
         CASE 
@@ -28,11 +25,16 @@ WITH pool_deployed_events AS (
             ELSE 'Unknown'
         END AS factory_type
     FROM
-        {{ ref('core_evm__fact_event_logs') }}
+        {{ ref('core_evm__ez_decoded_event_logs') }}
     WHERE
-        LOWER(contract_address) = LOWER('0x4412140D52C1F5834469a061927811Abb6026dB7')
-        OR
-        LOWER(contract_address) = LOWER('0xf0E48dC92f66E246244dd9F33b02f57b0E69fBa9') 
+        (
+            LOWER(contract_address) = LOWER('0x4412140D52C1F5834469a061927811Abb6026dB7')
+            OR LOWER(contract_address) = LOWER('0xf0E48dC92f66E246244dd9F33b02f57b0E69fBa9')
+        )
+        AND (
+            event_name IN ('PlainPoolDeployed', 'PoolDeployed', 'Deployed')
+            OR topic_0 = '0xd1d60d4611e4091bb2e5f699eeb79136c21ac2305ad609f3de569afc3471eecc' -- PlainPoolDeployed
+        )
              
             -- Note: TriKittyFactory (0xebd098c60b1089f362AC9cfAd9134CBD29408226) has no deployment events
             -- This factory may not be active or may use a different deployment mechanism
@@ -53,45 +55,42 @@ parsed_pools AS (
         tx_position,
         event_index,
         contract_address AS factory_address,
+        -- Use decoded log fields for token addresses
         CASE 
-            WHEN factory_type = 'StableKittyFactoryNG' 
-            THEN CONCAT('0x', SUBSTR(data, 251, 40))
-            
-            WHEN factory_type = 'TwoKittyFactory' AND LENGTH(data) = 130 
-            THEN CONCAT('0x', SUBSTR(data, 27, 40))
+            WHEN decoded_log:coins IS NOT NULL AND ARRAY_SIZE(decoded_log:coins) >= 1
+            THEN decoded_log:coins[0]::STRING
+            WHEN decoded_log:token0 IS NOT NULL
+            THEN decoded_log:token0::STRING
             ELSE NULL
         END AS token0_address,
         
         CASE 
-            WHEN factory_type = 'StableKittyFactoryNG' AND TRY_TO_NUMBER(SUBSTR(data, 195, 64), 16) >= 2
-            THEN CONCAT('0x', SUBSTR(data, 315, 40))
-            
-            WHEN factory_type = 'TwoKittyFactory' AND LENGTH(data) = 130 
-            THEN CONCAT('0x', SUBSTR(data, 91, 40))
+            WHEN decoded_log:coins IS NOT NULL AND ARRAY_SIZE(decoded_log:coins) >= 2
+            THEN decoded_log:coins[1]::STRING
+            WHEN decoded_log:token1 IS NOT NULL
+            THEN decoded_log:token1::STRING
             ELSE NULL
         END AS token1_address,
         
         CASE 
-            WHEN factory_type = 'StableKittyFactoryNG' AND TRY_TO_NUMBER(SUBSTR(data, 195, 64), 16) = 3
-            THEN CONCAT('0x', SUBSTR(data, 379, 40))
-
-            WHEN factory_type = 'StableKittyFactoryNG' AND TRY_TO_NUMBER(SUBSTR(data, 195, 64), 16) = 2
-            THEN CONCAT('0x', SUBSTR(data, 315, 40))
-
-            WHEN factory_type = 'TwoKittyFactory' AND LENGTH(data) = 66 
-            THEN CONCAT('0x', SUBSTR(data, 27, 40))
-
-            WHEN factory_type = 'TwoKittyFactory' AND LENGTH(data) = 130 
-            THEN CONCAT('0x', SUBSTR(data, 91, 40))
-
+            WHEN decoded_log:coins IS NOT NULL AND ARRAY_SIZE(decoded_log:coins) >= 3
+            THEN decoded_log:coins[2]::STRING
             ELSE NULL
-        END AS pool_address,
-        factory_type
+        END AS token2_address,
+        
+        -- Pool address from decoded log
+        COALESCE(
+            decoded_log:pool::STRING,
+            decoded_log:poolAddress::STRING,
+            decoded_log:address::STRING
+        ) AS pool_address,
+        
+        factory_type,
+        full_decoded_log AS raw_data
     FROM
         pool_deployed_events
     WHERE
-        data IS NOT NULL
-        OR topic_1 IS NOT NULL
+        decoded_log IS NOT NULL
 ),
 
 FINAL AS (
@@ -105,8 +104,10 @@ FINAL AS (
         'stable' AS platform_version,
         token0_address,
         token1_address,
+        token2_address,
         pool_address,
-        factory_type
+        factory_type,
+        raw_data
     FROM
         parsed_pools
     WHERE

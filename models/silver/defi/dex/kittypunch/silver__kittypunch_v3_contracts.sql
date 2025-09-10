@@ -14,20 +14,19 @@ WITH pool_created_events AS (
         tx_position,
         event_index,
         contract_address,
-        topics,
-        topic_0,
-        topic_1,
-        topic_2,
-        topic_3,
-        data,
+        decoded_log,
+        full_decoded_log,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('core_evm__fact_event_logs') }}
+        {{ ref('core_evm__ez_decoded_event_logs') }}
     WHERE
         LOWER(contract_address) = LOWER('0xf331959366032a634c7cAcF5852fE01ffdB84Af0')
-        AND topic_0 = '0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118' -- PoolCreated event signature
-        AND block_timestamp >= '2025-04-01' -- V3 factory deployment
+        AND (
+            topic_0 = '0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118' -- PoolCreated event signature
+            OR event_name = 'PoolCreated'
+        )
+        AND block_timestamp >= '2024-01-01' -- V3 factory deployment (started earlier than expected)
         
     {% if is_incremental() %}
         AND modified_timestamp > (
@@ -45,31 +44,21 @@ parsed_pools AS (
         tx_position,
         event_index,
         contract_address AS factory_address,
-        CONCAT('0x', SUBSTR(topic_1, 27, 40)) AS token_address_0,
-        CONCAT('0x', SUBSTR(topic_2, 27, 40)) AS token_address_1,
-        CASE 
-            WHEN topic_3 = '0x0000000000000000000000000000000000000000000000000000000000000064' THEN 100
-            WHEN topic_3 = '0x0000000000000000000000000000000000000000000000000000000000002710' THEN 10000
-            WHEN topic_3 = '0x0000000000000000000000000000000000000000000000000000000000000bb8' THEN 3000
-            ELSE TRY_TO_NUMBER(SUBSTR(topic_3, 3, 64), 16)
-        END AS fee_tier,
-        CASE 
-            WHEN SUBSTR(data, 3, 64) = '0000000000000000000000000000000000000000000000000000000000000001' THEN 1
-            WHEN SUBSTR(data, 3, 64) = '00000000000000000000000000000000000000000000000000000000000000c8' THEN 200
-            WHEN SUBSTR(data, 3, 64) = '000000000000000000000000000000000000000000000000000000000000003c' THEN 60
-            ELSE TRY_TO_NUMBER(SUBSTR(data, 3, 64), 16)
-        END AS tick_spacing,
-        CONCAT('0x', SUBSTR(data, 91, 40)) AS pool_address,
-        data AS raw_data,
+        decoded_log:token0::STRING AS token_address_0,
+        decoded_log:token1::STRING AS token_address_1,
+        decoded_log:fee::NUMBER AS fee_tier,
+        decoded_log:tickSpacing::NUMBER AS tick_spacing,
+        decoded_log:pool::STRING AS pool_address,
+        full_decoded_log AS raw_data,
         inserted_timestamp,
         modified_timestamp
     FROM
         pool_created_events
     WHERE
-        data IS NOT NULL
-        AND topic_1 IS NOT NULL
-        AND topic_2 IS NOT NULL
-        AND topic_3 IS NOT NULL
+        decoded_log IS NOT NULL
+        AND decoded_log:token0 IS NOT NULL
+        AND decoded_log:token1 IS NOT NULL
+        AND decoded_log:pool IS NOT NULL
 ),
 
 FINAL AS (

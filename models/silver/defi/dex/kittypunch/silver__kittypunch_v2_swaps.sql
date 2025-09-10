@@ -25,18 +25,19 @@ swap_events AS (
         tx_position,
         event_index,
         contract_address,
-        topics,
-        topic_0,
-        topic_1,
-        topic_2,
-        topic_3,
-        data,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        event_name,
+        decoded_log,
+        full_decoded_log,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('core_evm__fact_event_logs') }}
+        {{ ref('core_evm__ez_decoded_event_logs') }}
     WHERE
-        topic_0 = '0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1'
+        topic_0 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'  -- Correct V2 Swap signature
+        AND event_name = 'Swap'
         AND LOWER(contract_address) IN (
             SELECT LOWER(pair_address) FROM kittypunch_pairs
         )
@@ -57,13 +58,24 @@ parsed_swaps AS (
         tx_position,
         event_index,
         contract_address AS pair_contract,
-        data,
-        TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 3, 64)) AS NUMBER) AS amount0,
-        TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 67, 64)) AS NUMBER) AS amount1
+        full_decoded_log AS data,
+        decoded_log:sender::STRING AS sender_address,  -- From decoded_log, not origin
+        decoded_log:to::STRING AS recipient_address,   -- From decoded_log
+        -- V2 Uniswap style amounts
+        decoded_log:amount0In::NUMBER AS amount0_in,
+        decoded_log:amount0Out::NUMBER AS amount0_out,
+        decoded_log:amount1In::NUMBER AS amount1_in,
+        decoded_log:amount1Out::NUMBER AS amount1_out
     FROM
         swap_events
     WHERE
-        data IS NOT NULL
+        decoded_log IS NOT NULL
+        AND (
+            decoded_log:amount0In::NUMBER > 0 
+            OR decoded_log:amount0Out::NUMBER > 0 
+            OR decoded_log:amount1In::NUMBER > 0 
+            OR decoded_log:amount1Out::NUMBER > 0
+        )
 ),
 
 swap_with_tokens AS (
@@ -75,9 +87,12 @@ swap_with_tokens AS (
         s.event_index,
         s.pair_contract,
         s.data,
-        t.from_address AS sender_address,
-        s.amount0,
-        s.amount1,
+        s.sender_address,
+        s.recipient_address,
+        s.amount0_in,
+        s.amount0_out,
+        s.amount1_in,
+        s.amount1_out,
         p.token0_address,
         p.token1_address
     FROM
@@ -86,10 +101,6 @@ swap_with_tokens AS (
         kittypunch_pairs p
     ON
         LOWER(s.pair_contract) = LOWER(p.pair_address)
-    INNER JOIN
-        {{ ref('core_evm__fact_transactions') }} t
-    ON
-        s.tx_hash = t.tx_hash
 ),
 
 swap_details AS (
@@ -102,33 +113,44 @@ swap_details AS (
         pair_contract,
         data,
         sender_address,
+        recipient_address,
         token0_address,
         token1_address,
+        -- V2 Uniswap logic: determine input/output based on which amounts are non-zero
         CASE 
-            WHEN amount0 > 0 THEN amount0
-            ELSE amount1
+            WHEN amount0_in > 0 AND amount1_out > 0 THEN amount0_in   -- token0 → token1
+            WHEN amount1_in > 0 AND amount0_out > 0 THEN amount1_in   -- token1 → token0
+            ELSE 0
         END AS token_in_amount_raw,
         
         CASE 
-            WHEN amount0 > 0 THEN amount1
-            ELSE amount0
+            WHEN amount0_in > 0 AND amount1_out > 0 THEN amount1_out  -- token0 → token1
+            WHEN amount1_in > 0 AND amount0_out > 0 THEN amount0_out  -- token1 → token0
+            ELSE 0
         END AS token_out_amount_raw,
         
-        -- Token contracts based on amounts
+        -- Token contracts: determine based on swap direction
         CASE 
-            WHEN amount0 > 0 THEN token0_address
-            ELSE token1_address
+            WHEN amount0_in > 0 AND amount1_out > 0 THEN token0_address   -- Sending token0
+            WHEN amount1_in > 0 AND amount0_out > 0 THEN token1_address   -- Sending token1  
+            ELSE token0_address
         END AS token_in_contract,
         
         CASE 
-            WHEN amount0 > 0 THEN token1_address
-            ELSE token0_address
-        END AS token_out_contract
+            WHEN amount0_in > 0 AND amount1_out > 0 THEN token1_address   -- Receiving token1
+            WHEN amount1_in > 0 AND amount0_out > 0 THEN token0_address   -- Receiving token0
+            ELSE token1_address
+        END AS token_out_contract,
+        
+        -- Pass through for debugging
+        amount0_in,
+        amount0_out, 
+        amount1_in,
+        amount1_out
     FROM
         swap_with_tokens
     WHERE
-        amount0 IS NOT NULL AND amount1 IS NOT NULL 
-        AND (amount0 > 0 OR amount1 > 0)
+        (amount0_in > 0 OR amount0_out > 0 OR amount1_in > 0 OR amount1_out > 0)
 ),
 FINAL AS (
     SELECT
@@ -137,12 +159,26 @@ FINAL AS (
         block_number AS block_height,
         event_index,
         pair_contract AS swap_contract,
-        sender_address,
-        'kittypunch_v2' AS platform,
+        sender_address AS trader,
+        recipient_address,
+        'kittypunch' AS platform,
+        'v2' AS platform_version,
         token_in_contract,
         token_out_contract,
         token_in_amount_raw AS token_in_amount,
         token_out_amount_raw AS token_out_amount,
+        CASE 
+            WHEN token_in_contract = token0_address THEN 'token0_to_token1'
+            WHEN token_in_contract = token1_address THEN 'token1_to_token0'
+            ELSE 'unknown'
+        END AS swap_direction,
+        0 AS pair_id,  -- Set default pair_id since we don't extract it in this model
+        CASE
+            WHEN LOWER(token_in_contract) = LOWER('0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e') 
+                OR LOWER(token_out_contract) = LOWER('0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e')
+            THEN TRUE
+            ELSE FALSE
+        END AS contains_wflow,
         data as raw_data
     FROM
         swap_details
@@ -163,5 +199,3 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
-ORDER BY
-    block_timestamp DESC

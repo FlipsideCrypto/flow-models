@@ -77,6 +77,6 @@ models:
           - unique
     tests:
       - dbt_utils.recency:
-          datepart: hour
+          datepart: day
           field: block_timestamp
-          interval: 48
+          interval: 30

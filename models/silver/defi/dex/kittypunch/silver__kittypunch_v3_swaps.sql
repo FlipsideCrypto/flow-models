@@ -21,22 +21,26 @@ v3_swap_events AS (
         block_number,
         block_timestamp,
         tx_hash,
-        tx_position,
         event_index,
         contract_address AS pool_address,
-        CONCAT('0x', SUBSTR(topic_1, 27, 40)) AS sender_address,
-        CONCAT('0x', SUBSTR(topic_2, 27, 40)) AS recipient_address,
-        data,
+        -- Extract sender and recipient from indexed topics
+        LOWER(CONCAT('0x', SUBSTR(topics[1], 27))) AS sender_address,
+        LOWER(CONCAT('0x', SUBSTR(topics[2], 27))) AS recipient_address,
+        -- Decode amounts from hex data with error handling
+        TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 3, 64)) AS NUMBER) AS amount0,
+        TRY_CAST(utils.udf_hex_to_int(SUBSTR(data, 67, 64)) AS NUMBER) AS amount1,
+        data AS raw_data,
         inserted_timestamp,
         modified_timestamp
     FROM
         {{ ref('core_evm__fact_event_logs') }}
     WHERE
-        topic_0 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67' -- V3 Swap event signature
+        topic_0 = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'
         AND LOWER(contract_address) IN (
             SELECT LOWER(pool_address) FROM kittypunch_pools
         )
-        AND block_timestamp >= '2025-04-01' -- V3 deployment
+        AND block_timestamp >= '2024-01-01'
+        AND tx_succeeded = TRUE
         
     {% if is_incremental() %}
         AND modified_timestamp > (
@@ -45,104 +49,90 @@ v3_swap_events AS (
         )
     {% endif %}
 ),
-transfer_events AS (
-    SELECT 
-        t.tx_hash,
-        t.event_index,
-        t.block_number,
-        t.block_timestamp,
-        CONCAT('0x', SUBSTR(t.topic_1, 27, 40)) AS from_address,
-        CONCAT('0x', SUBSTR(t.topic_2, 27, 40)) AS to_address,
-        TRY_CAST(utils.udf_hex_to_int(SUBSTR(t.data, 3, 64)) AS NUMBER) AS amount,
-        t.contract_address AS token_address,
-        s.pool_address,
-        s.sender_address,
-        s.recipient_address,
-        s.event_index AS swap_event_index,
-        s.data,
-        s.inserted_timestamp,
-        s.modified_timestamp
-    FROM {{ ref('core_evm__fact_event_logs') }} t
-    INNER JOIN v3_swap_events s ON t.tx_hash = s.tx_hash
-    WHERE t.topic_0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' -- Swap event
-        AND t.data IS NOT NULL
-        AND (LOWER(CONCAT('0x', SUBSTR(t.topic_1, 27, 40))) = LOWER(s.pool_address)  -- FROM pool
-             OR LOWER(CONCAT('0x', SUBSTR(t.topic_2, 27, 40))) = LOWER(s.pool_address)) -- TO pool
-),
 swap_amounts AS (
     SELECT 
         tx_hash,
         pool_address,
         sender_address,
         recipient_address,
-        swap_event_index,
-        data,
+        event_index,
+        raw_data,
         block_number,
         block_timestamp,
-        MAX(CASE WHEN LOWER(from_address) = LOWER(pool_address) THEN token_address END) AS token_out_contract,
-        MAX(CASE WHEN LOWER(from_address) = LOWER(pool_address) THEN amount END) AS token_out_amount_raw,
-        MAX(CASE WHEN LOWER(to_address) = LOWER(pool_address) THEN token_address END) AS token_in_contract,
-        MAX(CASE WHEN LOWER(to_address) = LOWER(pool_address) THEN amount END) AS token_in_amount_raw,
-    FROM transfer_events
-    WHERE amount IS NOT NULL
-    GROUP BY 
-        tx_hash, pool_address, sender_address, recipient_address, swap_event_index, data,
-        block_number, block_timestamp
-    HAVING 
-        token_out_contract IS NOT NULL 
-        AND token_in_contract IS NOT NULL
-        AND token_out_amount_raw > 0
-        AND token_in_amount_raw > 0
-        AND token_out_amount_raw IS NOT NULL
-        AND token_in_amount_raw IS NOT NULL
+        -- V3 logic: positive amount = outgoing, negative = incoming
+        CASE 
+            WHEN amount0 > 0 THEN amount0
+            WHEN amount1 > 0 THEN amount1
+            ELSE 0
+        END AS token_in_amount_raw,
+        CASE 
+            WHEN amount0 < 0 THEN ABS(amount0)
+            WHEN amount1 < 0 THEN ABS(amount1)
+            ELSE 0
+        END AS token_out_amount_raw,
+        -- Determine token contracts based on amount direction
+        CASE 
+            WHEN amount0 > 0 OR amount0 < 0 THEN 'token0'
+            ELSE 'token1'
+        END AS input_token,
+        CASE 
+            WHEN amount0 < 0 OR amount0 > 0 THEN 'token1'
+            ELSE 'token0'
+        END AS output_token,
+        amount0,
+        amount1,
+        inserted_timestamp,
+        modified_timestamp
+    FROM v3_swap_events
+    WHERE amount0 IS NOT NULL AND amount1 IS NOT NULL 
+        AND (amount0 != 0 OR amount1 != 0)
 ),
 swap_details AS (
     SELECT
         s.tx_hash,
         s.block_timestamp,
         s.block_number,
-        s.swap_event_index AS event_index,
+        s.event_index,
         s.pool_address AS pool_contract,
         s.sender_address,
         s.recipient_address,
-        s.token_in_contract,
-        s.token_out_contract, 
+        -- Map token contracts based on direction
+        CASE 
+            WHEN s.input_token = 'token0' THEN p.token0_address
+            ELSE p.token1_address
+        END AS token_in_contract,
+        CASE 
+            WHEN s.output_token = 'token0' THEN p.token0_address  
+            ELSE p.token1_address
+        END AS token_out_contract,
         s.token_in_amount_raw,
         s.token_out_amount_raw,
-        s.data,
-        p.token0_address,
-        p.token1_address
+        s.raw_data
     FROM
         swap_amounts s
     INNER JOIN
-        kittypunch_pools p
-    ON
-        LOWER(s.pool_address) = LOWER(p.pool_address)
+        kittypunch_pools p ON LOWER(s.pool_address) = LOWER(p.pool_address)
     WHERE
-        s.token_in_contract != s.token_out_contract
+        p.token0_address != p.token1_address
+        AND s.token_in_amount_raw > 0 
+        AND s.token_out_amount_raw > 0
 ),
 FINAL AS (
     SELECT
-    tx_hash,
-    block_timestamp,
-    block_number AS block_height,
-    event_index,
-    pool_contract AS swap_contract,
-    sender_address,
-    recipient_address,
-    'kittypunch_v3' AS platform,
-    token_in_contract,
-    token_out_contract,
-    token_in_amount_raw AS token_in_amount,
-    token_out_amount_raw AS token_out_amount,
-    data as raw_data
-FROM
-    swap_details
-WHERE
-    token_in_amount_raw > 0 
-    AND token_out_amount_raw > 0
-    AND token_in_contract IS NOT NULL
-    AND token_out_contract IS NOT NULL
+        tx_hash,
+        block_timestamp,
+        block_number AS block_height,
+        event_index,
+        pool_contract AS swap_contract,
+        sender_address,
+        recipient_address,
+        'kittypunch_v3' AS platform,
+        token_in_contract,
+        token_out_contract,
+        token_in_amount_raw AS token_in_amount,
+        token_out_amount_raw AS token_out_amount,
+        raw_data
+    FROM swap_details
 )
 
 SELECT

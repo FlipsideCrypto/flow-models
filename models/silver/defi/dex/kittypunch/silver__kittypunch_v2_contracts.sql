@@ -14,19 +14,18 @@ WITH pair_created_events AS (
         tx_position,
         event_index,
         contract_address,
-        topics,
-        topic_0,
-        topic_1,
-        topic_2,
-        topic_3,
-        data,
+        decoded_log,
+        full_decoded_log,
         inserted_timestamp,
         modified_timestamp
     FROM
-        {{ ref('core_evm__fact_event_logs') }}
+        {{ ref('core_evm__ez_decoded_event_logs') }}
     WHERE
         LOWER(contract_address) = LOWER('0x29372c22459a4e373851798bFd6808e71EA34A71')
-        AND topic_0 = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9' --PairCreated event signature
+        AND (
+            topic_0 = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9' --PairCreated event signature
+            OR event_name = 'PairCreated'
+        )
         
     {% if is_incremental() %}
         AND modified_timestamp > (
@@ -44,19 +43,38 @@ parsed_pairs AS (
         tx_position,
         event_index,
         contract_address AS factory_address,
-        CONCAT('0x', SUBSTR(topic_1, 27, 40)) AS token_address_0,
-        CONCAT('0x', SUBSTR(topic_2, 27, 40)) AS token_address_1,
-        CONCAT('0x', SUBSTR(data, 27, 40)) AS pair_address,
-        TRY_TO_NUMBER(SUBSTR(data, 67, 64), 16) AS pair_id,
-        data AS raw_data,
+        -- Handle multiple possible field name patterns
+        COALESCE(
+            decoded_log:token0::STRING,
+            decoded_log:tokenA::STRING
+        ) AS token_address_0,
+        COALESCE(
+            decoded_log:token1::STRING,
+            decoded_log:tokenB::STRING
+        ) AS token_address_1,
+        COALESCE(
+            decoded_log:pair::STRING,
+            decoded_log:pool::STRING,
+            decoded_log:address::STRING
+        ) AS pair_address,
+        COALESCE(
+            decoded_log:pairId::NUMBER,
+            decoded_log:id::NUMBER,
+            0
+        ) AS pair_id,
+        full_decoded_log AS raw_data,
         inserted_timestamp,
         modified_timestamp
     FROM
         pair_created_events
     WHERE
-        data IS NOT NULL
-        AND topic_1 IS NOT NULL
-        AND topic_2 IS NOT NULL
+        decoded_log IS NOT NULL
+        AND (
+            decoded_log:token0 IS NOT NULL OR decoded_log:tokenA IS NOT NULL
+        )
+        AND (
+            decoded_log:token1 IS NOT NULL OR decoded_log:tokenB IS NOT NULL
+        )
 ),
 FINAL AS (
     SELECT
