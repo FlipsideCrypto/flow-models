@@ -194,7 +194,7 @@ incremental_traces AS (
         f.trace_address,
         t.tx_succeeded
     FROM json_traces f
-    LEFT OUTER JOIN {{ ref('testnet_evm__fact_transactions') }} t
+    LEFT OUTER JOIN {{ ref('testnet__fact_evm_transactions') }} t
         ON f.tx_position = t.tx_position
         AND f.block_number = t.block_number
     {% if is_incremental() %}
@@ -240,7 +240,7 @@ heal_missing_data AS (
         t.trace_address,
         txs.tx_succeeded AS tx_succeeded_heal
     FROM {{ this }} t
-    JOIN {{ ref('testnet_evm__fact_transactions') }} txs
+    JOIN {{ ref('testnet__fact_evm_transactions') }} txs
         ON t.tx_position = txs.tx_position
         AND t.block_number = txs.block_number
     WHERE t.tx_position IS NULL

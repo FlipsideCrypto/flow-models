@@ -147,7 +147,7 @@ WHERE
             txs.v
         FROM
             transactions_fields txs
-            LEFT JOIN {{ ref('testnet_evm__fact_blocks') }}
+            LEFT JOIN {{ ref('testnet__fact_evm_blocks') }}
             b
             ON txs.block_number = b.block_number
 
@@ -226,7 +226,7 @@ missing_data AS (
     FROM
         {{ this }}
         t
-        LEFT JOIN {{ ref('testnet_evm__fact_blocks') }}
+        LEFT JOIN {{ ref('testnet__fact_evm_blocks') }}
         b
         ON t.block_number = b.block_number
         LEFT JOIN {{ ref('silver_evm__testnet_receipts') }}
