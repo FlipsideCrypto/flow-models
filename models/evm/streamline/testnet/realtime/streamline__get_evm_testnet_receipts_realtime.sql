@@ -62,7 +62,7 @@ ready_blocks AS (
     SELECT
         block_number
     FROM
-        {{ ref("_missing_receipts") }}
+        {{ ref("_missing_testnet_receipts") }}
 )
 SELECT
     block_number,
