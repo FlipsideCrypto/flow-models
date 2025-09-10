@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: core_evm__fact_transactions
+  - name: testnet_evm__fact_transactions
     description: '{{ doc("evm_tx_table_doc") }}'
       
     columns:

@@ -126,6 +126,9 @@ sources:
       - name: evm_traces_v2
       - name: evm_decoded_logs
       - name: topshot_metadata
+      - name: evm_testnet_blocks
+      - name: evm_testnet_receipts
+      - name: evm_testnet_traces
 
   - name: crosschain_silver
     database: crosschain
