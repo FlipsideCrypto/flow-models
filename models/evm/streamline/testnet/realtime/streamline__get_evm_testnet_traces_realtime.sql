@@ -17,7 +17,7 @@
 WITH last_3_days AS (
 
     SELECT
-        ZEROIFNULL(block_number) AS block_number
+        GREATEST(ZEROIFNULL(block_number), 67860000) AS block_number
     FROM
         {{ ref("_evm_testnet_block_lookback") }}
 ), 
