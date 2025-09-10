@@ -5,7 +5,7 @@
 SELECT
     DISTINCT block_number AS block_number
 FROM
-    {{ ref("testnet_evm__fact_transactions") }}
+    {{ ref("testnet__fact_evm_transactions") }}
 WHERE
     tx_succeeded IS NULL
     AND block_number > (

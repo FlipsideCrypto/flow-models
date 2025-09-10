@@ -5,7 +5,7 @@
 SELECT
     MIN(block_number) AS block_number
 FROM
-    {{ ref("testnet_evm__fact_blocks") }}
+    {{ ref("testnet__fact_evm_blocks") }}
 WHERE
     block_timestamp >= DATEADD('hour', -72, TRUNCATE(SYSDATE(), 'HOUR'))
     AND block_timestamp < DATEADD('hour', -71, TRUNCATE(SYSDATE(), 'HOUR'))
