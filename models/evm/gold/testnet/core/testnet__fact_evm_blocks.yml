@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: testnet_evm__fact_blocks
+  - name: testnet__fact_evm_blocks
     description: '{{ doc("evm_blocks_table_doc") }}'
       
     columns:

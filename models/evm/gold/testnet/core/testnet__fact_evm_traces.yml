@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: testnet_evm__fact_traces
+  - name: testnet__fact_evm_traces
     description: '{{ doc("evm_traces_table_doc") }}'
       
     columns:

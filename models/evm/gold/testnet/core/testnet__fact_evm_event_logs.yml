@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: testnet_evm__fact_event_logs
+  - name: testnet__fact_evm_event_logs
     description: '{{ doc("evm_logs_table_doc") }}'
       
     columns:
