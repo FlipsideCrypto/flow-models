@@ -159,10 +159,9 @@ FINAL AS (
         block_number AS block_height,
         event_index,
         pair_contract AS swap_contract,
-        sender_address AS trader,
+        sender_address,
         recipient_address,
-        'kittypunch' AS platform,
-        'v2' AS platform_version,
+        'kittypunch_v2' AS platform,
         token_in_contract,
         token_out_contract,
         token_in_amount_raw AS token_in_amount,
@@ -173,12 +172,6 @@ FINAL AS (
             ELSE 'unknown'
         END AS swap_direction,
         0 AS pair_id,  -- Set default pair_id since we don't extract it in this model
-        CASE
-            WHEN LOWER(token_in_contract) = LOWER('0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e') 
-                OR LOWER(token_out_contract) = LOWER('0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e')
-            THEN TRUE
-            ELSE FALSE
-        END AS contains_wflow,
         data as raw_data
     FROM
         swap_details

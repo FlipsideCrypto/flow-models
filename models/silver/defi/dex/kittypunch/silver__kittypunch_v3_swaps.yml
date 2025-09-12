@@ -23,24 +23,18 @@ models:
         description: "Contract address of the V3 pool where the swap was executed"
         tests:
           - not_null
-      - name: trader
+      - name: sender_address
         description: "Address that initiated the swap transaction"
         tests:
           - not_null
       - name: recipient_address
         description: "Address that received the output tokens (may differ from trader)"
       - name: platform
-        description: "DEX platform identifier, always 'kittypunch' for this model"
+        description: "DEX platform identifier, always 'kittypunch_v3' for this model"
         tests:
           - not_null
           - accepted_values:
-              values: ['kittypunch']
-      - name: platform_version
-        description: "Platform version, always 'v3' for this model"
-        tests:
-          - not_null
-          - accepted_values:
-              values: ['v3']
+              values: ['kittypunch_v3']
       - name: token_in_contract
         description: "Contract address of the token being sold (derived from Transfer events)"
         tests:
@@ -67,18 +61,8 @@ models:
           - not_null
           - accepted_values:
               values: ['token0_to_token1', 'token1_to_token0', 'unknown']
-      - name: fee_tier
-        description: "Fee tier of the V3 pool in basis points"
-        tests:
-          - not_null
-      - name: tick
-        description: "Current tick after the swap execution"
-      - name: sqrt_price_x96
-        description: "Square root price after swap in Q64.96 format"
-      - name: liquidity
-        description: "Pool liquidity after the swap"
-      - name: contains_wflow
-        description: "Boolean indicating if the swap involves WFLOW token"
+      - name: pair_id
+        description: "ID of the trading pair from the factory (set to 0 for V3)"
         tests:
           - not_null
       - name: raw_data

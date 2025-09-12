@@ -119,7 +119,7 @@ swap_details AS (
 ),
 FINAL AS (
     SELECT
-        tx_hash,
+        tx_hash AS tx_id,
         block_timestamp,
         block_number AS block_height,
         event_index,
@@ -131,6 +131,8 @@ FINAL AS (
         token_out_contract,
         token_in_amount_raw AS token_in_amount,
         token_out_amount_raw AS token_out_amount,
+        'unknown' AS swap_direction,  -- V3 doesn't have clear token0/token1 mapping like V2
+        0 AS pair_id,  -- Set default pair_id to match V2 structure
         raw_data
     FROM swap_details
 )
@@ -138,7 +140,7 @@ FINAL AS (
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['tx_hash', 'event_index']
+        ['tx_id', 'event_index']
     ) }} AS kittypunch_v3_swaps_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
