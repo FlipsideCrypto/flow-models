@@ -8,9 +8,13 @@ sources:
     tables:
       - name: moments_minted_metadata_api
       - name: blocks
+      - name: blocks_v2
       - name: collections
+      - name: collections_v2
       - name: transactions
+      - name: transactions_v2
       - name: transaction_results
+      - name: transaction_results_v2
       - name: BLOCKS_CANDIDATE_07
       - name: BLOCKS_CANDIDATE_08
       - name: BLOCKS_CANDIDATE_09
