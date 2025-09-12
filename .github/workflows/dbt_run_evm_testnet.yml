@@ -1,5 +1,5 @@
-name: dbt_run_evm
-run-name: dbt_run_evm
+name: dbt_run_evm_testnet
+run-name: dbt_run_evm_testnet
 
 on:
   workflow_dispatch:
