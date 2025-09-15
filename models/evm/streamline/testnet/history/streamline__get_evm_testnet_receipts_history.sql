@@ -4,65 +4,34 @@
         func = 'streamline.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table" :"evm_testnet_receipts",
-        "sql_limit" :"25000",
-        "producer_batch_size" :"5000",
+        "sql_limit" :"1000000",
+        "async_concurrent_requests" :"10",
+        "producer_batch_size" :"10000",
         "worker_batch_size" :"1000",
         "sql_source" :"{{this.identifier}}" }
     ),
-    tags = ['streamline_realtime_evm_testnet']
+    tags = ['streamline_history_evm_testnet']
 ) }}
 
-WITH last_3_days AS (
-
-    SELECT
-        GREATEST(ZEROIFNULL(block_number), 67860000) AS block_number
-    FROM
-        {{ ref("_evm_testnet_block_lookback") }}
-),
-tbl AS (
+WITH tbl AS (
 
     SELECT
         block_number
     FROM
         {{ ref('streamline__evm_testnet_blocks') }}
-    WHERE
-        (
-            block_number >= (
-                SELECT
-                    block_number
-                FROM
-                    last_3_days
-            )
-        )
-        AND block_number IS NOT NULL
+    WHERE block_number IS NOT NULL
     EXCEPT
     SELECT
         block_number
     FROM
         {{ ref('streamline__complete_get_evm_testnet_receipts') }}
-    WHERE
-        block_number >= (
-            SELECT
-                block_number
-            FROM
-                last_3_days
-        )
-        AND _inserted_timestamp >= DATEADD(
-            'day',
-            -4,
-            SYSDATE()
-        )
+    WHERE block_number IS NOT NULL
 ),
 ready_blocks AS (
     SELECT
         block_number
     FROM
         tbl
-    UNION ALL
-    SELECT
-        block_number
-    FROM
-        {{ ref("_missing_testnet_receipts") }}
 )
 SELECT
     block_number,
@@ -96,4 +65,4 @@ SELECT
 FROM
     ready_blocks
 ORDER BY
-    block_number DESC
+    block_number ASC
