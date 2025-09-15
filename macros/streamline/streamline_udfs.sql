@@ -49,7 +49,7 @@
     CREATE
     OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_grpc_v2(json variant) returns variant api_integration = 
     {% if target.name == "prod" %} 
-        aws_flow_api_stg_v2 AS 'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_grpc'
+        aws_flow_api_prod_v2 AS 'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_grpc'
     {% elif target.name == "dev" %}
         aws_flow_api_stg_v2 AS 'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_grpc'
     {% elif  target.name == "sbx" %}

@@ -2,9 +2,20 @@
 {% macro create_aws_flow_api() %}
     {% if target.name == "prod" %}
         {% set sql %}
+        -- Likely deprecated endpoint
         CREATE api integration IF NOT EXISTS aws_flow_api_prod api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-prod-rolesnowflakeudfsAF733095-FNY67ODG1RFG' api_allowed_prefixes = (
             'https://quxfxtl934.execute-api.us-east-1.amazonaws.com/prod/'
         ) enabled = TRUE;
+
+        {% endset %}
+        {% do run_query(sql) %}
+
+        {% set sql %}
+        -- New v2 deployment for prod
+        CREATE api integration IF NOT EXISTS aws_flow_api_prod_v2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::924682671219:role/flow-api-prod-rolesnowflakeudfsAF733095-RmrgKIWbzoFL' api_allowed_prefixes = (
+            'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/'
+        ) enabled = TRUE;
+
         {% endset %}
         {% do run_query(sql) %}
 
@@ -26,6 +37,14 @@
 
     {% elif target.name == "dev" %}
         {{ log("Generating api integration for target:" ~ target.name, info=True) }}
+        -- New v2 deployment for dev
+        {% set sql %}
+        CREATE api integration IF NOT EXISTS aws_flow_api_stg_v2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/flow-api-stg-rolesnowflakeudfsAF733095-ybejBONVMTd4' api_allowed_prefixes = (
+            'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/'
+        ) enabled = TRUE;    
+        {% endset %}
+        {% do run_query(sql) %}
+
         {% set sql %}
         CREATE api integration IF NOT EXISTS aws_flow_api_dev_2 api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/flow-api-dev-rolesnowflakeudfsAF733095-i1JsMNTpSzX0' api_allowed_prefixes = (
             'https://sicl8dvvv9.execute-api.us-east-1.amazonaws.com/dev/'
