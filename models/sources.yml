@@ -1,13 +1,6 @@
 version: 2
 
 sources:
-  - name: prod
-    database: chainwalkers
-    schema: prod
-    tables:
-      - name: flow_blocks
-      - name: flow_txs
-
   - name: bronze_streamline
     database: streamline
     schema: |
@@ -133,6 +126,9 @@ sources:
       - name: evm_traces_v2
       - name: evm_decoded_logs
       - name: topshot_metadata
+      - name: evm_testnet_blocks
+      - name: evm_testnet_receipts
+      - name: evm_testnet_traces
 
   - name: crosschain_silver
     database: crosschain

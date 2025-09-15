@@ -1,0 +1,46 @@
+version: 2
+models:
+  - name: testnet__fact_evm_event_logs
+    description: '{{ doc("evm_logs_table_doc") }}'
+      
+    columns:
+      - name: BLOCK_NUMBER
+        description: '{{ doc("evm_block_number") }}'
+      - name: BLOCK_TIMESTAMP
+        description: '{{ doc("evm_block_timestamp") }}'
+      - name: TX_HASH
+        description: '{{ doc("evm_tx_hash") }}'
+      - name: TX_POSITION
+        description: '{{ doc("evm_tx_position") }}'
+      - name: EVENT_INDEX
+        description: '{{ doc("evm_event_index") }}'
+      - name: CONTRACT_ADDRESS
+        description: '{{ doc("evm_logs_contract_address") }}'
+      - name: TOPICS
+        description: '{{ doc("evm_topics") }}'
+      - name: TOPIC_0
+        description: '{{ doc("evm_topic_0") }}'
+      - name: TOPIC_1
+        description: '{{ doc("evm_topic_1") }}'
+      - name: TOPIC_2
+        description: '{{ doc("evm_topic_2") }}'
+      - name: TOPIC_3
+        description: '{{ doc("evm_topic_3") }}'
+      - name: DATA
+        description: '{{ doc("evm_logs_data") }}'
+      - name: EVENT_REMOVED
+        description: '{{ doc("evm_event_removed") }}'
+      - name: ORIGIN_FROM_ADDRESS
+        description: '{{ doc("evm_from_address") }}'
+      - name: ORIGIN_TO_ADDRESS
+        description: '{{ doc("evm_to_address") }}'
+      - name: ORIGIN_FUNCTION_SIGNATURE
+        description: '{{ doc("evm_origin_sig") }}'
+      - name: TX_SUCCEEDED
+        description: '{{ doc("evm_tx_succeeded") }}'
+      - name: FACT_EVENT_LOGS_ID
+        description: '{{ doc("evm_pk") }}'
+      - name: INSERTED_TIMESTAMP
+        description: '{{ doc("evm_inserted_timestamp") }}'
+      - name: MODIFIED_TIMESTAMP
+        description: '{{ doc("evm_modified_timestamp") }}'

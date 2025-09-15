@@ -1,0 +1,62 @@
+version: 2
+models:
+  - name: testnet__fact_evm_traces
+    description: '{{ doc("evm_traces_table_doc") }}'
+      
+    columns:
+      - name: BLOCK_NUMBER
+        description: '{{ doc("evm_block_number") }}'
+      - name: BLOCK_TIMESTAMP
+        description: '{{ doc("evm_block_timestamp") }}'
+      - name: TX_HASH
+        description: '{{ doc("evm_tx_hash") }}'
+      - name: TX_POSITION
+        description: '{{ doc("evm_tx_position") }}'
+      - name: TRACE_INDEX
+        description: '{{ doc("evm_trace_index") }}'
+      - name: FROM_ADDRESS
+        description: '{{ doc("evm_from_address") }}'
+      - name: TO_ADDRESS
+        description: '{{ doc("evm_to_address") }}'
+      - name: INPUT
+        description: '{{ doc("evm_traces_input") }}'
+      - name: OUTPUT
+        description: '{{ doc("evm_traces_output") }}'
+      - name: TYPE
+        description: '{{ doc("evm_traces_type") }}'
+      - name: TRACE_ADDRESS
+        description: '{{ doc("evm_trace_address") }}'
+      - name: SUB_TRACES
+        description: '{{ doc("evm_sub_traces") }}'
+      - name: VALUE
+        description: '{{ doc("evm_value") }}'
+      - name: VALUE_PRECISE_RAW
+        description: '{{ doc("evm_precise_amount_unadjusted") }}'
+      - name: VALUE_PRECISE
+        description: '{{ doc("evm_precise_amount_adjusted") }}'
+      - name: VALUE_HEX
+        description: '{{ doc("evm_value_hex") }}'
+      - name: GAS
+        description: '{{ doc("evm_traces_gas") }}'
+      - name: GAS_USED
+        description: '{{ doc("evm_traces_gas_used") }}'
+      - name: ORIGIN_FROM_ADDRESS
+        description: '{{ doc("evm_traces_from") }}'
+      - name: ORIGIN_TO_ADDRESS
+        description: '{{ doc("evm_traces_to") }}'
+      - name: ORIGIN_FUNCTION_SIGNATURE
+        description: '{{ doc("evm_origin_sig") }}'
+      - name: TRACE_SUCCEEDED
+        description: '{{ doc("evm_trace_succeeded") }}'
+      - name: ERROR_REASON
+        description: '{{ doc("evm_trace_error_reason") }}'
+      - name: REVERT_REASON
+        description: '{{ doc("evm_revert_reason") }}'
+      - name: TX_SUCCEEDED
+        description: '{{ doc("evm_tx_succeeded") }}'
+      - name: FACT_TRACES_ID
+        description: '{{ doc("evm_pk") }}'
+      - name: INSERTED_TIMESTAMP
+        description: '{{ doc("evm_inserted_timestamp") }}'
+      - name: MODIFIED_TIMESTAMP
+        description: '{{ doc("evm_modified_timestamp") }}'

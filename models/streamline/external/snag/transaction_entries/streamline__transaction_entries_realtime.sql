@@ -25,11 +25,11 @@
                     ROW_NUMBER() over (
                         ORDER BY
                             partition_key DESC,
-                            INDEX ASC
+                            INDEX DESC
                     ) AS rn
                 FROM
                     {{ ref('silver_api__transaction_entries') }}
-                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '3 days'
+                    WHERE _inserted_timestamp >= SYSDATE() - INTERVAL '14 days'
             )
             SELECT
                 entry_id
@@ -49,7 +49,7 @@
 SELECT
     {{ var(
         'API_LIMIT',
-        1000
+        100
     ) }} AS api_limit,
     '{{ starting_after }}' AS starting_after,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS partition_key,

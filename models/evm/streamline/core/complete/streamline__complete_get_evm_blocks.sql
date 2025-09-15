@@ -2,6 +2,7 @@
 -- depends_on: {{ ref('bronze_evm__FR_blocks') }}
 {{ config (
     materialized = "incremental",
+    incremental_predicates = ["dynamic_range_predicate", "partition_key"],
     unique_key = "block_number",
     cluster_by = "ROUND(block_number, -3)",
     merge_exclude_columns = ["inserted_timestamp"],
