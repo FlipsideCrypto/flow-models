@@ -112,9 +112,13 @@ sources:
       - name: TRANSACTION_RESULTS_MAINNET_21
       - name: TRANSACTION_RESULTS_MAINNET_22
       - name: testnet_blocks
+      - name: testnet_blocks_v2
       - name: testnet_collections
+      - name: testnet_collections_v2
       - name: testnet_transactions
+      - name: testnet_transactions_v2
       - name: testnet_transaction_results
+      - name: testnet_transaction_results_v2
       - name: evm_blocks
       - name: evm_receipts
       - name: evm_traces
