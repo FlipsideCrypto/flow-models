@@ -1,0 +1,86 @@
+version: 2
+models:
+  - name: silver__kittypunch_v3_contracts
+    description: "KittyPunch V3 pool contracts registry extracted from Factory PoolCreated events. This model captures all concentrated liquidity pools created on the KittyPunch DEX V3 protocol."
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+      - name: event_index
+        description: "{{ doc('event_index') }}"
+        tests:
+          - not_null
+      - name: factory_address
+        description: "Address of the KittyPunch V3 Factory contract that created the pool"
+        tests:
+          - not_null
+      - name: platform
+        description: "DEX platform identifier, always 'kittypunch' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kittypunch']
+      - name: platform_version
+        description: "Platform version, always 'v3' for this model"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['v3']
+      - name: token0_address
+        description: "Contract address of the first token in the pool (lower address)"
+        tests:
+          - not_null
+      - name: token1_address
+        description: "Contract address of the second token in the pool (higher address)"
+        tests:
+          - not_null
+      - name: pool_address
+        description: "Contract address of the created V3 pool"
+        tests:
+          - not_null
+          - unique
+      - name: fee_tier
+        description: "Fee tier for the pool in basis points (e.g., 500 = 0.05%)"
+        tests:
+          - not_null
+      - name: tick_spacing
+        description: "Tick spacing for the concentrated liquidity pool"
+        tests:
+          - not_null
+      - name: contains_wflow
+        description: "Boolean indicating if the pool contains WFLOW token"
+        tests:
+          - not_null
+      - name: pool_name
+        description: "Standardized pool name with tokens in alphabetical order"
+        tests:
+          - not_null
+      - name: raw_data
+        description: "Raw data field from the PoolCreated event"
+      - name: inserted_timestamp
+        description: "{{ doc('inserted_timestamp') }}"
+        tests:
+          - not_null
+      - name: modified_timestamp
+        description: "{{ doc('modified_timestamp') }}"
+        tests:
+          - not_null
+      - name: kittypunch_v3_contracts_id
+        description: "Unique identifier for each pool creation record"
+        tests:
+          - not_null
+          - unique
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: block_timestamp
+          interval: 48
