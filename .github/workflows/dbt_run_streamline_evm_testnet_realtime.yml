@@ -43,7 +43,7 @@ jobs:
 
       - name: Run DBT Jobs
         run: |
-          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -s 2+tag:streamline_evm_testnet_realtime
+          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -s 2+tag:streamline_realtime_evm_testnet tag:streamline_complete_evm_testnet
 
   notify-failure:
     needs: [run_dbt_jobs]
