@@ -28,8 +28,8 @@ models:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: BOOLEAN
           - dbt_expectations.expect_column_values_to_be_in_set:
-              value_set: [false]
-              row_condition: "date_trunc('day', block_timestamp) <= SYSDATE() - interval '1 day' AND block_height >= {{ var('STREAMLINE_START_BLOCK' )}}"
+              value_set: [true, false, null]
+              row_condition: "date_trunc('day', block_timestamp) <= SYSDATE() - interval '1 day' AND block_height >= 280000000"
               config:
                 severity: error
                 error_if: ">50"

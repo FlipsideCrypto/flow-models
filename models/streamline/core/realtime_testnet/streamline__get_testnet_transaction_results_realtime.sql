@@ -9,7 +9,7 @@
 
 WITH min_block_height AS (
     SELECT
-        279500000 AS block_height
+        280000000 AS block_height
 ),
     collection_transactions AS (
         SELECT

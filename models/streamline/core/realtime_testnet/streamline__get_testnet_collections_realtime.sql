@@ -10,7 +10,7 @@
 WITH 
 min_block_height AS (
     SELECT
-        279500000 AS block_height
+        280000000 AS block_height
 ),
     -- CTE to get targeted block_heights and their associated collection_ids from the complete_get_blocks table
     block_collections AS (
