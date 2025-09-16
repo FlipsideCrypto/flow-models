@@ -22,10 +22,10 @@ WITH flat_txs as (
         SELECT 
             COALESCE(MAX(_inserted_timestamp), '1900-01-01'::TIMESTAMP) AS _inserted_timestamp
         FROM {{ this }}
-    ) AND data:result:transactions[0] is not null
+    ) AND data:result:transactions[0] is not null AND block_number >= 67860000
     {% else %}
     {{ ref('bronze_evm__FR_testnet_blocks') }}
-    WHERE data:result:transactions[0] is not null
+    WHERE data:result:transactions[0] is not null AND block_number >= 67860000
     {% endif %}    
 ),
 bronze_transactions AS (

@@ -22,10 +22,10 @@ WITH bronze_blocks AS (
         SELECT 
             COALESCE(MAX(_inserted_timestamp), '1900-01-01'::TIMESTAMP) AS _inserted_timestamp
         FROM {{ this }}
-    ) AND DATA:result IS NOT NULL
+    ) AND DATA:result IS NOT NULL AND block_number >= 67860000
     {% else %}
     {{ ref('bronze_evm__FR_testnet_blocks') }}
-    WHERE DATA:result IS NOT NULL
+    WHERE DATA:result IS NOT NULL AND block_number >= 67860000
     {% endif %}
 )
 
