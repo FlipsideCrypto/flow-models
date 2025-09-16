@@ -20,16 +20,14 @@ WITH bronze AS (
 
 {% if is_incremental() %}
 {{ ref('bronze_evm__testnet_receipts') }}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    ) AND data:result[0] is not null
+WHERE _inserted_timestamp >= (
+        SELECT 
+            COALESCE(MAX(_inserted_timestamp), '1900-01-01'::TIMESTAMP) AS _inserted_timestamp
+        FROM {{ this }}
+    ) AND data:result[0] is not null and block_number >= 67860000
 {% else %}
     {{ ref('bronze_evm__FR_testnet_receipts') }}
-    WHERE data:result[0] is not null
+    WHERE data:result[0] is not null and block_number >= 67860000
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
