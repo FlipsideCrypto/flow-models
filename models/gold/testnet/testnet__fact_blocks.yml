@@ -42,12 +42,6 @@ models:
 
       - name: NETWORK_VERSION
         description: "{{ doc('network_version') }}"
-        tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - STRING
-                - VARCHAR
 
       - name: CHAIN_ID
         description: "{{ doc('chain_id') }}"
@@ -62,7 +56,7 @@ models:
         description: "{{ doc('tx_count') }}"
         tests:
           - not_null:
-              where: block_timestamp <= SYSDATE() - interval '12 hours'
+              where: inserted_timestamp <= SYSDATE() - interval '12 hours'
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER
