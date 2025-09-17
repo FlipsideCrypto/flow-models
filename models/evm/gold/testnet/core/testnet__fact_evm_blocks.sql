@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['evm_testnet']
+    tags = ['evm_testnet','testnet_gold']
 ) }}
 
 SELECT
