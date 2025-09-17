@@ -23,6 +23,9 @@ WHERE
             {{ this }}
     ) {% endset %}
     {% set min_block_timestamp_hour = run_query(query).columns [0].values() [0] %}
+    {% if min_block_timestamp_hour is none %}
+        {% set min_block_timestamp_hour = "DATE_TRUNC('hour', CURRENT_TIMESTAMP - INTERVAL '3 days')" %}
+    {% endif %}
 {% endif %}
 {% endif %}
 
@@ -49,7 +52,7 @@ WITH fees AS (
 AND DATE_TRUNC(
     'hour',
     block_timestamp
-) >= '{{ min_block_timestamp_hour }}'
+) >= {{ min_block_timestamp_hour }}
 {% endif %}
 GROUP BY
     1
@@ -95,7 +98,7 @@ transactions AS (
 AND DATE_TRUNC(
     'hour',
     block_timestamp
-) >= '{{ min_block_timestamp_hour }}'
+) >= {{ min_block_timestamp_hour }}
 {% endif %}
 GROUP BY
     1
