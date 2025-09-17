@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: silver__testnet_blocks
+    description: -|
+      Initial table for the gRPC blocks response, loading data into Snowflake from the external AWS table.
+
+    columns:
+      - name: BLOCK_NUMBER
+        description: "{{ doc('block_number') }}"
+
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
+
+      - name: ID
+        description: "{{ doc('id') }}"
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+
+      - name: COLLECTION_COUNT
+        description: "{{ doc('collection_count') }}"
+
+      - name: PARENT_ID
+        description: "{{ doc('parent_id') }}"
+
+      - name: SIGNATURES
+        description: "{{ doc('signatures') }}"
+
+      - name: COLLECTION_GUARANTEES
+        description: "{{ doc('collection_guarantees') }}"
+
+      - name: BLOCK_SEALS
+        description: "{{ doc('block_seals') }}"
+
+      - name: COLLECTION_COUNT_AGG
+        description: "{{ doc('collection_count_agg') }}"
+
+      - name: _PARTITION_BY_BLOCK_ID
+        description: "{{ doc('_partition_by_block_id') }}"
+
+      - name: _INSERTED_TIMESTAMP
+        description: "{{ doc('_inserted_timestamp') }}"
+
+      - name: BLOCKS_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"

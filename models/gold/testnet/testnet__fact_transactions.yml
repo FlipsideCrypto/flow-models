@@ -1,0 +1,127 @@
+version: 2
+
+models:
+  - name: testnet__fact_transactions
+    description: "{{ doc('core__fact_transactions') }}"
+
+    columns:
+      - name: TX_ID
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: BLOCK_TIMESTAMP
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+              where: block_height >= 280000000
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_NTZ
+
+      - name: BLOCK_HEIGHT
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
+
+      - name: CHAIN_ID
+        description: "{{ doc('chain_id') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: TX_INDEX
+        description: "{{ doc('tx_index') }}"
+
+      - name: PROPOSER
+        description: "{{ doc('proposer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: PAYER
+        description: "{{ doc('payer') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: AUTHORIZERS
+        description: "{{ doc('authorizers') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - ARRAY
+
+      - name: COUNT_AUTHORIZERS
+        description: "{{ doc('count_authorizers') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: GAS_LIMIT
+        description: "{{ doc('gas_limit') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+
+      - name: SCRIPT
+        description: "{{ doc('script') }}"
+
+      - name: ARGUMENTS
+        description: "{{ doc('arguments') }}"
+
+      - name: TRANSACTION_RESULT
+        description: "{{ doc('transaction_result') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - VARIANT
+                - OBJECT
+
+      - name: TX_SUCCEEDED
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - BOOLEAN
+
+      - name: ERROR_MSG
+        description: "{{ doc('error_msg') }}"
+        tests:
+          - not_null:
+              where: not TX_SUCCEEDED
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - STRING
+                - VARCHAR
+
+      - name: FACT_TRANSACTIONS_ID
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"

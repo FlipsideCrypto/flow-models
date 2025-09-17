@@ -1,0 +1,140 @@
+version: 2
+
+models:
+  - name: silver__testnet_transactions_final
+    description: |-
+      This table records all the transactions of the FLOW testnet blockchain.
+    tests:
+      - dbt_utils.recency:
+          datepart: minutes
+          field: block_timestamp
+          interval: 360
+      - dbt_utils.recency:
+          datepart: hours
+          field: _inserted_timestamp
+          interval: 6
+
+    columns:
+      - name: tx_id
+        description: "{{ doc('tx_id') }}"
+        tests:
+          - not_null
+          - unique
+
+      - name: pending_result_response
+        description: "{{ doc('pending_result_response') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: BOOLEAN
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [true, false]
+              row_condition: "date_trunc('day', block_timestamp) <= SYSDATE() - interval '1 day' AND block_height >= 280000000"
+              config:
+                severity: error
+                error_if: ">50"
+
+      - name: block_timestamp
+        description: "{{ doc('block_timestamp') }}"
+        tests:
+          - not_null:
+              where: block_height >= {{ var('STREAMLINE_START_BLOCK' )}}
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: TIMESTAMP_NTZ
+
+      - name: block_height
+        description: "{{ doc('block_height') }}"
+        tests:
+          - not_null
+
+      - name: gas_limit
+        description: "{{ doc('gas_limit') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: payer
+        description: "{{ doc('payer') }}"
+        tests:
+          - not_null
+
+      - name: arguments
+        description: "{{ doc('arguments') }}"
+
+      - name: authorizers
+        description: "{{ doc('authorizers') }}"
+
+      - name: count_authorizers
+        description: "{{ doc('count_authorizers') }}"
+
+      - name: envelope_signatures
+        description: "{{ doc('envelope_signatures') }}"
+
+      - name: payload_signatures
+        description: "{{ doc('payload_signatures') }}"
+
+      - name: proposal_key
+        description: "{{ doc('proposal_key') }}"
+
+      - name: proposer
+        description: "{{ doc('proposer') }}"
+
+      - name: script
+        description: "{{ doc('script') }}"
+
+      - name: events
+        description: "{{ doc('events') }}"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: ARRAY
+
+      - name: EVENT_COUNT
+        description: "{{ doc('event_count') }}"
+
+      - name: status
+        description: "{{ doc('status') }}"
+        tests:
+          - not_null:
+              where: not pending_result_response
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: status_code
+        description: "{{ doc('status_code') }}"
+        tests:
+          - not_null:
+              where: not pending_result_response
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+
+      - name: error_message
+        description: "{{ doc('error_message') }}"
+
+      - name: tx_succeeded
+        description: "{{ doc('tx_succeeded') }}"
+        tests:
+          - not_null:
+              where: not pending_result_response
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: BOOLEAN
+
+      - name: _inserted_timestamp
+        description: "{{ doc('_inserted_timestamp') }}"
+        tests:
+          - not_null
+
+      - name: _partition_by_block_id
+        description: "{{ doc('_partition_by_block_id') }}"
+
+      - name: streamline_transaction_id
+        description: "{{ doc('pk_id') }}"
+
+      - name: INSERTED_TIMESTAMP
+        description: "{{ doc('inserted_timestamp') }}"
+
+      - name: MODIFIED_TIMESTAMP
+        description: "{{ doc('modified_timestamp') }}"
+
+      - name: _INVOCATION_ID
+        description: "{{ doc('invocation_id') }}"

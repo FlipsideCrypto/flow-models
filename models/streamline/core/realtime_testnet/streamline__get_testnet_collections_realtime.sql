@@ -1,16 +1,16 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_bulk_grpc_us_east_2(object_construct('sql_source', '{{this.identifier}}','node_url','access.devnet.nodes.onflow.org:9000','external_table', 'testnet_collections', 'sql_limit', {{var('sql_limit','500000')}}, 'producer_batch_size', {{var('producer_batch_size','10000')}}, 'worker_batch_size', {{var('worker_batch_size','1000')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
+        func = "{{this.schema}}.udf_bulk_grpc_v2(object_construct('sql_source', '{{this.identifier}}','node_url','late-multi-patina.flow-testnet.quiknode.pro:8999','external_table', 'testnet_collections_v2', 'sql_limit', {{var('sql_limit','25000')}}, 'producer_batch_size', {{var('producer_batch_size','5000')}}, 'worker_batch_size', {{var('worker_batch_size','500')}}, 'batch_call_limit', {{var('batch_call_limit','1')}}))",
         target = "{{this.schema}}.{{this.identifier}}"
     ),
     tags = ['streamline_realtime_testnet']
 ) }}
 
 WITH 
-post_crescendo AS (
+min_block_height AS (
     SELECT
-        185000000 AS block_height
+        280000000 AS block_height
 ),
     -- CTE to get targeted block_heights and their associated collection_ids from the complete_get_blocks table
     block_collections AS (
@@ -28,7 +28,7 @@ post_crescendo AS (
                 SELECT
                     block_height
                 FROM
-                    post_crescendo
+                    min_block_height
             )
     ),
     -- CTE to identify collections that haven't been ingested yet

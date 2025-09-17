@@ -119,3 +119,11 @@ bronze:
 	--vars '{"STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
 	--profiles-dir ~/.dbt \
 	--target $(DBT_TARGET)
+
+blocks_testnet:
+	dbt run \
+	--vars '{"STREAMLINE_INVOKE_STREAMS":True, "STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES": True}' \
+	-m 1+models/streamline/core/realtime_testnet/streamline__get_testnet_blocks_realtime.sql \
+	--profile flow \
+	--target $(DBT_TARGET) \
+	--profiles-dir ~/.dbt

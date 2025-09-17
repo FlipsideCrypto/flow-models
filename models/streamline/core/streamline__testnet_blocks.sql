@@ -16,4 +16,4 @@ SELECT
 FROM
     TABLE(streamline.udtf_get_base_table({{block_height}}))
 WHERE
-    block_height > 185000000
+    block_height > 280000000
