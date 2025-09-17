@@ -12,3 +12,4 @@ FROM
     ) }}
 WHERE
     _id <= (SELECT block_number FROM {{ ref('streamline__evm_testnet_chainhead') }})
+AND _id >= 67860000

@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_evm_testnet_realtime
 on:
   workflow_dispatch:
   schedule:
-    # Every 4 hours
-    - cron: "0 */4 * * *"
+    # Every hour at minute 2
+    - cron: "2 * * * *"
 
 env:
   USE_VARS: "${{ vars.USE_VARS }}"
