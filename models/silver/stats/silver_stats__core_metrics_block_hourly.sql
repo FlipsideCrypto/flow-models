@@ -54,7 +54,7 @@ WHERE
 AND DATE_TRUNC(
     'hour',
     block_timestamp
-) >= {{ min_block_timestamp_hour }}
+) >= '{{ min_block_timestamp_hour }}'
 {% endif %}
 GROUP BY
     1
