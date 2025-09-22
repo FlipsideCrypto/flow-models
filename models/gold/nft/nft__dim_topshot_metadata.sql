@@ -6,7 +6,8 @@
     unique_key = "nft_id",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(nft_id,nbatopshot_id);",
     tags = ['scheduled_non_core'],
-    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, TOPSHOT' }} }
+    meta ={ 'database_tags':{ 'table':{ 'PURPOSE': 'NFT, TOPSHOT' }} },
+    enabled = false
 ) }}
 -- depends_on: {{ ref('bronze__streamline_topshot_metadata') }}
 WITH

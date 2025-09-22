@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: silver__swaps_factory
+  - name: silver__increment_swaps
     description: |-
       This table records asset swaps on the Flow blockchain parsed from Swap events emitted by Increment SwapPair contracts (via the SwapFactory contract).
     tests:
