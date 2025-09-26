@@ -48,7 +48,7 @@ SELECT
 FROM
     {{ ref('core__fact_blocks') }}
 WHERE
-    block_timestamp_hour < DATE_TRUNC('hour', systimestamp())
+    DATE_TRUNC('hour', block_timestamp) < DATE_TRUNC('hour', systimestamp())
 
 {% if is_incremental() %}
 AND DATE_TRUNC(
