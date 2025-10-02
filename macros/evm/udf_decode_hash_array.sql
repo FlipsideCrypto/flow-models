@@ -5,7 +5,7 @@ CREATE
 OR REPLACE FUNCTION {{ target.database }}.streamline.udf_decode_hash_array(raw_array ARRAY)
 RETURNS STRING
 LANGUAGE PYTHON
-RUNTIME_VERSION = '3.8'
+RUNTIME_VERSION = '3.9'
 HANDLER = 'decode_hash_array'
 AS
 $$

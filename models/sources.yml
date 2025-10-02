@@ -133,6 +133,7 @@ sources:
       - name: evm_testnet_blocks
       - name: evm_testnet_receipts
       - name: evm_testnet_traces
+      - name: account_storage
 
   - name: crosschain_silver
     database: crosschain
