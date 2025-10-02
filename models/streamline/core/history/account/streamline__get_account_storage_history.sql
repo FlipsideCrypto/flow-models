@@ -37,8 +37,7 @@ select
         '{Service}/{Authentication}' || endpoint,
         OBJECT_CONSTRUCT(
             'Content-Type', 'application/json',
-            'Accept', 'application/json',
-            'fsc-quantum-state', 'livequery'
+            'Accept', 'application/json'
         ),
         request_data,
         'Vault/prod/flow/quicknode/mainnet'
