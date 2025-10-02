@@ -26,8 +26,8 @@ with to_do as (
     limit 5
 )
 
-select 
-    block_date,
+select
+    block_date::VARCHAR as block_date,
     round(block_height, -3) :: INT AS partition_key,
     block_height,
     account_address,
