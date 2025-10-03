@@ -18,7 +18,7 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM
-    {{ ref('silver__streamline_account_storage') }}
+    {{ ref('silver__account_storage') }}
 WHERE 1=1
 {% if is_incremental() %}
     AND modified_timestamp > (
