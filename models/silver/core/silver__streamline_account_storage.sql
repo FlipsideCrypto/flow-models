@@ -3,21 +3,24 @@
 {{ config (
     materialized = "incremental",
     incremental_predicates = ["dynamic_range_predicate", "partition_key"],
-    unique_key = "complete_account_storage_id",
+    unique_key = "streamline_account_storage_id",
     cluster_by = "partition_key",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(complete_account_storage_id)",
-    tags = ['streamline_complete', 'account_storage']
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(streamline_account_storage_id)",
+    tags = ['streamline_load', 'core', 'scheduled_core']
 ) }}
 
 SELECT
     value:"BLOCK_HEIGHT"::INT AS block_height,
     value:"ACCOUNT_ADDRESS"::STRING AS account_address,
+    value:"BLOCK_DATE"::string::Date as block_date,
+    data::string as encoded_data,
+    TRY_PARSE_JSON(BASE64_DECODE_STRING(encoded_data)) as decoded_data,
     file_name,
     partition_key,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
         ['block_height', 'account_address']
-    ) }} AS complete_account_storage_id,
+    ) }} AS streamline_account_storage_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
@@ -39,6 +42,6 @@ WHERE
     {{ ref('bronze__streamline_fr_account_storage') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY complete_account_storage_id
+qualify(ROW_NUMBER() over (PARTITION BY streamline_account_storage_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

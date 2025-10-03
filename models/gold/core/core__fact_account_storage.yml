@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: core__fact_account_storage
+    description: This table contains account storage data as of the last block each day. Please note that the table will only update once a day.
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: block_date
+          interval: 2
+
+    columns:
+      - name: BLOCK_HEIGHT
+        description: The block height of the last block for the day at which storage was fetched.
+        tests:
+          - not_null
+
+      - name: ACCOUNT_ADDRESS
+        description: The address of the account for which storage was fetched.
+        tests:
+          - not_null
+
+      - name: BLOCK_DATE
+        description: The date for which storage was fetched at the last block of the day.
+        tests:
+          - not_null
+      
+      - name: ENCODED_DATA
+        description: The encoded data of the account storage.
+        tests:
+          - not_null
+
+      - name: DECODED_DATA
+        description: The decoded data of the account storage.
+        tests:
+          - not_null
+
+      - name: STORAGE_USED
+        description: The storage used by the account.
+        tests:
+          - not_null
+
+      - name: STORAGE_CAPACITY
+        description: The storage capacity of the account.
+        tests:
+          - not_null
+
+      - name: FACT_ACCOUNT_STORAGE_ID
+        description: The surrogate key for the account storage.
+        tests:
+          - not_null
+
+      - name: INSERTED_TIMESTAMP
+        description: The timestamp of that the row was inserted.
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 2
+
+      - name: MODIFIED_TIMESTAMP
+        description: The timestamp of that the row was last modified.
+        tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 2
