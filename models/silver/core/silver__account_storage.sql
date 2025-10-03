@@ -6,7 +6,7 @@
     unique_key = "streamline_account_storage_id",
     cluster_by = "partition_key",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(streamline_account_storage_id)",
-    tags = ['streamline_load', 'core', 'scheduled_core']
+    tags = ['scheduled_non_core']
 ) }}
 
 SELECT
