@@ -3,14 +3,6 @@
     tags = ['scheduled_non_core']
 ) }}
 
--- Unified rewards points table combining legacy Flow API and new Snag API data
--- Legacy data: 2024-10-16 to 2025-04-14 (Flow Points API - 147,730 records)
--- New data: 2025-04-16 onwards (Snag Loyalty API - 1,395,127 records)
---
--- Schema notes:
---   Legacy fields (NULL in new data): to_address, boxes, keys, transfer_index
---   New fields (NULL in legacy): direction, amount_start, amount_end, account_id, user_id, transaction_id, data, partition_key, index, _inserted_timestamp
-
 WITH legacy AS (
     SELECT
         batch_id AS point_id,
