@@ -2,71 +2,202 @@ version: 2
 
 models:
   - name: rewards__fact_points_transfers
-    description: '{{ doc("rewards__fact_points_transfers") }}'
+    description: |
+      Unified rewards points transfer table combining legacy Flow Points API
+      and new Snag Loyalty API data.
+
+      **Data Sources:**
+      - **Legacy** (source='legacy'): October 2024 - April 14, 2025 (147,730 records)
+        - API: Flow Points API (crescendo-rewards.run.app)
+        - Structure: Batch-based transfers with boxes/keys/points
+        - Includes: to_address, transfer_index for granular tracking
+
+      - **Snag** (source='snag'): April 16, 2025 onwards (1,395,127+ records)
+        - API: Snag Loyalty API (snag-render.com)
+        - Structure: Individual transaction entries with direction (IN/OUT)
+        - Includes: Account balance tracking, user identity, transaction context
+
+      **Schema Evolution:**
+      - Legacy-only fields (NULL for snag): to_address, boxes, keys, transfer_index
+      - Snag-only fields (NULL for legacy): direction, amount_start, amount_end,
+        account_id, user_id, transaction_id, data, partition_key, index, _inserted_timestamp
+
+      **Common Use Cases:**
+      ```sql
+      -- Get all point earning transactions (Snag only)
+      SELECT * FROM rewards__fact_points_transfers
+      WHERE source = 'snag' AND direction = 'IN';
+
+      -- Get legacy batch transfers
+      SELECT * FROM rewards__fact_points_transfers
+      WHERE source = 'legacy' AND batch_id = 'xxx';
+
+      -- Track user point balance changes (Snag only)
+      SELECT user_wallet_address, SUM(CASE WHEN direction='IN' THEN points ELSE -points END) as net_points
+      FROM rewards__fact_points_transfers
+      WHERE source = 'snag' GROUP BY user_wallet_address;
+      ```
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: request_date
-          interval: 1
+          field: created_at
+          interval: 2
           severity: warn
 
     columns:
-      - name: BATCH_ID
-        description: "The batch ID of the transfer"
+      - name: POINT_ID
+        description: |
+          Unique identifier for the points transaction.
+          - **Legacy**: batch_id from Flow Points API
+          - **Snag**: entry_id from Snag Loyalty API
         tests:
           - not_null
 
       - name: CREATED_AT
-        description: "The date of the transfer"
+        description: "Timestamp when the transaction occurred"
         tests:
           - not_null
 
       - name: BATCH_INDEX
-        description: "The index of the batch for the sending account"
+        description: |
+          Index of the batch or transaction.
+          - **Legacy**: Batch index for the sending account
+          - **Snag**: Maps to INDEX field from API
         tests:
           - not_null
 
       - name: TRANSFER_INDEX
-        description: "The index of the transfer within the batch"
-        tests:
-          - not_null
+        description: |
+          **Legacy API only** - Index of the individual transfer within a batch.
+          NULL for Snag data (no batch concept).
 
       - name: FROM_ADDRESS
-        description: "The EVM address of the sender"
-        tests:
-          - not_null
+        description: |
+          EVM address of the user involved in the transaction.
+          - **Legacy**: Sender address
+          - **Snag**: Maps from user_wallet_address
 
       - name: TO_ADDRESS
-        description: "The EVM address of the recipient"
-        tests:
-          - not_null
+        description: |
+          **Legacy API only** - EVM address of the recipient.
+          NULL for Snag data (direction field indicates flow instead).
 
       - name: BOXES
-        description: "The number of boxes transferred"
-        tests:
-          - not_null
+        description: |
+          **Legacy API only** - Number of boxes transferred.
+          NULL for Snag data.
 
       - name: KEYS
-        description: "The number of keys transferred"
+        description: |
+          **Legacy API only** - Number of keys transferred.
+          NULL for Snag data.
+
+      - name: POINTS
+        description: |
+          Number of points involved in the transaction.
+          - **Legacy**: Points transferred
+          - **Snag**: Maps from amount field
         tests:
           - not_null
 
-      - name: POINTS
-        description: "The number of points transferred"
+      - name: DIRECTION
+        description: |
+          **Snag API only** - Transaction direction indicating point flow:
+          - **'IN'**: Points earned/credited to account
+          - **'OUT'**: Points spent/debited from account
+          NULL for legacy data.
+
+      - name: AMOUNT_START
+        description: |
+          **Snag API only** - Loyalty account balance before the transaction.
+          Used for balance reconciliation and audit trails.
+          NULL for legacy data.
+
+      - name: AMOUNT_END
+        description: |
+          **Snag API only** - Loyalty account balance after the transaction.
+          Note: May differ from (amount_start ± points) due to concurrent transactions.
+          NULL for legacy data.
+
+      - name: ACCOUNT_ID
+        description: |
+          **Snag API only** - Loyalty account identifier.
+          NULL for legacy data.
+
+      - name: USER_ID
+        description: |
+          **Snag API only** - User identifier associated with the loyalty account.
+          NULL for legacy data.
+
+      - name: USER_WALLET_ADDRESS
+        description: |
+          EVM wallet address of the user.
+          - **Legacy**: Same as from_address
+          - **Snag**: Native field from API
+
+      - name: TRANSACTION_ID
+        description: |
+          **Snag API only** - Parent loyalty transaction identifier.
+          Links multiple entries to a single transaction.
+          NULL for legacy data.
+
+      - name: DATA
+        description: |
+          **Snag API only** - Full raw JSON response from the API.
+          Contains additional metadata not extracted to dedicated columns.
+          Available for custom analysis and future field extraction.
+          NULL for legacy data.
+
+      - name: PARTITION_KEY
+        description: |
+          **Snag API only** - Partition key for efficient querying and incremental loading.
+          NULL for legacy data.
+
+      - name: INDEX
+        description: |
+          **Snag API only** - Index of the transaction entry within the batch or partition.
+          NULL for legacy data.
+
+      - name: _INSERTED_TIMESTAMP
+        description: |
+          **Snag API only** - Timestamp when the record was inserted into the warehouse.
+          NULL for legacy data.
 
       - name: FACT_POINTS_TRANSFERS_ID
+        description: |
+          Surrogate primary key for the table.
+          - **Legacy**: Generated from (from_address, batch_id, transfer_index)
+          - **Snag**: Generated from (entry_id, partition_key)
         tests:
           - not_null
           - unique
 
       - name: REQUEST_DATE
+        description: |
+          Date of the points transfer (truncated to day).
+          - **Legacy**: From request_date field
+          - **Snag**: Derived from DATE_TRUNC('day', created_at)
         tests:
           - not_null
 
       - name: INSERTED_TIMESTAMP
+        description: "UTC timestamp when the record was first inserted into this table"
         tests:
           - not_null
 
       - name: MODIFIED_TIMESTAMP
+        description: "UTC timestamp when this record was last modified"
         tests:
           - not_null
+
+      - name: SOURCE
+        description: |
+          Data source indicator:
+          - **'legacy'**: Flow Points API (Oct 2024 - Apr 2025)
+          - **'snag'**: Snag Loyalty API (Apr 2025 onwards)
+
+          Use this field to filter by API source or handle schema differences.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['legacy', 'snag']
