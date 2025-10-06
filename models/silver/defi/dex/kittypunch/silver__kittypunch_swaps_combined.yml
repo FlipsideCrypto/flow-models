@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: silver__kittypunch_swaps_combined
+    description: "Combined KittyPunch swaps from V2, V3, and StableKitty platforms"
+    columns:
+      - name: kittypunch_swaps_combined_id
+        description: "Primary key for combined swaps"
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_id
+        description: "Transaction hash"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "Timestamp of the block containing the swap"
+        tests:
+          - not_null
+
+      - name: block_height
+        description: "Block number"
+        tests:
+          - not_null
+
+      - name: event_index
+        description: "Index of the event within the transaction"
+        tests:
+          - not_null
+
+      - name: swap_contract
+        description: "Address of the swap contract/pool"
+        tests:
+          - not_null
+
+      - name: sender_address
+        description: "Address that initiated the swap"
+
+      - name: recipient_address
+        description: "Address that received the output tokens (V3 only)"
+
+      - name: platform
+        description: "Platform identifier (kittypunch_v2, kittypunch_v3, stablekitty)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kittypunch_v2', 'kittypunch_v3', 'stablekitty']
+
+      - name: token_in_contract
+        description: "Address of the input token"
+        tests:
+          - not_null
+
+      - name: token_out_contract
+        description: "Address of the output token"
+        tests:
+          - not_null
+
+      - name: token_in_amount
+        description: "Amount of input token (raw)"
+        tests:
+          - not_null
+
+      - name: token_out_amount
+        description: "Amount of output token (raw)"
+        tests:
+          - not_null
+
+      - name: source_table
+        description: "Source table name"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kittypunch_v2_swaps', 'kittypunch_v3_swaps', 'stablekitty_swaps']
+
+      - name: source_id
+        description: "Original primary key from source table"
+        tests:
+          - not_null
+
+      - name: inserted_timestamp
+        description: "Timestamp when record was inserted"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "Timestamp when record was last modified"
+        tests:
+          - not_null
