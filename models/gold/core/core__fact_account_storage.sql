@@ -20,6 +20,7 @@ SELECT
 FROM
     {{ ref('silver__account_storage') }}
 WHERE 1=1
+and encoded_data is not null
 {% if is_incremental() %}
     AND modified_timestamp > (
         SELECT
