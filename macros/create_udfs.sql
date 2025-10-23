@@ -7,7 +7,7 @@
             ) }}
             {{ create_udf_get_chainhead() }}
             {{ create_udf_get_chainhead_testnet() }}
-            {{ create_udf_bulk_grpc() }}
+            {{ create_udf_bulk_grpc_v2() }}
             
             {{ run_create_udf_array_disjunctive_union() }}
             {{ run_create_address_array_adj() }}

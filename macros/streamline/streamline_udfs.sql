@@ -43,6 +43,21 @@
     {%- endif %};
 {% endmacro %}
 
+{% macro create_udf_bulk_grpc_v2() %}    
+    {{ log("Creating udf udf_bulk_grpc_v2 for target:" ~ target.name ~ ", schema: " ~ target.schema, info=True) }}
+    {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
+    CREATE
+    OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_grpc_v2(json variant) returns variant api_integration = 
+    {% if target.name == "prod" %} 
+        aws_flow_api_prod_v2 AS 'https://rajpkbgko9.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_grpc'
+    {% elif target.name == "dev" %}
+        aws_flow_api_stg_v2 AS 'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_grpc'
+    {% elif  target.name == "sbx" %}
+        {{ log("Creating sbx udf_bulk_grpc_v2", info=True) }}
+        aws_flow_api_stg_v2 AS 'https://2hcu4hei27.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_grpc'
+    {%- endif %};
+{% endmacro %}
+
 {% macro create_udf_bulk_grpc_us_east_2() %}    
     {{ log("Creating udf udf_bulk_grpc for target:" ~ target.name ~ ", schema: " ~ target.schema, info=True) }}
     {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
