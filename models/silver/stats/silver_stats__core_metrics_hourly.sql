@@ -24,7 +24,7 @@ WHERE
     ) {% endset %}
     {% set min_block_timestamp_hour = run_query(query).columns [0].values() [0] %}
     {% if min_block_timestamp_hour is none %}
-        {% set min_block_timestamp_hour = "DATE_TRUNC('hour', CURRENT_TIMESTAMP - INTERVAL '3 days')" %}
+        {% set min_block_timestamp_hour = run_query("SELECT DATE_TRUNC('hour', CURRENT_TIMESTAMP - INTERVAL '3 days')").columns[0].values()[0] %}
     {% endif %}
 {% endif %}
 {% endif %}
