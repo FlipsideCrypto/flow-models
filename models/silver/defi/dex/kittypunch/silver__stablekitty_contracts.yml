@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: silver__stablekitty_contracts
+    description: "StableKitty pool contracts and their configuration details"
+    columns:
+      - name: stablekitty_contracts_id
+        description: "Primary key for stablekitty contracts"
+        tests:
+          - not_null
+          - unique
+
+      - name: tx_hash
+        description: "Transaction hash where the pool was created"
+        tests:
+          - not_null
+
+      - name: block_timestamp
+        description: "Timestamp of the block containing the pool creation"
+        tests:
+          - not_null
+
+      - name: block_height
+        description: "Block number where the pool was created"
+        tests:
+          - not_null
+
+      - name: event_index
+        description: "Index of the pool creation event within the transaction"
+        tests:
+          - not_null
+
+      - name: factory_address
+        description: "Address of the factory contract that created the pool"
+        tests:
+          - not_null
+
+      - name: platform
+        description: "Platform identifier (stablekitty)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['stablekitty']
+
+      - name: platform_version
+        description: "Platform version (stable)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['stable']
+
+      - name: token0_address
+        description: "Address of the first token in the pool"
+        tests:
+          - not_null
+
+      - name: token1_address
+        description: "Address of the second token in the pool"
+        tests:
+          - not_null
+
+      - name: pool_address
+        description: "Address of the created pool contract"
+        tests:
+          - not_null
+
+      - name: factory_type
+        description: "Type of factory used to create the pool"
+
+      - name: inserted_timestamp
+        description: "Timestamp when record was inserted"
+        tests:
+          - not_null
+
+      - name: modified_timestamp
+        description: "Timestamp when record was last modified"
+        tests:
+          - not_null

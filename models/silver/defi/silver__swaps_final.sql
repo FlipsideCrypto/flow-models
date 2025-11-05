@@ -109,6 +109,38 @@ AND _modified_timestamp >= (
 )
 {% endif %}
 ),
+
+swaps_from_kittypunch AS (
+    SELECT
+        block_height,
+        block_timestamp,
+        tx_id,
+        event_index AS swap_index,
+        swap_contract,
+        platform,
+        sender_address AS trader,
+        token_in_amount,
+        token_in_contract,
+        NULL AS token_in_destination,
+        token_out_amount,
+        token_out_contract,
+        NULL AS token_out_source,
+        source_modified_timestamp AS _modified_timestamp,
+        3 AS _priority
+    FROM
+        {{ ref('silver__kittypunch_swaps_combined') }}
+
+{% if is_incremental() %}
+WHERE
+    source_modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+),
+
 swaps_union AS (
     SELECT
         *
@@ -124,10 +156,12 @@ swaps_union AS (
         *
     FROM
         swaps
-) {# Note - curr prices pipeline does not include token address data, making the join difficult and
-inaccurate.NEW prices models DO have this so will
-ADD
-    price fields WITH may RELEASE.#}
+    UNION ALL
+    SELECT
+        *
+    FROM
+        swaps_from_kittypunch
+)
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
