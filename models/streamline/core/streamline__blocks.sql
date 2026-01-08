@@ -3,19 +3,24 @@
     tags = ['streamline_view']
 ) }}
 
-{% if execute %}
-{% set height = run_query('SELECT streamline.udf_get_chainhead()') %}
-{% set block_height = height.columns[0].values()[0] %}
-{% else %}
-{% set block_height = 0 %}
-{% endif %}
+WITH ch AS (
 
+    SELECT
+        block_height
+    FROM
+        {{ ref('streamline__chainhead') }}
+)
 SELECT
-    height as block_height
+    _id AS block_height
 FROM
-    TABLE(streamline.udtf_get_base_table({{block_height}}))
+    {{ source(
+        'silver_crosschain',
+        'number_sequence'
+    ) }}
 WHERE
-    block_height > 4132133 -- Root Height for Candidate node 7 
-                           -- the earliest available block we can ingest since earlier candidate nodes
-                           -- do not have the get_block_by_height grpc method
-                           -- https://developers.flow.com/concepts/nodes/node-operation/past-sporks#candidate-4
+    _id <= (
+        SELECT
+            block_height
+        FROM
+            ch
+    )
