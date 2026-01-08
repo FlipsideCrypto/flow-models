@@ -7,5 +7,5 @@ SELECT
 FROM
     {{ ref("core_evm__fact_blocks") }}
 WHERE
-    block_timestamp >= DATEADD('hour', -72, TRUNCATE(SYSDATE(), 'HOUR'))
+    block_timestamp >= DATEADD('hour', -270, TRUNCATE(SYSDATE(), 'HOUR'))
     AND block_timestamp < DATEADD('hour', -71, TRUNCATE(SYSDATE(), 'HOUR'))

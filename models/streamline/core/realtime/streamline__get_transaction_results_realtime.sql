@@ -20,7 +20,7 @@ WITH last_3_days AS (
     
     {% else %}
     SELECT
-        MAX(block_height) - 210000 AS block_height
+        MAX(block_height) - 850000 AS block_height
     FROM
         {{ ref('streamline__blocks') }}
     {% endif %}),

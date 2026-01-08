@@ -15,7 +15,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
         {{ ref('seeds__network_version') }}
     {% else %}
     SELECT
-        MAX(block_height) - 210000 AS block_height
+        MAX(block_height) - 850000 AS block_height
     FROM
         {{ ref('streamline__blocks') }}
     {% endif %}),
