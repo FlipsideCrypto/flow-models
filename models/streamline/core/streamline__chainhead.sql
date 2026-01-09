@@ -5,7 +5,7 @@
 
 SELECT
     live.udf_api(
-        'POST',
+        'GET',
         '{Service}/{Authentication}/v1/node_version_info',
         OBJECT_CONSTRUCT(
             'Content-Type',
